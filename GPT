@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Tracking Bar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+            color: white;
+        }
+        h1 {
+            margin-top: 50px;
+        }
+        .progress-container {
+            width: 80%;
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 30px;
+            width: 0%;
+            background: linear-gradient(90deg, #12c2e9, #c471ed, #f64f59);
+            transition: width 0.5s ease-in-out;
+        }
+        .input-container {
+            margin: 20px auto;
+        }
+        input[type="number"] {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            width: 100px;
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #333;
+            margin-left: 10px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>Customizable Tracking Bar</h1>
+    <div class="progress-container">
+        <div id="progress-bar" class="progress-bar"></div>
+    </div>
+    <div class="input-container">
+        <input id="progress-input" type="number" placeholder="Enter %" min="0" max="100">
+        <button onclick="updateProgressBar()">Update</button>
+    </div>
+
+    <script>
+        function updateProgressBar() {
+            const input = document.getElementById('progress-input');
+            const progressBar = document.getElementById('progress-bar');
+            const value = parseInt(input.value, 10);
+
+            if (isNaN(value) || value < 0 || value > 100) {
+                alert('Please enter a number between 0 and 100.');
+                return;
+            }
+
+            progressBar.style.width = value + '%';
+        }
+    </script>
+</body>
+</html>
