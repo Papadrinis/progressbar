@@ -106,6 +106,11 @@ the product too if the product must stay pixel-consistent.
 If the user chose the Soul path (D) instead, the spine is `soul_id` on `soul_2` images, and
 those images then drive video as `start_image`.
 
+**Check the style's image model against the spine before Stage 4.** Elements cannot be read by
+`soul_2` or `soul_cinematic`, which three style cards name. If they conflict, swap the keyframe
+model to an Elements-compatible one for the whole run — never mid-storyboard. Details in
+`references/models.md`.
+
 Report the locked identity back in one line: name, path used, and the id you will reuse.
 
 ---

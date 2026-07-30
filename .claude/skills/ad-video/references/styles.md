@@ -141,6 +141,10 @@ every prompt, **audio**, **pacing** (shots per 15s), and **negatives** to avoid.
 
 1. Append the DNA string to **every** keyframe prompt, after the shot-specific content.
 2. Use the card's image model for all keyframes in the run — never mix models mid-storyboard.
+   **Exception:** `ugc-raw`, `docu-testimonial`, and `luxe-minimal` name Soul models, which
+   cannot read Element references. If the avatar is locked as an Element, swap those cards to
+   `nano_banana_2` (photoreal) or `cinematic_studio_2_5` (cinematic) for the whole run. See the
+   identity-spine note in `models.md`.
 3. Use the card's video model unless the router in `models.md` overrides it for a hard
    requirement (identity lock, 12–15s marketing format, product entity).
 4. Let the pacing number set the shot count for the chosen duration.

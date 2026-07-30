@@ -64,6 +64,16 @@ Multiple elements per prompt (avatar + product + environment). Works with `nano_
 `nano_banana_flash`, `gpt_image_2`, `seedream_v4_5`, `seedream_v5_lite`, `cinematic_studio_2_5`,
 `seedance_2_0`, `kling3_0`. Instant.
 
+> **Elements do NOT work with `soul_2` or `soul_cinematic`.** Several style cards name those as
+> their image model (`ugc-raw`, `docu-testimonial`, `luxe-minimal`). When a style names a Soul
+> model *and* the avatar is locked as an Element, you cannot use both — pick one:
+> - keep the Element and render keyframes with an Elements-compatible model
+>   (`nano_banana_2` for photoreal, `cinematic_studio_2_5` for the cinematic cards), or
+> - drop the Element and use the Soul spine, passing the avatar as `soul_id`, or as the single
+>   `image`-role reference `soul_2` accepts.
+>
+> Verified: a run using `ugc-raw` with an Element had to swap `soul_2` → `nano_banana_2`.
+
 **2. Soul (trained).** `show_characters(action='train', name, images[5–20])`, ~10 min. Usable
 **only** with `soul_2` and `soul_cinematic`, **one soul per generation**. Highest identity
 fidelity for one recurring person. Multi-character shots cannot use Soul.
@@ -83,6 +93,14 @@ Pick one spine per campaign and stay on it.
 - A completed generation's job id can be fed directly as an input to the next generation. This is
   how a keyframe becomes a `start_image` without any upload step.
 - `job_display` takes exactly one job id per call.
+- Verified: passing a bare image job id as `start_image` works with no upload and no
+  `media_import_url` step — the backend resolves it to the underlying image.
+- The returned job's `model` field may differ from the id you sent: requesting `nano_banana_2`
+  comes back as `nano_banana_flash`, and `gpt_image_2` reports an internal codename in
+  `params.model`. This is backend naming, not a silent substitution of a different model —
+  do not "correct" the id you send based on what comes back.
+- Generated asset URLs are on a CDN that some sandboxes block outbound. If you cannot fetch a
+  result to inspect it, say so and hand the user the URL rather than guessing at the content.
 
 ## Cost and credits
 
