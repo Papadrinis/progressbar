@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ad Video Brief Builder</title>
+<style>
+  :root {
+    --bg: #0e1116;
+    --panel: #161b23;
+    --panel-2: #1c222c;
+    --line: #2a323f;
+    --ink: #e8edf5;
+    --muted: #93a0b4;
+    --accent: #12c2e9;
+    --accent-2: #c471ed;
+    --accent-3: #f64f59;
+    --ok: #35d0a5;
+    --warn: #ffb020;
+    --bad: #ff5c6c;
+    --radius: 14px;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f4f6fa; --panel: #ffffff; --panel-2: #f0f3f8; --line: #dfe5ee;
+      --ink: #161d27; --muted: #5d6b80;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font: 15px/1.55 ui-sans-serif, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+  header {
+    position: sticky; top: 0; z-index: 20;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .head-inner {
+    max-width: 1080px; margin: 0 auto; padding: 14px 20px 12px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  h1 { font-size: 17px; margin: 0; letter-spacing: -0.01em; }
+  h1 small { display: block; font-weight: 400; color: var(--muted); font-size: 12.5px; letter-spacing: 0; }
+  .track {
+    flex: 1 1 220px; min-width: 160px; height: 8px; border-radius: 99px;
+    background: var(--panel-2); overflow: hidden; border: 1px solid var(--line);
+  }
+  .track > i {
+    display: block; height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent-3));
+    transition: width .45s cubic-bezier(.4,0,.2,1);
+  }
+  .track-label { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 12.5px; min-width: 78px; text-align: right; }
+
+  main { max-width: 1080px; margin: 0 auto; padding: 26px 20px 90px; }
+  section {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 20px; margin-bottom: 18px;
+  }
+  .sec-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px; }
+  .step-n {
+    font-size: 11px; font-weight: 700; letter-spacing: .1em; color: var(--accent);
+    border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+    border-radius: 6px; padding: 2px 7px;
+  }
+  h2 { font-size: 15.5px; margin: 0; }
+  .hint { color: var(--muted); font-size: 13px; margin: 6px 0 16px; }
+
+  label { display: block; font-size: 12.5px; color: var(--muted); margin: 0 0 5px; }
+  input[type=text], textarea, select {
+    width: 100%; background: var(--panel-2); color: var(--ink);
+    border: 1px solid var(--line); border-radius: 9px; padding: 9px 11px;
+    font: inherit; font-size: 14px;
+  }
+  input:focus, textarea:focus, select:focus { outline: 2px solid color-mix(in srgb, var(--accent) 55%, transparent); outline-offset: -1px; }
+  textarea { resize: vertical; min-height: 66px; }
+  .grid { display: grid; gap: 13px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+  .field { min-width: 0; }
+
+  .choices { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(215px, 1fr)); }
+  .choice {
+    text-align: left; cursor: pointer; background: var(--panel-2);
+    border: 1px solid var(--line); border-radius: 11px; padding: 12px 13px;
+    color: var(--ink); font: inherit; transition: border-color .15s, background .15s, transform .1s;
+  }
+  .choice:hover { border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); }
+  .choice:active { transform: translateY(1px); }
+  .choice[aria-pressed="true"] {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 12%, var(--panel-2));
+  }
+  .choice b { display: block; font-size: 13.5px; margin-bottom: 3px; }
+  .choice span { display: block; color: var(--muted); font-size: 12.5px; }
+
+  .styles { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(238px, 1fr)); }
+  .style-card { position: relative; }
+  .style-card .models {
+    margin-top: 8px; font-size: 11.5px; color: var(--muted);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .pill {
+    display: inline-block; font-size: 11px; padding: 1px 7px; border-radius: 99px;
+    border: 1px solid var(--line); background: var(--panel); color: var(--muted); margin-right: 5px;
+  }
+
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+  .seg button {
+    background: var(--panel-2); border: 0; color: var(--muted); font: inherit; font-size: 13.5px;
+    padding: 8px 14px; cursor: pointer; border-right: 1px solid var(--line);
+  }
+  .seg button:last-child { border-right: 0; }
+  .seg button[aria-pressed="true"] { background: color-mix(in srgb, var(--accent) 18%, var(--panel-2)); color: var(--ink); font-weight: 600; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 7px 9px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; width: 62px; }
+  .scroll-x { overflow-x: auto; }
+
+  .meter { height: 7px; border-radius: 99px; background: var(--panel-2); border: 1px solid var(--line); overflow: hidden; }
+  .meter > i { display: block; height: 100%; width: 0%; background: var(--ok); transition: width .3s, background .3s; }
+  .meter.warn > i { background: var(--warn); }
+  .meter.bad > i { background: var(--bad); }
+
+  pre {
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 11px;
+    padding: 15px; overflow-x: auto; font-size: 12.5px; line-height: 1.5;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; margin: 0;
+    white-space: pre-wrap; word-break: break-word;
+  }
+  .btn {
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    color: #08111a; font-weight: 650; border: 0; border-radius: 9px;
+    padding: 10px 17px; font-size: 14px; cursor: pointer;
+  }
+  .btn.ghost { background: var(--panel-2); color: var(--ink); border: 1px solid var(--line); font-weight: 500; }
+  .btn:active { transform: translateY(1px); }
+  .warnbox {
+    border-left: 3px solid var(--warn); background: color-mix(in srgb, var(--warn) 9%, transparent);
+    padding: 9px 12px; border-radius: 0 8px 8px 0; font-size: 13px; margin-top: 12px; color: var(--ink);
+  }
+  .muted { color: var(--muted); }
+  footer { max-width: 1080px; margin: 0 auto; padding: 0 20px 40px; color: var(--muted); font-size: 12.5px; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="head-inner">
+    <h1>Ad Video Brief Builder<small>Feeds the <code>/ad-video</code> skill · Higgsfield MCP</small></h1>
+    <div class="track"><i id="prog"></i></div>
+    <div class="track-label" id="proglabel">0 / 4</div>
+  </div>
+</header>
+
+<main>
+
+  <!-- STEP 1 -->
+  <section>
+    <div class="sec-head"><span class="step-n">STEP 1</span><h2>Avatar</h2></div>
+    <p class="hint">The face of the ad. Whichever path you pick, the skill locks the identity once and reuses it by id in every later prompt — that is what stops the face drifting between shots.</p>
+    <div class="choices" id="avatarPaths"></div>
+
+    <div id="avatarGen" hidden style="margin-top:16px">
+      <div class="grid">
+        <div class="field">
+          <label for="avModel">Image model</label>
+          <select id="avModel">
+            <option value="gpt_image_2">gpt_image_2 — GPT / ChatGPT family, strong adherence + text</option>
+            <option value="soul_2">soul_2 — most photoreal human faces</option>
+            <option value="nano_banana_pro">nano_banana_pro — 4K detail, crisp typography</option>
+            <option value="seedream_v4_5">seedream_v4_5 — stylized looks</option>
+            <option value="cinematic_studio_2_5">cinematic_studio_2_5 — cinema-grade</option>
+          </select>
+        </div>
+        <div class="field"><label for="avAge">Age range</label><input type="text" id="avAge" placeholder="late 20s"></div>
+        <div class="field"><label for="avLook">Build, hair, features</label><input type="text" id="avLook" placeholder="athletic, shoulder-length dark curls"></div>
+        <div class="field"><label for="avWardrobe">Wardrobe</label><input type="text" id="avWardrobe" placeholder="oversized cream knit"></div>
+        <div class="field"><label for="avExpr">Expression</label><input type="text" id="avExpr" placeholder="warm, half-smile, direct to lens"></div>
+        <div class="field"><label for="avBg">Background</label><input type="text" id="avBg" placeholder="sunlit apartment kitchen"></div>
+      </div>
+    </div>
+    <p class="hint" id="avatarNote" style="margin-top:14px"></p>
+  </section>
+
+  <!-- STEP 2 -->
+  <section>
+    <div class="sec-head"><span class="step-n">STEP 2</span><h2>Style</h2></div>
+    <p class="hint">Picking a style locks four things for the whole run: image model, video model, the prompt DNA appended to every shot, and the audio treatment.</p>
+    <div class="styles" id="styleGrid"></div>
+    <div id="styleDetail" hidden style="margin-top:16px"></div>
+  </section>
+
+  <!-- STEP 3 -->
+  <section>
+    <div class="sec-head"><span class="step-n">STEP 3</span><h2>Brief</h2></div>
+    <p class="hint">Only product and core message are required — the skill infers the rest and tells you what it assumed.</p>
+    <div class="grid">
+      <div class="field"><label for="bProduct">Product / brand <span style="color:var(--accent-3)">*</span></label><input type="text" id="bProduct" placeholder="name, or a product URL"></div>
+      <div class="field"><label for="bAudience">Audience</label><input type="text" id="bAudience" placeholder="leave blank to let the skill infer"></div>
+      <div class="field"><label for="bCta">CTA</label><input type="text" id="bCta" placeholder="Link in bio"></div>
+      <div class="field"><label for="bLang">Language</label><input type="text" id="bLang" placeholder="English"></div>
+    </div>
+    <div class="field" style="margin-top:13px">
+      <label for="bMessage">Core message — the one thing the viewer must remember <span style="color:var(--accent-3)">*</span></label>
+      <textarea id="bMessage" placeholder="Two weeks to visibly softer skin, without a ten-step routine."></textarea>
+    </div>
+
+    <div class="row" style="margin-top:16px">
+      <div><label>Duration</label><div class="seg" id="durSeg">
+        <button data-v="8" type="button">8s</button><button data-v="15" type="button" aria-pressed="true">15s</button><button data-v="30" type="button">30s</button>
+      </div></div>
+      <div><label>Aspect</label><div class="seg" id="arSeg">
+        <button data-v="9:16" type="button" aria-pressed="true">9:16</button><button data-v="16:9" type="button">16:9</button><button data-v="1:1" type="button">1:1</button>
+      </div></div>
+      <div><label>Platform</label><div class="seg" id="platSeg">
+        <button data-v="TikTok / Reels" type="button" aria-pressed="true">TikTok / Reels</button><button data-v="YouTube" type="button">YouTube</button><button data-v="Web / CTV" type="button">Web / CTV</button>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- STEP 4 -->
+  <section>
+    <div class="sec-head"><span class="step-n">STEP 4</span><h2>Beat plan &amp; dialogue budget</h2></div>
+    <p class="hint">Generated from the duration you picked. The skill builds its storyboard on exactly this structure — shot count comes from the chosen style's pacing.</p>
+    <div class="scroll-x"><table id="beatTable"><thead><tr><th>Beat</th><th class="num">Sec</th><th>What it does</th></tr></thead><tbody></tbody></table></div>
+
+    <div style="margin-top:18px">
+      <label for="bVo">Draft voiceover (optional) — counted against the budget live</label>
+      <textarea id="bVo" placeholder="Leave blank and the skill writes it inside the budget."></textarea>
+      <div class="row" style="margin-top:9px; gap:12px">
+        <div class="meter" id="voMeter" style="flex:1 1 200px"><i></i></div>
+        <div class="track-label" id="voLabel" style="min-width:130px">0 / 35 words</div>
+      </div>
+      <div class="warnbox" id="voWarn" hidden></div>
+    </div>
+  </section>
+
+  <!-- OUTPUT -->
+  <section>
+    <div class="sec-head"><span class="step-n">OUTPUT</span><h2>Brief block</h2></div>
+    <p class="hint">Copy this into Claude with <code>/ad-video</code>. It answers Stage 0 through Stage 2 in one paste, so the run starts at the storyboard.</p>
+    <pre id="out"></pre>
+    <div class="row" style="margin-top:13px">
+      <button class="btn" id="copyBtn" type="button">Copy brief</button>
+      <button class="btn ghost" id="resetBtn" type="button">Reset</button>
+      <span class="muted" id="copyMsg" style="font-size:13px"></span>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  Mirrors <code>.claude/skills/ad-video/</code> — styles, beat structures, and model routing are kept in sync with the skill's reference files.
+  This page composes a brief; generation runs through Claude and the Higgsfield MCP.
+</footer>
+
+<script>
+"use strict";
+
+const STYLES = [
+  { id:"jingle-pop", name:"Jingle Pop", vibe:"Sung hook, candy colors, bouncing rhythm", best:"FMCG, snacks, apps, kids", img:"nano_banana_2", vid:"kling3_0", pace:5.5,
+    audio:"Sung hook, 4–8 words, repeated at open and close", neg:"muted colors, moody shadows, handheld shake",
+    dna:"saturated candy palette, bright even key light, playful bouncy staging, glossy surfaces, confetti-clean background, cheerful exaggerated expression, commercial pop aesthetic" },
+  { id:"cinematic-prestige", name:"Cinematic Prestige", vibe:"Anamorphic, filmic grain, slow push-ins", best:"Autos, fragrance, finance, watches", img:"cinematic_studio_2_5", vid:"seedance_2_0", pace:3.5,
+    audio:"Sparse. Score plus one VO line at the end", neg:"fast cuts, on-screen text spam, flat lighting",
+    dna:"anamorphic 2.39 framing, shallow depth of field, motivated practical lighting, subtle film grain, deep shadows with retained detail, slow deliberate camera, muted cinematic color grade" },
+  { id:"toon-3d", name:"Toon 3D", vibe:"Soft-shaded 3D, big eyes, warm bounce light", best:"Family brands, insurance, telco, mascots", img:"seedream_v4_5", vid:"kling3_0", pace:4.5,
+    audio:"Warm narrator or character voice, light orchestral bed", neg:"photorealism, uncanny skin — describe the look, never name a studio",
+    dna:"stylized 3D animation, soft subsurface shading, expressive oversized eyes, rounded appealing character design, warm bounce light, shallow toy-like depth, family-friendly animated feature look" },
+  { id:"hyperreal", name:"Hyperreal Product", vibe:"Macro product photography that moves", best:"Cosmetics, beverages, tech, food", img:"marketing_studio_image", vid:"seedance_2_0", pace:5,
+    audio:"Designed SFX over music, no dialogue except the CTA", neg:"plastic CGI sheen, floating unsupported objects",
+    dna:"hyperreal macro product photography, crisp specular highlights, controlled studio lighting, condensation and texture detail, seamless gradient backdrop, commercial tabletop realism, razor-sharp focus on product" },
+  { id:"ugc-raw", name:"UGC Raw", vibe:"Handheld selfie, imperfect, phone-camera honest", best:"DTC, TikTok Shop, supplements, apps", img:"soul_2", vid:"seedance_2_0", pace:4,
+    audio:"Native dialogue, room tone kept, no music under the hook", neg:"studio lighting, color grading, tripod stillness, retouched skin",
+    dna:"shot on a phone front camera, natural window light, slightly imperfect handheld framing, real skin texture, lived-in home background, casual everyday wardrobe, unpolished authentic look" },
+  { id:"docu-testimonial", name:"Docu-Testimonial", vibe:"Interview framing, natural light, real speech", best:"Services, healthcare, B2B, trust-building", img:"soul_2", vid:"seedance_2_0", pace:5,
+    audio:"Native speech, quiet ambience, music only under B-roll", neg:"direct-to-lens address, jokes, hard sell language",
+    dna:"documentary interview framing, subject slightly off-center looking just off-lens, soft natural key from a window, shallow depth with a real environment behind, honest unretouched face, 50mm perspective" },
+  { id:"kinetic-hype", name:"Kinetic Hype", vibe:"Whip pans, hard cuts on beat, high contrast", best:"Sportswear, energy drinks, gaming, events", img:"grok_image", vid:"kling3_0", pace:7.5,
+    audio:"Percussive track, hits on cuts, shouted single-word tags", neg:"static framing, pastel palettes, calm",
+    dna:"high-contrast dynamic sports commercial look, hard rim light, motion blur streaks, low wide-angle hero framing, sweat and texture detail, punchy saturated grade, explosive energy" },
+  { id:"luxe-minimal", name:"Luxe Minimal", vibe:"Negative space, one light, glacial movement", best:"Fashion, jewelry, skincare, premium tiers", img:"soul_cinematic", vid:"seedance_2_0", pace:3,
+    audio:"Ambient tone or a single piano figure, one line of copy", neg:"clutter, saturated color, fast motion",
+    dna:"luxury editorial minimalism, vast negative space, single soft directional light, restrained monochrome or sand palette, glacial camera drift, immaculate surfaces, high-fashion composure" },
+  { id:"anime-cel", name:"Anime Cel", vibe:"Cel shading, speed lines, expressive reactions", best:"Gaming, streetwear, youth culture", img:"seedream_v4_5", vid:"kling3_0", pace:5.5,
+    audio:"Energetic synth or city-pop bed, punchy VO", neg:"3D rendering, photoreal skin — never name a studio or series",
+    dna:"cel-shaded anime illustration, clean linework, flat shadow shapes, dramatic speed lines, expressive stylized reaction, vivid sky gradient background, 2D animation aesthetic" },
+  { id:"retro-vhs", name:"Retro VHS", vibe:"90s tape artifacts, hard zooms, infomercial energy", best:"Nostalgia plays, ironic DTC, music drops", img:"flux_2", vid:"kling3_0_turbo", pace:6,
+    audio:"Compressed announcer voice, period synth sting", neg:"4K clarity, modern devices, clean audio",
+    dna:"1990s VHS tape look, chromatic tracking artifacts, scanlines and slight tape warble, hard optical zooms, oversaturated broadcast color, period-accurate wardrobe and set dressing, late-night infomercial energy" },
+  { id:"stop-motion", name:"Stop-Motion Craft", vibe:"Handmade felt/clay/paper, tactile imperfection", best:"Artisanal food, sustainability, craft, gifting", img:"nano_banana_2", vid:"kling3_0", pace:4.5,
+    audio:"Foley-forward, ukulele or music-box bed, warm narrator", neg:"smooth interpolation, digital gloss, photoreal humans",
+    dna:"handmade stop-motion look, felt and clay and cut-paper materials, visible fingerprints and fiber texture, miniature practical set, warm tungsten key, slight frame-to-frame jitter, tactile crafted charm" },
+  { id:"neon-cyber", name:"Neon Cyber", vibe:"Rain-slick neon, volumetric haze, chrome", best:"Crypto, fintech, gaming rigs, nightlife", img:"cinematic_studio_2_5", vid:"seedance_2_0", pace:5.5,
+    audio:"Driving synthwave, filtered VO, riser into the CTA", neg:"daylight, warm neutrals, rural settings",
+    dna:"rain-slick neon cyberpunk night, magenta and cyan practicals, volumetric haze, chrome and glass reflections, low-angle wide lens, holographic UI accents, high-contrast blue-shifted grade" },
+  { id:"asmr-satisfy", name:"ASMR Satisfying", vibe:"Extreme macro, slow textures, sound-forward", best:"Skincare, cleaning, food, candles", img:"nano_banana_pro", vid:"seedance_2_0", pace:4,
+    audio:"Native only. No music. Crinkle, tap, pour, scrape", neg:"speech, music, fast cuts, wide shots",
+    dna:"extreme macro texture study, ultra-shallow focus, slow deliberate motion, soft diffused light, tactile surface detail, clean pastel surroundings" },
+  { id:"meme-chaos", name:"Meme Chaos", vibe:"Trend-native, jump cuts, caption-driven absurdity", best:"Gen-Z apps, merch, high-velocity drops", img:"gpt_image_2", vid:"kling3_0_turbo", pace:7,
+    audio:"Trending-style bed, dry delivery", neg:"polish, corporate voiceover, aspirational imagery",
+    dna:"native social video look, deadpan absurd framing, hard zoom punch-ins, phone-shot lighting, bold caption bar across the frame, deliberately unpolished, internet-native comedic timing" }
+];
+
+const AVATAR_PATHS = [
+  { id:"library",  name:"Pick from library",  desc:"Marketing Studio preset or saved avatar. Fastest — the id drops straight into a marketing video call.",
+    note:"The skill will call show_marketing_studio(action='list', type='avatar') and show you the options." },
+  { id:"generate", name:"Generate a new one",  desc:"Cast a face from a text brief. The default when you have no avatar in mind.",
+    note:"Fill in the casting brief below. The skill generates 2–4 options and you choose one." },
+  { id:"upload",   name:"Use my own photo",    desc:"Your face, or a photo you own the rights to.",
+    note:"The skill opens the Higgsfield upload widget — remote tools can't read chat attachments." },
+  { id:"soul",     name:"Train a reusable Soul", desc:"5–20 photos, ~10 min. A recurring brand face across many campaigns.",
+    note:"Note the constraint: a trained soul_id works only with soul_2 and soul_cinematic, one per generation." }
+];
+
+const BEATS = {
+  8:  [["Hook",2,"A visual interrupt. Must read with the sound off. Never open on a logo."],
+       ["Value",4,"The single idea. No setup, no problem statement."],
+       ["CTA",2,"One instruction, one brand mark."]],
+  15: [["Hook",2,"A visual interrupt. Must read with the sound off."],
+       ["Problem",3,"The viewer's friction, shown rather than narrated."],
+       ["Product",4,"The product doing its actual job, in use, in hand."],
+       ["Proof",3,"A result, a number, a reaction, a before/after. Concrete."],
+       ["CTA",3,"One instruction, spoken and supered."]],
+  30: [["Hook",2,"A visual interrupt. Must read with the sound off."],
+       ["Problem",4,"The viewer's friction, shown rather than narrated."],
+       ["Turn",4,"The product enters and the frame's energy changes."],
+       ["Demo",7,"The product doing its actual job, in context."],
+       ["Proof",5,"A result, a number, a reaction. Concrete."],
+       ["Payoff",5,"The emotional state after the problem is gone."],
+       ["CTA",3,"One instruction, one brand mark."]]
+};
+
+const VO_BUDGET = { 8:20, 15:35, 30:70 };
+
+const state = {
+  avatarPath: null,
+  styleId: null,
+  duration: 15,
+  aspect: "9:16",
+  platform: "TikTok / Reels"
+};
+
+const $ = (s) => document.querySelector(s);
+const el = (t, props) => Object.assign(document.createElement(t), props || {});
+const val = (id) => ($(id).value || "").trim();
+
+/* ---------- Step 1: avatar ---------- */
+function renderAvatarPaths() {
+  const wrap = $("#avatarPaths");
+  AVATAR_PATHS.forEach(p => {
+    const b = el("button", { className:"choice", type:"button" });
+    b.setAttribute("aria-pressed", "false");
+    b.append(el("b", { textContent:p.name }), el("span", { textContent:p.desc }));
+    b.addEventListener("click", () => {
+      state.avatarPath = state.avatarPath === p.id ? null : p.id;
+      wrap.querySelectorAll(".choice").forEach((n,i) =>
+        n.setAttribute("aria-pressed", String(AVATAR_PATHS[i].id === state.avatarPath)));
+      $("#avatarGen").hidden = state.avatarPath !== "generate";
+      $("#avatarNote").textContent = state.avatarPath ? p.note : "";
+      update();
+    });
+    wrap.append(b);
+  });
+}
+
+/* ---------- Step 2: styles ---------- */
+function renderStyles() {
+  const grid = $("#styleGrid");
+  STYLES.forEach(s => {
+    const b = el("button", { className:"choice style-card", type:"button" });
+    b.setAttribute("aria-pressed", "false");
+    b.append(el("b", { textContent:s.name }), el("span", { textContent:s.vibe }));
+    b.append(el("div", { className:"models", textContent:`${s.img} → ${s.vid}` }));
+    b.addEventListener("click", () => {
+      state.styleId = state.styleId === s.id ? null : s.id;
+      grid.querySelectorAll(".choice").forEach((n,i) =>
+        n.setAttribute("aria-pressed", String(STYLES[i].id === state.styleId)));
+      renderStyleDetail();
+      update();
+    });
+    grid.append(b);
+  });
+}
+
+function renderStyleDetail() {
+  const box = $("#styleDetail");
+  const s = currentStyle();
+  if (!s) { box.hidden = true; box.textContent = ""; return; }
+  box.hidden = false;
+  box.textContent = "";
+  const shots = shotCount();
+  const meta = el("div", { className:"row", style:"margin-bottom:10px" });
+  [["best for", s.best], ["audio", s.audio],
+   ["shots", `${shots} for ${state.duration}s${beatsMerge() ? " — beats merge" : ""}`]]
+    .forEach(([k,v]) => {
+      const p = el("span", { className:"pill", textContent:k });
+      const t = el("span", { textContent:v, style:"font-size:13px" });
+      const g = el("span"); g.append(p, t); meta.append(g);
+    });
+  box.append(meta);
+  box.append(el("label", { textContent:"Prompt DNA appended to every shot" }));
+  box.append(el("pre", { textContent:s.dna }));
+  box.append(el("div", { className:"warnbox", textContent:`Avoid: ${s.neg}` }));
+}
+
+const currentStyle = () => STYLES.find(s => s.id === state.styleId) || null;
+
+function shotCount() {
+  const s = currentStyle();
+  if (!s) return BEATS[state.duration].length;
+  // The style's pacing wins. A slow style covering more beats than it has shots is
+  // intended — those beats merge into one held shot.
+  return Math.max(2, Math.round(s.pace * (state.duration / 15)));
+}
+
+const beatsMerge = () => !!currentStyle() && shotCount() < BEATS[state.duration].length;
+
+/* ---------- segmented controls ---------- */
+function wireSeg(sel, key, cast) {
+  const seg = $(sel);
+  seg.addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+    seg.querySelectorAll("button").forEach(n => n.setAttribute("aria-pressed", String(n === btn)));
+    state[key] = cast ? cast(btn.dataset.v) : btn.dataset.v;
+    renderBeats(); renderStyleDetail(); update();
+  });
+}
+
+/* ---------- Step 4: beats + budget ---------- */
+function renderBeats() {
+  const body = $("#beatTable").querySelector("tbody");
+  body.textContent = "";
+  BEATS[state.duration].forEach(([name, sec, what]) => {
+    const tr = el("tr");
+    tr.append(el("td", { textContent:name, style:"font-weight:600" }),
+              el("td", { className:"num", textContent:`${sec}s` }),
+              el("td", { textContent:what, className:"muted" }));
+    body.append(tr);
+  });
+}
+
+function countWords(t) {
+  const s = t.trim();
+  return s ? s.split(/\s+/).length : 0;
+}
+
+function updateBudget() {
+  const budget = VO_BUDGET[state.duration];
+  const n = countWords(val("#bVo"));
+  const pct = Math.min(100, Math.round((n / budget) * 100));
+  const meter = $("#voMeter");
+  meter.querySelector("i").style.width = pct + "%";
+  meter.classList.toggle("warn", n > budget * 0.85 && n <= budget);
+  meter.classList.toggle("bad", n > budget);
+  $("#voLabel").textContent = `${n} / ${budget} words`;
+  const warn = $("#voWarn");
+  if (n > budget) {
+    warn.hidden = false;
+    warn.textContent = `Over budget by ${n - budget} words. At ~2.5 words/second the read speeds up and the ad sounds panicked. Cut copy, not pauses.`;
+  } else { warn.hidden = true; }
+}
+
+/* ---------- output ---------- */
+function buildBrief() {
+  const s = currentStyle();
+  const path = AVATAR_PATHS.find(p => p.id === state.avatarPath);
+  const L = [];
+  L.push("/ad-video", "");
+  L.push("BRIEF");
+  L.push(`  product:      ${val("#bProduct") || "(REQUIRED — fill this in)"}`);
+  L.push(`  message:      ${val("#bMessage") || "(REQUIRED — fill this in)"}`);
+  if (val("#bAudience")) L.push(`  audience:     ${val("#bAudience")}`);
+  if (val("#bCta"))      L.push(`  cta:          ${val("#bCta")}`);
+  if (val("#bLang"))     L.push(`  language:     ${val("#bLang")}`);
+  L.push(`  platform:     ${state.platform}`);
+  L.push(`  aspect:       ${state.aspect}`);
+  L.push(`  duration:     ${state.duration}s`);
+  L.push("");
+
+  L.push("AVATAR");
+  if (!path) {
+    L.push("  path:         (pick one in step 1)");
+  } else if (path.id === "generate") {
+    L.push("  path:         generate");
+    L.push(`  model:        ${$("#avModel").value}`);
+    const cast = [
+      ["age", val("#avAge")], ["look", val("#avLook")], ["wardrobe", val("#avWardrobe")],
+      ["expression", val("#avExpr")], ["background", val("#avBg")]
+    ].filter(([,v]) => v);
+    if (cast.length) {
+      L.push("  casting:");
+      cast.forEach(([k,v]) => L.push(`    ${k}: ${v}`));
+    } else {
+      L.push("  casting:      (your call — cast something that fits the brief)");
+    }
+  } else {
+    L.push(`  path:         ${path.id}`);
+  }
+  L.push("  lock:         create a reference Element and reuse it in every downstream prompt");
+  L.push("");
+
+  L.push("STYLE");
+  if (!s) {
+    L.push("  (pick one in step 2 — or say 'recommend a style' and let the skill choose)");
+  } else {
+    L.push(`  id:           ${s.id}  (${s.name})`);
+    L.push(`  image model:  ${s.img}`);
+    L.push(`  video model:  ${s.vid}`);
+    L.push(`  shots:        ~${shotCount()} across ${state.duration}s`);
+    if (beatsMerge()) L.push(`  note:         fewer shots than beats — merge adjacent beats into held shots`);
+    L.push(`  audio:        ${s.audio}`);
+  }
+  L.push("");
+
+  L.push(`BEATS (${state.duration}s)`);
+  BEATS[state.duration].forEach(([n, sec]) => L.push(`  ${String(sec + "s").padEnd(5)} ${n}`));
+  L.push("");
+
+  const vo = val("#bVo");
+  if (vo) {
+    const n = countWords(vo), b = VO_BUDGET[state.duration];
+    L.push(`VOICEOVER DRAFT (${n}/${b} words${n > b ? " — OVER BUDGET, trim it" : ""})`);
+    L.push("  " + vo.replace(/\s*\n\s*/g, "\n  "));
+    L.push("");
+  }
+
+  L.push("Stop at the storyboard for approval before generating anything.");
+  return L.join("\n");
+}
+
+function update() {
+  const briefReady = !!(val("#bProduct") && val("#bMessage"));
+  const steps = [!!state.avatarPath, !!state.styleId, briefReady];
+  // Step 4 (beat plan) is settled once the three inputs that shape it are in.
+  steps.push(steps.every(Boolean));
+  const done = steps.filter(Boolean).length;
+  $("#prog").style.width = (done / 4 * 100) + "%";
+  $("#proglabel").textContent = `${done} / 4`;
+  updateBudget();
+  $("#out").textContent = buildBrief();
+}
+
+/* ---------- init ---------- */
+renderAvatarPaths();
+renderStyles();
+renderBeats();
+wireSeg("#durSeg", "duration", Number);
+wireSeg("#arSeg", "aspect");
+wireSeg("#platSeg", "platform");
+
+document.querySelectorAll("input, textarea, select").forEach(n =>
+  n.addEventListener("input", update));
+
+$("#copyBtn").addEventListener("click", async () => {
+  const text = buildBrief();
+  try {
+    await navigator.clipboard.writeText(text);
+    $("#copyMsg").textContent = "Copied.";
+  } catch {
+    const ta = el("textarea", { value:text });
+    document.body.append(ta); ta.select();
+    document.execCommand("copy"); ta.remove();
+    $("#copyMsg").textContent = "Copied.";
+  }
+  setTimeout(() => { $("#copyMsg").textContent = ""; }, 2200);
+});
+
+$("#resetBtn").addEventListener("click", () => {
+  document.querySelectorAll("input, textarea").forEach(n => { n.value = ""; });
+  state.avatarPath = null; state.styleId = null;
+  document.querySelectorAll("#avatarPaths .choice, #styleGrid .choice")
+    .forEach(n => n.setAttribute("aria-pressed", "false"));
+  $("#avatarGen").hidden = true;
+  $("#avatarNote").textContent = "";
+  renderStyleDetail();
+  update();
+});
+
+update();
+</script>
+</body>
+</html>
