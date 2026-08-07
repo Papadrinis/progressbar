@@ -1,82 +1,93 @@
 {
   "schema_version": "1.0.0",
   "id": "daniela",
-  "name": "Daniela Restrepo",
+  "name": "Daniela Londoño",
   "created_at": "2026-08-07T00:00:00Z",
-  "updated_at": "2026-08-07T00:00:00Z",
-  "revision": 1,
-  "identity_revision": 1,
-  "tagline": "Dueña de salón en Medellín, 30 años. Cercana, práctica, buena con la cámara sin parecer modelo.",
+  "updated_at": "2026-08-07T12:00:00Z",
+  "revision": 2,
+  "identity_revision": 2,
+  "tagline": "Dueña de Londoño Salón, Medellín. 30 años. Emprendedora, perfeccionista y cercana — la cara de su propia marca.",
   "identity_lock": {
-    "apparent_age": "30 years old — an adult face with settled features, not a smoothed twenty-something: faint expression lines already set at the outer corners of the eyes and between the brows",
-    "heritage": "Colombian, Medellín — mixed mestizo features, warm-toned",
+    "apparent_age": "30 years old — a settled adult face, not a smoothed twenty-something: faint expression lines at the outer corners of the eyes when she smiles, and a fully developed jaw and cheek structure",
+    "heritage": "Colombian, from Medellín — warm-toned mestiza features",
     "skin": {
-      "tone": "warm light-brown, evenly tanned",
+      "tone": "warm tan, evenly sun-kissed",
       "undertone": "golden-olive",
-      "texture": "visible pores across the nose and cheeks, faint uneven pigmentation on the forehead, a small cluster of light freckles high on the left cheekbone, matte except for slight natural shine on the nose bridge",
+      "texture": "healthy and well cared for but real — visible pores across the nose and inner cheeks, a faint natural flush across the cheekbones, soft natural sheen on the high points rather than a highlighter shine, no smoothing",
       "fitzpatrick": "IV"
     },
     "hair": {
-      "colour": "dark chocolate brown, natural, with warm caramel sun-lift only in the lower third — not a salon balayage",
-      "texture": "type 2B wavy, medium density, slight natural frizz at the crown that is never smoothed away",
-      "length": "collarbone length, blunt-ish ends with soft face-framing layers",
-      "default_styling": "centre-left side part, worn loose and pushed behind the right ear, a few strands escaping at the temples"
+      "colour": "dark espresso-brown base with a strong warm caramel and honey balayage that begins around cheekbone height and brightens toward the ends — a professionally coloured, expensive-looking blend, never a flat block colour",
+      "texture": "thick, glossy, loose beachy waves with an S-bend through the mid-lengths and softer ends; healthy movement rather than a rigid curl",
+      "length": "long — falling to mid-chest, well below the collarbone",
+      "default_styling": "centre-to-slightly-off-centre part, worn down and swept behind one shoulder so the caramel face-framing pieces sit forward around her face"
     },
     "eyes": {
-      "colour": "dark brown, almost black in low light, warm amber ring visible near the pupil in daylight",
-      "shape": "almond, slight downturn at the outer corner, medium-set, natural lash length with no extensions",
-      "brows": "full and naturally dense, softly arched, groomed but not over-shaped; the left brow sits about two millimetres higher than the right"
+      "colour": "dark brown, warm, with a soft catchlight",
+      "shape": "almond, medium-set, gently upturned at the outer corner, natural lashes with mascara",
+      "brows": "thick, full and naturally dense with a soft low arch, groomed and brushed up, noticeably dark against her skin; the left brow sits marginally higher than the right"
     },
     "face": {
-      "shape": "oval tending to heart — width at the cheekbones, narrowing to a soft chin",
-      "cheekbones": "defined and rounded, not sculpted or hollow beneath",
-      "nose": "straight medium-width bridge, slightly rounded tip, nostrils narrow",
-      "mouth": "medium-full lips, upper lip slightly thinner than the lower, soft cupid's bow, natural rosy-brown lip colour",
-      "jaw_chin": "soft rounded jawline with a clean but not sharp definition, small chin with no cleft"
+      "shape": "soft oval with full cheeks — width through the mid-face, tapering to a rounded chin",
+      "cheekbones": "high and full, rounded rather than sculpted, with soft fullness underneath",
+      "nose": "straight medium-width bridge, slightly rounded tip, narrow nostrils",
+      "mouth": "full lips, balanced upper and lower, well-defined cupid's bow, natural rosy-nude colour with a soft sheen",
+      "jaw_chin": "soft, clean jawline without a sharp angle; small rounded chin, no cleft"
     },
     "distinguishing_marks": [
-      "a small dark mole roughly 1 cm below the outer corner of her RIGHT eye, on the cheekbone",
-      "a light freckle cluster high on the LEFT cheekbone, about six or seven freckles",
-      "a faint 4 mm pale scar through the outer end of the left eyebrow"
+      "the caramel balayage that starts at cheekbone height and frames her face — her single strongest recognition cue at any distance",
+      "thick, dark, naturally full brows with a low soft arch, the left one sitting marginally higher than the right",
+      "full cheeks that round out visibly when she smiles, lifting the lower eyelid"
     ],
     "body": {
-      "height": "1.65 m",
-      "build": "medium, lightly athletic, natural waist, not slim-model proportions",
-      "posture": "upright and open, shoulders relaxed and back, chin level — the posture of someone used to standing all day",
-      "hands": "medium-sized working hands, short filed nails with a nude polish, no rings on the right hand, a thin gold band on the left index finger"
+      "height": "approximately 1.65 m",
+      "build": "medium and healthy with softly toned bare arms — a real body, not a slim-model frame",
+      "posture": "relaxed and open, shoulders down and back, head often tilted slightly to one side when she is listening",
+      "hands": "well-kept hands with short almond nails in a nude gloss, a fine gold ring, a slim dark-strap watch on the left wrist"
     },
-    "grooming": "minimal everyday makeup — light skin tint that does not hide the freckles or pores, groomed brows, a touch of mascara, nude-rose balm on the lips. No contouring, no highlighter, no false lashes, no heavy eyeliner.",
+    "grooming": "polished everyday makeup, the way a beauty professional actually wears it — brows filled and brushed up, warm neutral bronze on the lids, mascara, soft cream blush high on the cheek, and a nude-rose lip with a light sheen. Skin looks like good skin, not like a filter: no heavy contouring, no strobe highlighter, no false lashes, no sharp cut crease.",
     "must_not": [
-      "do not slim the face or sharpen the jawline",
-      "do not lighten the skin tone or cool the undertone",
-      "do not remove the freckles, the mole, or the eyebrow scar",
-      "do not straighten the hair or turn it into a glossy blowout",
-      "do not add heavy glamour makeup, contouring or highlighter",
-      "do not render her as a fashion model — she reads as a real working woman in her thirties",
-      "do not make her younger than 30 or older than 34",
-      "do not add tattoos, piercings beyond a single small lobe piercing per ear, or dyed fashion colours"
+      "when a master reference is attached, the reference is authoritative for facial detail — do not add moles, scars or marks that are not visible in it",
+      "do not shorten the hair, straighten it flat, or remove the caramel balayage",
+      "do not slim the face or sharpen the jawline — the full cheeks are part of who she is",
+      "do not lighten the skin tone or cool the golden undertone",
+      "do not thin, arch or over-shape the brows",
+      "do not add heavy glamour makeup, cut crease, false lashes or strobe highlighter",
+      "do not render her as a fashion model — she is a working salon owner who is comfortable on camera",
+      "do not make her younger than 29 or older than 34",
+      "do not add tattoos, or piercings beyond a single small lobe piercing per ear"
     ],
-    "distinct_from": "Deliberately NOT the woman in any original reference photo this concept started from. Daniela is a newly authored, fictional person: different face shape, different hair length and texture, different marks, different build. If a source photo is supplied, use it only for lighting, mood and wardrobe language — never for facial likeness."
+    "distinct_from": "Daniela Londoño is the woman in the attached master reference — that photograph defines her likeness. She is deliberately NOT the earlier reference woman this project started from; if any other source image is supplied, use it only for lighting, mood and wardrobe language, never for facial likeness."
   },
   "persona": {
-    "profession": "Hair stylist and owner of her own salon",
-    "business": "Salón Raíz — a small independent salon with four chairs",
-    "location": "Medellín, Colombia — Laureles neighbourhood",
-    "context": "Runs the business herself: cuts and colours, manages two employees, films her own content for the salon's social accounts between clients.",
-    "language": "Spanish (Colombian, paisa)",
-    "energy": "Warm and direct. Talks with her hands. Comfortable on camera because she is used to it, not because she is performing."
+    "profession": "Dueña de salón de belleza y peluquera",
+    "business": "Londoño Salón — su propio espacio, abierto hace 5 años, con un equipo pequeño",
+    "location": "Medellín, Colombia",
+    "context": "Daniela siempre supo que su pasión era la belleza y el servicio al cliente. Empezó trabajando en un salón mientras estudiaba y hace cinco años decidió emprender y abrir su propio espacio. Hoy lidera un equipo, atiende a sus clientas habituales, se sigue capacitando en tendencias y técnicas, y produce ella misma el contenido de la marca entre cita y cita.",
+    "language": "Español (Colombia, paisa)",
+    "energy": "Emprendedora, perfeccionista, creativa y cercana. Habla con las manos, escucha con la cabeza ligeramente inclinada, y en cámara se ve cómoda porque lleva años haciéndolo — no porque esté actuando.",
+    "goal": "Hacer crecer su salón, fidelizar clientas y posicionar su marca como referente de belleza en la ciudad.",
+    "represents": [
+      "Profesionalismo y atención al detalle",
+      "Estilo moderno y sofisticado",
+      "Liderazgo femenino",
+      "Cercanía, empatía y autenticidad",
+      "Pasión por realzar la belleza de cada mujer"
+    ]
   },
   "style": {
-    "wardrobe_base": "an off-white linen button-down shirt, sleeves rolled to just below the elbow, tucked loosely into straight-leg dark indigo jeans; simple tan leather sneakers",
-    "wardrobe_working": "a black linen salon apron with a chest pocket holding shears and a tail comb, sleeves rolled higher",
-    "wardrobe_offduty": "a soft terracotta ribbed knit top and dark jeans, no apron",
-    "accessories": "small thin gold hoop earrings, a fine gold chain at the collarbone, a slim leather-strap watch on the left wrist",
-    "palette": "warm neutrals — off-white, terracotta, indigo, black, tan leather, gold hardware",
+    "wardrobe_base": "a fitted black sleeveless knit top with a straight neckline, and ivory high-waisted pleated trousers with a black leather belt and a gold buckle",
+    "wardrobe_working": "",
+    "wardrobe_offduty": "a cream ribbed knit top and straight dark denim, the same gold jewellery",
+    "accessories": "two layered fine gold chains, the shorter one carrying a small round pendant that sits at the collarbone; small thin gold hoops; a slim dark-strap watch on the left wrist; short almond nails in a nude gloss",
+    "palette": "black, ivory and cream, warm gold hardware, dark charcoal and warm wood from the salon",
     "identity_backdrop": "seamless mid-grey studio paper, evenly lit, two stops darker than the subject",
     "environments": [
-      "her salon: warm wood counters, a large street-facing window, black styling chairs, hanging plants, mirrors with warm bulb strips",
-      "the salon's small reception area with a terrazzo counter and a potted monstera",
-      "a Laureles café with a big window, wooden table, morning light"
+      "Londoño Salón, main floor: charcoal walls, warm wood counters, black leather styling chairs, arched mirrors edged with warm LED strips, trailing pothos and a large potted monstera, exposed pendant bulbs, and a warm-white neon sign reading GOOD HAIR GOOD MOOD GOOD DAY on the dark wall",
+      "the salon's retail wall: backlit shelves of amber and clear product bottles against dark stone, warm downlight",
+      "her back-office corner at the end of the salon: dark stone counter, open laptop, leather notebook, a single warm downlight",
+      "the street entrance: a pale concrete facade with a full-height glass door and LONDOÑO SALÓN etched in thin capitals, clipped shrubs either side, soft overcast daylight",
+      "a Medellín café with a large window, pale wood table and morning light — where she is photographed off duty"
     ]
   },
   "realism": {
@@ -88,10 +99,10 @@
       "D_pose_context": "window_daylight_soft",
       "E_work_lifestyle": "documentary_available"
     },
-    "extra_notes": "Keep her warm skin tone honest — the failure mode for this colouring is an over-warmed, over-saturated orange render. Grade neutral and let the golden undertone come from the skin itself, not from the white balance."
+    "extra_notes": "Two failure modes to watch with this colouring and this room. First the grade: her skin is already warm and the salon is full of tungsten practicals, so grade neutral and let the warmth come from the light, never from the white balance — otherwise she renders orange. Second the hair: the caramel balayage is the thing models most often flatten into a single brown. Keep the dark root, the warm mid-length and the brighter ends distinct."
   },
   "identity_anchors": {
-    "identity_token": "DANIELA-RESTREPO-30-CO-v1",
+    "identity_token": "DANIELA-LONDONO-30-MED-v2",
     "seed": null,
     "master_reference_ids": [],
     "higgsfield_soul_id": null,
@@ -99,7 +110,7 @@
     "openai_file_ids": []
   },
   "master_references": [],
-  "base_prompt": "DANIELA-RESTREPO-30-CO-v1 — the same single person in every frame. 30 years old — an adult face with settled features, not a smoothed twenty-something: faint expression lines already set at the outer corners of the eyes and between the brows, Colombian, Medellín — mixed mestizo features, warm-toned. warm light-brown, evenly tanned skin, golden-olive undertone, Fitzpatrick IV, visible pores across the nose and cheeks, faint uneven pigmentation on the forehead, a small cluster of light freckles high on the left cheekbone, matte except for slight natural shine on the nose bridge. dark chocolate brown, natural, with warm caramel sun-lift only in the lower third — not a salon balayage hair, type 2B wavy, medium density, slight natural frizz at the crown that is never smoothed away, collarbone length, blunt-ish ends with soft face-framing layers, centre-left side part, worn loose and pushed behind the right ear, a few strands escaping at the temples. dark brown, almost black in low light, warm amber ring visible near the pupil in daylight eyes, almond, slight downturn at the outer corner, medium-set, natural lash length with no extensions, full and naturally dense, softly arched, groomed but not over-shaped; the left brow sits about two millimetres higher than the right. oval tending to heart — width at the cheekbones, narrowing to a soft chin face, defined and rounded, not sculpted or hollow beneath, straight medium-width bridge, slightly rounded tip, nostrils narrow, medium-full lips, upper lip slightly thinner than the lower, soft cupid's bow, natural rosy-brown lip colour, soft rounded jawline with a clean but not sharp definition, small chin with no cleft. identifying marks that must appear in every frame: a small dark mole roughly 1 cm below the outer corner of her RIGHT eye, on the cheekbone; a light freckle cluster high on the LEFT cheekbone, about six or seven freckles; a faint 4 mm pale scar through the outer end of the left eyebrow. 1.65 m, medium, lightly athletic, natural waist, not slim-model proportions, upright and open, shoulders relaxed and back, chin level — the posture of someone used to standing all day, medium-sized working hands, short filed nails with a nude polish, no rings on the right hand, a thin gold band on the left index finger. minimal everyday makeup — light skin tint that does not hide the freckles or pores, groomed brows, a touch of mascara, nude-rose balm on the lips. No contouring, no highlighter, no false lashes, no heavy eyeliner.",
+  "base_prompt": "DANIELA-LONDONO-30-MED-v2 — the same single person in every frame. 30 years old — a settled adult face, not a smoothed twenty-something: faint expression lines at the outer corners of the eyes when she smiles, and a fully developed jaw and cheek structure, Colombian, from Medellín — warm-toned mestiza features. warm tan, evenly sun-kissed skin, golden-olive undertone, Fitzpatrick IV, healthy and well cared for but real — visible pores across the nose and inner cheeks, a faint natural flush across the cheekbones, soft natural sheen on the high points rather than a highlighter shine, no smoothing. dark espresso-brown base with a strong warm caramel and honey balayage that begins around cheekbone height and brightens toward the ends — a professionally coloured, expensive-looking blend, never a flat block colour hair, thick, glossy, loose beachy waves with an S-bend through the mid-lengths and softer ends; healthy movement rather than a rigid curl, long — falling to mid-chest, well below the collarbone, centre-to-slightly-off-centre part, worn down and swept behind one shoulder so the caramel face-framing pieces sit forward around her face. dark brown, warm, with a soft catchlight eyes, almond, medium-set, gently upturned at the outer corner, natural lashes with mascara, thick, full and naturally dense with a soft low arch, groomed and brushed up, noticeably dark against her skin; the left brow sits marginally higher than the right. soft oval with full cheeks — width through the mid-face, tapering to a rounded chin face, high and full, rounded rather than sculpted, with soft fullness underneath, straight medium-width bridge, slightly rounded tip, narrow nostrils, full lips, balanced upper and lower, well-defined cupid's bow, natural rosy-nude colour with a soft sheen, soft, clean jawline without a sharp angle; small rounded chin, no cleft. identifying marks that must appear in every frame: the caramel balayage that starts at cheekbone height and frames her face — her single strongest recognition cue at any distance; thick, dark, naturally full brows with a low soft arch, the left one sitting marginally higher than the right; full cheeks that round out visibly when she smiles, lifting the lower eyelid. approximately 1.65 m, medium and healthy with softly toned bare arms — a real body, not a slim-model frame, relaxed and open, shoulders down and back, head often tilted slightly to one side when she is listening, well-kept hands with short almond nails in a nude gloss, a fine gold ring, a slim dark-strap watch on the left wrist. polished everyday makeup, the way a beauty professional actually wears it — brows filled and brushed up, warm neutral bronze on the lids, mascara, soft cream blush high on the cheek, and a nude-rose lip with a light sheen. Skin looks like good skin, not like a filter: no heavy contouring, no strobe highlighter, no false lashes, no sharp cut crease.",
   "shot_suite": "identity-pack-20",
   "generation_defaults": {
     "backend": "openai",
@@ -115,7 +126,14 @@
       "at": "2026-08-07T00:00:00Z",
       "revision": 1,
       "identity_revision": 1,
-      "change": "Card authored. Daniela Restrepo created as an original fictional person — explicitly distinct in face shape, hair, marks and build from any original reference photo. No master reference attached yet; attach one and promote it before the first full run for best identity stability.",
+      "change": "Card authored from a written brief only, before any reference image was available.",
+      "identity_touched": true
+    },
+    {
+      "at": "2026-08-07T12:00:00Z",
+      "revision": 2,
+      "identity_revision": 2,
+      "change": "Reference sheet received. Identity rewritten to describe the real Daniela Londoño: long mid-chest hair with caramel balayage (was collarbone length), full cheeks and a soft oval face, thick low-arched brows, polished-but-natural makeup. Persona updated to Londoño Salón, Medellín. Environments rewritten from the reference — the charcoal salon floor with its neon sign, the retail wall, the back-office corner and the street entrance. The invented moles and scar from revision 1 were removed: the master reference is now authoritative for facial detail.",
       "identity_touched": true
     }
   ]

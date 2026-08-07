@@ -39,7 +39,8 @@ Reference files — read the one you need, when you need it:
 
 The repo ships a working implementation at `avatar-generator/`. Prefer it over improvising:
 
-- `avatar-generator/index.html` — browser tool, bring-your-own OpenAI key
+- `avatar-generator/index.html` — browser tool, bring-your-own OpenAI key, plus a demo mode
+  that walks the whole flow with placeholder frames and no key
 - `avatar-generator/cli/generate-set.mjs` — batch runner, writes 20 separate files
 - `avatar-generator/presets/shot-suite-20.json` + `presets/realism.json` — canonical data
 - `avatar-generator/avatars/*.json` — the saved cards

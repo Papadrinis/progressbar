@@ -28,7 +28,8 @@
       "background": "identity backdrop",
       "wardrobe": "base",
       "purpose": "The anchor frame. Every other frame in the pack is judged against this one for identity drift.",
-      "aspect": "3:4"
+      "aspect": "3:4",
+      "purpose_es": "La toma ancla. Todas las demás se comparan con esta para detectar deriva de identidad."
     },
     {
       "order": 2,
@@ -45,7 +46,8 @@
       "background": "identity backdrop",
       "wardrobe": "base",
       "purpose": "Primary three-quarter. The single most-used angle in avatar video.",
-      "aspect": "3:4"
+      "aspect": "3:4",
+      "purpose_es": "El tres cuartos principal. El ángulo más usado en video de avatar."
     },
     {
       "order": 3,
@@ -63,7 +65,8 @@
       "wardrobe": "base",
       "purpose": "Mirror of shot 02. Faces are asymmetric; without both sides the model averages them into a face that matches neither.",
       "aspect": "3:4",
-      "lighting_override": "mirror the key so it stays on the near cheek"
+      "lighting_override": "mirror the key so it stays on the near cheek",
+      "purpose_es": "Espejo de la 02. Las caras son asimétricas; con un solo lado el modelo promedia una cara que no se parece a ninguno."
     },
     {
       "order": 4,
@@ -81,7 +84,8 @@
       "wardrobe": "base",
       "purpose": "Locks nose bridge, chin projection, jaw angle and ear shape — the features a front view cannot describe.",
       "aspect": "3:4",
-      "lighting_override": "reposition the key to rake across the profile, keeping the nose shadow short and soft"
+      "lighting_override": "reposition the key to rake across the profile, keeping the nose shadow short and soft",
+      "purpose_es": "Fija el puente de la nariz, la proyección del mentón, el ángulo de la mandíbula y la oreja — lo que una vista frontal no puede describir."
     },
     {
       "order": 5,
@@ -99,7 +103,8 @@
       "wardrobe": "base",
       "purpose": "Completes the yaw sweep. With 01–05 the model has the head at 0°, ±35° and ±90°.",
       "aspect": "3:4",
-      "lighting_override": "mirror the key so it rakes across the profile from the other side"
+      "lighting_override": "mirror the key so it rakes across the profile from the other side",
+      "purpose_es": "Cierra el barrido de ángulos. Con 01–05 el modelo tiene la cabeza a 0°, ±35° y ±90°."
     },
     {
       "order": 6,
@@ -116,7 +121,8 @@
       "background": "identity backdrop",
       "wardrobe": "base",
       "purpose": "Upper bound of the expression range, and the frame that fixes tooth shape and smile-line geometry so they stop changing between generations.",
-      "aspect": "3:4"
+      "aspect": "3:4",
+      "purpose_es": "El techo del rango de expresión, y la toma que fija la forma de los dientes y las líneas de sonrisa para que dejen de cambiar entre generaciones."
     },
     {
       "order": 7,
@@ -133,7 +139,8 @@
       "background": "identity backdrop or soft environment",
       "wardrobe": "base",
       "purpose": "Non-eye-contact reference. Without it, avatar video locks into an unbroken stare at the viewer.",
-      "aspect": "3:4"
+      "aspect": "3:4",
+      "purpose_es": "Referencia sin contacto visual. Sin ella, el avatar se queda mirando fijo a cámara todo el rato."
     },
     {
       "order": 8,
@@ -150,7 +157,8 @@
       "background": "identity backdrop",
       "wardrobe": "base",
       "purpose": "The frame most avatar datasets forget. Lip-sync models trained only on closed mouths produce a rubbery, pasted-on mouth in video.",
-      "aspect": "3:4"
+      "aspect": "3:4",
+      "purpose_es": "La toma que casi todos los datasets olvidan. Un modelo entrenado solo con bocas cerradas produce una boca de goma, pegada, en video."
     },
     {
       "order": 9,
@@ -167,7 +175,8 @@
       "background": "identity backdrop",
       "wardrobe": "base",
       "purpose": "Fixes hand size, skin tone continuity between hand and face, and nail styling — the details that betray a synthetic avatar the moment it gestures.",
-      "aspect": "3:4"
+      "aspect": "3:4",
+      "purpose_es": "Fija el tamaño de las manos, la continuidad de tono entre mano y cara, y las uñas — los detalles que delatan un avatar sintético en cuanto gesticula."
     },
     {
       "order": 10,
@@ -186,7 +195,8 @@
       "wardrobe": "base",
       "purpose": "The mandatory full-height frame. This is what a video model reads for height, build and limb proportion.",
       "aspect": "3:4",
-      "lighting_override": "open the key up to cover the full figure evenly, floor to head"
+      "lighting_override": "open the key up to cover the full figure evenly, floor to head",
+      "purpose_es": "El plano de cuerpo entero obligatorio. Es lo que un modelo de video lee para altura, complexión y proporción de las extremidades."
     },
     {
       "order": 11,
@@ -205,7 +215,8 @@
       "wardrobe": "base",
       "purpose": "Three-quarter body volume — shoulder depth and hip line, unreadable from a flat front view.",
       "aspect": "3:4",
-      "lighting_override": "open the key up to cover the full figure"
+      "lighting_override": "open the key up to cover the full figure",
+      "purpose_es": "Volumen del cuerpo en tres cuartos — profundidad de hombros y línea de cadera, ilegibles desde un frontal plano."
     },
     {
       "order": 12,
@@ -224,7 +235,8 @@
       "wardrobe": "base",
       "purpose": "Mirror of 11.",
       "aspect": "3:4",
-      "lighting_override": "mirror the key and open it up to cover the full figure"
+      "lighting_override": "mirror the key and open it up to cover the full figure",
+      "purpose_es": "Espejo de la 11."
     },
     {
       "order": 13,
@@ -243,7 +255,8 @@
       "wardrobe": "base",
       "purpose": "Silhouette depth: posture, chest-to-back depth, how the hair sits off the shoulders.",
       "aspect": "3:4",
-      "lighting_override": "rake the key from the camera side so the silhouette edge stays readable"
+      "lighting_override": "rake the key from the camera side so the silhouette edge stays readable",
+      "purpose_es": "Profundidad de silueta: postura, fondo del torso, cómo cae el pelo sobre los hombros."
     },
     {
       "order": 14,
@@ -262,7 +275,8 @@
       "wardrobe": "base",
       "purpose": "Mirror of 13. Completes the 360° body turnaround with shot 15.",
       "aspect": "3:4",
-      "lighting_override": "mirror the key, raking from the camera side"
+      "lighting_override": "mirror the key, raking from the camera side",
+      "purpose_es": "Espejo de la 13. Con la 15 completa el giro de 360° del cuerpo."
     },
     {
       "order": 15,
@@ -281,7 +295,8 @@
       "wardrobe": "base",
       "purpose": "Back of the head, hair length and fall, shoulder width. Required for any camera move that orbits the avatar.",
       "aspect": "3:4",
-      "lighting_override": "key from the camera side, soft, full figure"
+      "lighting_override": "key from the camera side, soft, full figure",
+      "purpose_es": "Nuca, largo y caída del pelo, ancho de hombros. Imprescindible para cualquier movimiento de cámara que orbite al avatar."
     },
     {
       "order": 16,
@@ -299,7 +314,8 @@
       "background": "her own work environment, softly out of focus",
       "wardrobe": "base",
       "purpose": "Seated posture. Interview and testimonial video is shot seated; a dataset of only standing frames renders a seated avatar with broken proportions.",
-      "aspect": "3:4"
+      "aspect": "3:4",
+      "purpose_es": "Postura sentada. Las entrevistas y testimoniales se graban sentados; un dataset solo de pie renderiza mal al avatar sentado."
     },
     {
       "order": 17,
@@ -317,7 +333,8 @@
       "background": "her own work environment, full depth",
       "wardrobe": "working",
       "purpose": "The hero standing frame — natural contrapposto rather than the passive T-pose of shot 10.",
-      "aspect": "3:4"
+      "aspect": "3:4",
+      "purpose_es": "La toma héroe de pie — contraposto natural, no la pose pasiva de la 10."
     },
     {
       "order": 18,
@@ -335,7 +352,8 @@
       "background": "her workplace",
       "wardrobe": "working",
       "purpose": "Professional context. The second person must never occlude the avatar's face or compete for focus.",
-      "aspect": "3:4"
+      "aspect": "3:4",
+      "purpose_es": "Contexto profesional. La segunda persona nunca debe tapar el rostro del avatar ni competir por el foco."
     },
     {
       "order": 19,
@@ -353,7 +371,8 @@
       "background": "her workplace",
       "wardrobe": "working",
       "purpose": "Downward-gaze reference with no occlusion. Hard constraint: hands, tools and product never cross the jawline.",
-      "aspect": "3:4"
+      "aspect": "3:4",
+      "purpose_es": "Referencia de mirada baja sin oclusión. Regla dura: manos, herramientas y producto nunca cruzan la mandíbula."
     },
     {
       "order": 20,
@@ -372,7 +391,15 @@
       "wardrobe": "off-duty",
       "purpose": "One frame under genuinely different light. It teaches the model how her skin tone behaves outside the studio setup, which is what keeps her from looking like a cutout when composited into a new scene.",
       "aspect": "3:4",
-      "lighting_override": "a single large window to one side, the far cheek falling into open shade with no fill card"
+      "lighting_override": "a single large window to one side, the far cheek falling into open shade with no fill card",
+      "purpose_es": "Una toma con luz de verdad distinta. Enseña cómo se comporta su piel fuera del set, que es lo que evita que parezca un recorte al componerla en otra escena."
     }
-  ]
+  ],
+  "groups_es": {
+    "A_identity_core": "Bloqueo del rostro. Misma luz, mismo vestuario, mismo fondo en las seis. Este bloque es del que el modelo aprende la identidad: congela todas las variables salvo el giro de cabeza y la expresión.",
+    "B_expression_speech": "Rango de expresión y de boca. Alimenta el lip-sync y los modelos de talking head, que fallan cuando todas las referencias tienen la boca cerrada y quieta.",
+    "C_body_proportions": "Altura, complexión, silueta y pelo desde todos los lados. Los planos de cuerpo entero son lo que impide que un modelo de video se invente proporciones nuevas entre tomas.",
+    "D_pose_context": "Lenguaje corporal sentada y de pie, en su propio entorno.",
+    "E_work_lifestyle": "Situaciones reales. Luz y capas de vestuario variadas, rostro siempre despejado — enseñan a la persona en contexto sin contaminar la señal de identidad."
+  }
 }

@@ -11,7 +11,7 @@ Two front-ends, one shared prompt composer, so they can never drift apart:
 
 | | |
 |---|---|
-| `index.html` | Browser tool. Bring your own OpenAI key. Registry, ficha editor, references, the run queue, per-shot regeneration, downloads. |
+| `index.html` | Browser tool. Sidebar registry, visual ficha, reference manager, shot gallery, run queue, downloads. Bring your own OpenAI key — or switch on **demo mode** and walk the whole flow without one. |
 | `cli/generate-set.mjs` | Batch runner. Zero dependencies, Node 18+. Writes twenty separate files plus a manifest. |
 
 ---
@@ -26,15 +26,24 @@ open http://localhost:8000/
 Opening `index.html` straight off disk works too, but some browsers block local storage on
 `file://` and nothing will persist between reloads — the tool warns you when that happens.
 
-1. **Conexión** — paste an OpenAI API key. It is stored in this browser only and sent only to
-   the base URL you configure. Use a project-scoped key.
-2. **Avatares** — Daniela is preloaded. Or create a new avatar.
-3. **Referencias maestras** — upload a photo of the person if you have one. Optional but it is
-   the single biggest factor in identity stability.
+Daniela is preloaded, so there is something to look at immediately.
+
+1. **Conexión** — paste an OpenAI API key, or tick **modo demo**. The key is stored in this
+   browser only and sent only to the base URL you configure. Use a project-scoped key.
+2. **Ficha** — the avatar as a persona sheet, with the full editor underneath.
+3. **Referencias** — drop in a photo of the person. Optional, but the single biggest factor in
+   identity stability.
 4. **Set de 20** — *Regenerar set de 20*. Each shot lands as its own file.
 
-No API key? The tool is still useful: fill in the ficha and hit **Exportar prompt pack** to get
-all twenty prompts as JSON, ready to paste into Higgsfield, ChatGPT or anything else.
+### Demo mode
+
+Switch it on in **Conexión** and generation produces locally drawn placeholder frames instead of
+calling anything. The queue, gallery, viewer, filters, downloads and ZIP all behave exactly as
+they will with a real backend, at zero cost and with no key. Placeholders are watermarked `DEMO`
+and flagged `demo: true` in the manifest, so they cannot be mistaken for real output.
+
+No API key and no demo? Still useful: fill in the ficha and hit **Prompt pack** to get all twenty
+prompts as JSON, ready to paste into Higgsfield, ChatGPT or anything else.
 
 ## Quick start — CLI
 
@@ -69,8 +78,9 @@ Run `node cli/generate-set.mjs --help` for the full flag list.
 ## Layout
 
 ```
-index.html                       the browser tool
-app.js                           UI, registry, IndexedDB, run queue, zip
+index.html                       app shell — sidebar, tabs, panels
+styles.css                       app chrome + the cream ficha sheet
+app.js                           UI, registry, IndexedDB, run queue, demo mode, zip
 lib/prompt.js                    shared prompt composer  ← the important file
 presets/shot-suite-20.json       the 20 shots
 presets/realism.json             6 realism presets + the anti-AI-look suppression block
@@ -95,6 +105,10 @@ http(s) the files on disk win over the snapshot anyway.
 | **Regenerar set de 20** | Re-run every shot at the current identity revision |
 | **Generar una toma específica** | One shot, by number or id |
 | **Actualizar ficha sin perder identidad** | Edit persona / style / realism only; the existing pack stays valid |
+
+The **Ficha** tab renders the avatar as a persona sheet — photo, perfil, sobre ella, lo que la
+representa — filled from the card and from the generated frames. *Exportar ficha visual* opens it
+standalone in a new tab; print to PDF from there.
 
 ## Identity, and the two revision counters
 

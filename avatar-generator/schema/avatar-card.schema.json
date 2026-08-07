@@ -114,7 +114,13 @@
         "location": { "type": "string" },
         "context": { "type": "string" },
         "language": { "type": "string" },
-        "energy": { "type": "string", "description": "How she carries herself — read by the expression and pose fields." }
+        "energy": { "type": "string", "description": "How she carries herself — read by the expression and pose fields." },
+        "goal": { "type": "string", "description": "What this person is working towards. Shown on the visual ficha." },
+        "represents": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Brand values / what the avatar stands for. Shown on the visual ficha; does not enter image prompts."
+        }
       }
     },
 
