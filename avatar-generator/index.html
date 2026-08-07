@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Avatar Generator</title>
+<meta name="description" content="Define, guarda y regenera avatares fotorrealistas consistentes. Genera un set de 20 imágenes individuales listo para entrenar un avatar de video.">
+<style>
+  :root {
+    --bg: #0e1116;
+    --panel: #161b23;
+    --panel-2: #1c222c;
+    --line: #2a323f;
+    --ink: #e8edf5;
+    --muted: #93a0b4;
+    --accent: #12c2e9;
+    --accent-2: #c471ed;
+    --accent-3: #f64f59;
+    --ok: #35d0a5;
+    --warn: #ffb020;
+    --bad: #ff5c6c;
+    --radius: 14px;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f4f6fa; --panel: #ffffff; --panel-2: #f0f3f8; --line: #dfe5ee;
+      --ink: #161d27; --muted: #5d6b80;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font: 15px/1.55 ui-sans-serif, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased;
+  }
+  header {
+    position: sticky; top: 0; z-index: 30;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(10px); border-bottom: 1px solid var(--line);
+  }
+  .head-inner {
+    max-width: 1180px; margin: 0 auto; padding: 14px 20px 12px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  h1 { font-size: 17px; margin: 0; letter-spacing: -0.01em; }
+  h1 small { display: block; font-weight: 400; color: var(--muted); font-size: 12.5px; letter-spacing: 0; }
+  .track { flex: 1 1 220px; min-width: 160px; height: 8px; border-radius: 99px; background: var(--panel-2); overflow: hidden; border: 1px solid var(--line); }
+  .track > i { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent-3)); transition: width .45s cubic-bezier(.4,0,.2,1); }
+  .track-label { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 12.5px; min-width: 78px; text-align: right; }
+
+  main { max-width: 1180px; margin: 0 auto; padding: 22px 20px 90px; }
+  section.panel {
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 18px 20px; margin-bottom: 18px;
+  }
+  section.panel > h2 { font-size: 14px; margin: 0 0 4px; letter-spacing: .02em; text-transform: uppercase; color: var(--muted); }
+  section.panel > p.lead { margin: 0 0 14px; color: var(--muted); font-size: 13.5px; }
+
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .row.end { justify-content: flex-end; }
+  .spacer { flex: 1 1 auto; }
+
+  button, .btn {
+    font: inherit; font-size: 13.5px; padding: 8px 14px; border-radius: 9px;
+    border: 1px solid var(--line); background: var(--panel-2); color: var(--ink);
+    cursor: pointer; transition: background .15s, border-color .15s, opacity .15s;
+  }
+  button:hover:not(:disabled) { border-color: var(--accent); }
+  button:disabled { opacity: .42; cursor: not-allowed; }
+  button.primary { background: linear-gradient(90deg, var(--accent), var(--accent-2)); border-color: transparent; color: #06121a; font-weight: 600; }
+  button.danger { border-color: color-mix(in srgb, var(--bad) 50%, var(--line)); color: var(--bad); }
+  button.mini { font-size: 12px; padding: 4px 9px; border-radius: 7px; }
+  button.mini.bad { color: var(--bad); }
+
+  label.field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; font-size: 12.5px; color: var(--muted); }
+  label.field > span { font-weight: 500; }
+  .f-input, input[type="text"], input[type="password"], input[type="number"], select, textarea {
+    font: inherit; font-size: 13.5px; color: var(--ink); background: var(--panel-2);
+    border: 1px solid var(--line); border-radius: 9px; padding: 7px 10px; width: 100%; resize: vertical;
+  }
+  .f-input:focus, input:focus, select:focus, textarea:focus { outline: 2px solid color-mix(in srgb, var(--accent) 55%, transparent); outline-offset: 1px; }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0 14px; }
+  .grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0 14px; }
+
+  fieldset.group { border: 1px solid var(--line); border-radius: 11px; padding: 12px 14px 4px; margin: 0 0 14px; }
+  fieldset.group > legend { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); padding: 0 6px; }
+  fieldset.group h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin: 6px 0 6px; }
+  fieldset.group[disabled] { opacity: .55; }
+  fieldset.identity-block { border-color: color-mix(in srgb, var(--accent-2) 40%, var(--line)); }
+  .lock-note { text-transform: none; letter-spacing: 0; color: var(--warn); font-size: 11.5px; }
+  details.group { border: 1px solid var(--line); border-radius: 11px; padding: 10px 14px; margin-bottom: 14px; }
+  details.group > summary { cursor: pointer; font-size: 12.5px; color: var(--muted); }
+
+  .meta-line { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .pill { font-size: 11.5px; color: var(--muted); background: var(--panel-2); border: 1px solid var(--line); border-radius: 99px; padding: 3px 10px; }
+  .pill.identity { border-color: color-mix(in srgb, var(--accent-2) 45%, var(--line)); }
+  .pill b { color: var(--ink); }
+  .tag { font-size: 11px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 2px 7px; color: var(--muted); white-space: nowrap; }
+  .tag.bad { color: var(--bad); border-color: color-mix(in srgb, var(--bad) 40%, var(--line)); }
+  .muted { color: var(--muted); }
+  .hint { font-size: 12px; color: var(--muted); margin: 4px 0 10px; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; background: var(--panel-2); padding: 1px 5px; border-radius: 5px; }
+  pre.prompt-view {
+    white-space: pre-wrap; word-break: break-word; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px; line-height: 1.5; background: var(--panel-2); border: 1px solid var(--line);
+    border-radius: 9px; padding: 12px; max-height: 460px; overflow: auto; margin: 8px 0 0;
+  }
+  ul.history { list-style: none; padding: 0; margin: 8px 0 0; font-size: 12.5px; }
+  ul.history li { border-left: 2px solid var(--line); padding: 4px 0 8px 10px; margin-bottom: 4px; }
+
+  .banner { border-radius: 10px; padding: 10px 13px; font-size: 12.5px; margin-bottom: 14px; border: 1px solid; }
+  .banner.warn { border-color: color-mix(in srgb, var(--warn) 45%, var(--line)); background: color-mix(in srgb, var(--warn) 8%, transparent); }
+  .banner.info { border-color: var(--line); background: var(--panel-2); color: var(--muted); }
+
+  #refs-list { display: flex; gap: 12px; flex-wrap: wrap; }
+  .ref-card { margin: 0; width: 158px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--panel-2); }
+  .ref-card.primary { border-color: var(--ok); }
+  .ref-card img { width: 100%; height: 158px; object-fit: cover; display: block; }
+  .ref-missing { height: 158px; display: grid; place-items: center; color: var(--muted); }
+  .ref-card figcaption { padding: 7px 8px; font-size: 11px; display: flex; flex-direction: column; gap: 5px; }
+  .ref-card .role { color: var(--ok); font-weight: 600; }
+
+  table#shots { width: 100%; border-collapse: collapse; font-size: 13px; }
+  #shots th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 500; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+  #shots td { padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  #shots tr.has-image { background: color-mix(in srgb, var(--ok) 4%, transparent); }
+  #shots td.num { font-variant-numeric: tabular-nums; color: var(--muted); width: 30px; }
+  #shots td.thumb { width: 56px; }
+  #shots td.thumb img { width: 44px; height: 56px; object-fit: cover; border-radius: 6px; display: block; cursor: zoom-in; border: 1px solid var(--line); }
+  #shots td.thumb .ph { display: block; width: 44px; height: 56px; border-radius: 6px; background: var(--panel-2); border: 1px dashed var(--line); }
+  #shots td.label b { display: block; font-weight: 600; }
+  #shots td.label .muted { font-size: 11.5px; }
+  #shots td.st { font-size: 11.5px; width: 130px; color: var(--muted); }
+  #shots td.st.ok { color: var(--ok); }
+  #shots td.st.error { color: var(--bad); }
+  #shots td.st.running { color: var(--accent); }
+  #shots td.act { width: 220px; text-align: right; white-space: nowrap; }
+  #shots td.grp { width: 130px; }
+
+  #modal { position: fixed; inset: 0; z-index: 60; background: rgba(0,0,0,.62); display: none; padding: 30px 20px; overflow: auto; }
+  #modal.open { display: block; }
+  .modal-inner { max-width: 860px; margin: 0 auto; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px; }
+  .modal-head { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .modal-head h3 { margin: 0; font-size: 15px; flex: 1; }
+  img.preview { max-width: 100%; border-radius: 10px; display: block; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 22px; transform: translate(-50%, 140%);
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    padding: 10px 16px; font-size: 13px; z-index: 80; max-width: min(640px, 92vw);
+    box-shadow: 0 10px 34px rgba(0,0,0,.34); transition: transform .3s cubic-bezier(.4,0,.2,1);
+  }
+  .toast.show { transform: translate(-50%, 0); }
+  .toast.ok { border-color: var(--ok); }
+  .toast.warn { border-color: var(--warn); }
+  .toast.bad { border-color: var(--bad); }
+  .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="head-inner">
+    <h1>AI Avatar Generator
+      <small>Identidad persistente · set de 20 imágenes individuales · listo para Higgsfield / Soul ID</small>
+    </h1>
+    <div class="track"><i id="progress-fill"></i></div>
+    <div class="track-label" id="progress-label">listo</div>
+  </div>
+</header>
+
+<main>
+
+  <div class="banner warn" id="file-warning" hidden>
+    Estás abriendo el archivo con <code>file://</code>. Algunos navegadores bloquean el almacenamiento local aquí:
+    los avatares y las imágenes podrían no persistir entre recargas. Sirve la carpeta por HTTP
+    (<code>python3 -m http.server</code>) o publícala en GitHub Pages.
+  </div>
+
+  <!-- ---------------------------------------------------------- conexión -- -->
+  <section class="panel">
+    <h2>1 · Conexión</h2>
+    <p class="lead">La clave se guarda solo en este navegador y se envía únicamente al endpoint que configures aquí.
+      Usa una clave de proyecto con permiso limitado a imágenes.</p>
+    <div class="grid2">
+      <label class="field"><span>OpenAI API key</span>
+        <input type="password" id="api-key" placeholder="sk-..." autocomplete="off" spellcheck="false"></label>
+      <label class="field"><span>Base URL</span>
+        <input type="text" id="base-url" spellcheck="false"></label>
+    </div>
+    <div class="grid3">
+      <label class="field"><span>Modelo</span>
+        <select id="model">
+          <option value="gpt-image-1.5">gpt-image-1.5</option>
+          <option value="gpt-image-1">gpt-image-1</option>
+          <option value="gpt-image-1-mini">gpt-image-1-mini</option>
+          <option value="chatgpt-image-latest">chatgpt-image-latest</option>
+        </select></label>
+      <label class="field"><span>Tamaño</span>
+        <select id="size">
+          <option value="1024x1536">1024×1536 (retrato)</option>
+          <option value="1024x1024">1024×1024 (cuadrado)</option>
+          <option value="1536x1024">1536×1024 (apaisado)</option>
+          <option value="auto">auto</option>
+        </select></label>
+      <label class="field"><span>Calidad</span>
+        <select id="quality">
+          <option value="high">high</option>
+          <option value="medium">medium</option>
+          <option value="low">low</option>
+          <option value="auto">auto</option>
+        </select></label>
+      <label class="field" id="fidelity-field"><span>Fidelidad a la referencia</span>
+        <select id="input-fidelity">
+          <option value="high">high</option>
+          <option value="low">low</option>
+        </select></label>
+      <label class="field"><span>Formato</span>
+        <select id="output-format">
+          <option value="png">png</option>
+          <option value="jpeg">jpeg</option>
+          <option value="webp">webp</option>
+        </select></label>
+      <label class="field"><span>Concurrencia</span>
+        <select id="concurrency">
+          <option value="1">1 (más seguro con rate limits)</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+        </select></label>
+    </div>
+    <div class="row">
+      <label class="row" style="gap:6px;font-size:12.5px;color:var(--muted)">
+        <input type="checkbox" id="remember-key" style="width:auto"> Recordar la clave en este navegador
+      </label>
+      <span class="spacer"></span>
+      <button id="btn-forget-key">Olvidar clave</button>
+      <button id="btn-test">Probar conexión</button>
+    </div>
+    <p class="hint"><b>Sin API key el sistema sigue siendo útil:</b> puedes definir la ficha y exportar el
+      «prompt pack» con las 20 instrucciones para pegarlas en Higgsfield, ChatGPT o cualquier otro backend.</p>
+  </section>
+
+  <!-- ----------------------------------------------------------- avatares -- -->
+  <section class="panel">
+    <h2>2 · Avatares</h2>
+    <p class="lead">Registro persistente. Cada avatar guarda identidad, persona, estilo, realismo, referencias
+      maestras y prompt base — para poder regenerar siempre el mismo personaje.</p>
+    <div class="row">
+      <label class="field" style="flex:1 1 320px;margin:0"><span>Usar avatar existente</span>
+        <select id="avatar-select"></select></label>
+      <span class="pill" id="avatar-count"></span>
+      <span class="spacer"></span>
+      <button class="primary" id="btn-new-avatar">Crear nuevo avatar</button>
+      <button id="btn-duplicate">Duplicar</button>
+      <button id="btn-export">Exportar ficha</button>
+      <button onclick="document.getElementById('import-file').click()">Importar ficha</button>
+      <button class="danger" id="btn-delete">Borrar</button>
+      <input type="file" id="import-file" accept="application/json" class="visually-hidden">
+    </div>
+  </section>
+
+  <!-- --------------------------------------------------------------- ficha -- -->
+  <section class="panel">
+    <h2>3 · Ficha del avatar</h2>
+    <p class="lead">El bloque de <b>Identidad</b> está bloqueado a propósito. Editar contexto, estilo o realismo
+      no toca la identidad; editar la identidad crea una revisión nueva y marca las tomas anteriores.</p>
+    <div class="row" style="margin-bottom:14px">
+      <label class="row" style="gap:6px;font-size:12.5px;color:var(--warn)">
+        <input type="checkbox" id="identity-unlocked" style="width:auto"> Desbloquear edición de identidad
+      </label>
+      <span class="spacer"></span>
+      <button id="btn-rebuild-prompt">Reconstruir prompt base</button>
+      <button class="primary" id="btn-save-card">Actualizar ficha sin perder identidad</button>
+      <button id="btn-save-identity">Guardar cambio de identidad</button>
+    </div>
+    <div id="card-form"></div>
+  </section>
+
+  <!-- --------------------------------------------------------- referencias -- -->
+  <section class="panel">
+    <h2>4 · Referencias maestras</h2>
+    <p class="lead">Opcional pero muy recomendable. Con al menos una referencia, la herramienta usa
+      <code>/images/edits</code> en vez de <code>/images/generations</code>, y la identidad se mantiene mucho mejor
+      entre las 20 tomas. La primera referencia marcada como <b>principal</b> se envía siempre.</p>
+    <div class="row" style="margin-bottom:12px">
+      <button onclick="document.getElementById('ref-file').click()">Subir referencia</button>
+      <button id="btn-promote-shot">Promover la toma 01 a referencia maestra</button>
+      <input type="file" id="ref-file" accept="image/*" multiple class="visually-hidden">
+    </div>
+    <div id="refs-list"></div>
+  </section>
+
+  <!-- ------------------------------------------------------------ set de 20 -- -->
+  <section class="panel">
+    <h2>5 · Set de 20 tomas</h2>
+    <p class="lead" id="set-summary"></p>
+    <label class="field"><span>Dirección adicional para esta tanda (opcional)</span>
+      <input type="text" id="extra-direction" placeholder="p. ej. «que lleve el pelo recogido en todas las tomas»"></label>
+    <div class="row" style="margin:6px 0 14px">
+      <button class="primary" id="btn-run-all">Regenerar set de 20</button>
+      <button id="btn-run-missing">Generar solo las que faltan</button>
+      <button class="danger" id="btn-stop" disabled>Detener</button>
+      <span class="spacer"></span>
+      <button id="btn-download-all" disabled>Descargar los 20 sueltos</button>
+      <button id="btn-download-zip" disabled>Descargar ZIP + manifest</button>
+      <button id="btn-export-prompts">Exportar prompt pack</button>
+    </div>
+    <div class="banner info">Cada toma se guarda como un archivo independiente
+      (<code>avatar_r1_01_closeup_front_neutral.png</code>). El prompt prohíbe explícitamente collages, rejillas,
+      dípticos y texto en la imagen.</div>
+    <div style="overflow-x:auto">
+      <table id="shots">
+        <thead><tr>
+          <th>#</th><th></th><th>Toma</th><th>Bloque</th><th>Estado</th><th></th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<div id="modal">
+  <div class="modal-inner">
+    <div class="modal-head">
+      <h3 id="modal-title"></h3>
+      <button id="modal-close">Cerrar</button>
+    </div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Embedded snapshot of presets/ and avatars/. Regenerate with:
+     node cli/sync-presets.mjs
+     When the page is served over http(s) the files on disk win over this snapshot. -->
+<script type="application/json" id="aag-shot-suite">{"id":"identity-pack-20","version":"1.0.0","name":"Identity Pack 20 — Higgsfield / Soul ID dataset","description":"Twenty individual photoreal frames of one person, designed as a training + driving dataset for avatar video. Covers the full yaw sweep (front → 3/4 → profile → back), three framing scales (close-up / medium / full-height), the expression range a lip-sync model needs (neutral, soft smile, broad smile, mid-speech), seated and standing body language, and three work/lifestyle contexts with the face never occluded. Twenty is not arbitrary: it is the documented minimum for a Higgsfield Soul ID training set, and this breakdown satisfies its three quality rules — varied angles, varied expressions, at least one full-height frame for body proportions.","output_rule":"Each shot is written to its own image file. Never composite, collage, contact-sheet or grid the set.","default_aspect":"3:4","groups":{"A_identity_core":"Face lock. Same lighting setup, same wardrobe, same background across all six. This block is what the identity model actually learns from — keep every variable except head yaw and expression frozen.","B_expression_speech":"Expression and mouth range. Feeds lip-sync and talking-head models, which fail when every reference frame has a closed, static mouth.","C_body_proportions":"Height, build, silhouette and hair from every side. Full-height frames are what stop a video model from inventing new body proportions between shots.","D_pose_context":"Seated and standing body language in the avatar's own environment.","E_work_lifestyle":"Real situations. Varied light and wardrobe layers, face always clear — these teach the model the person in context without polluting the identity signal."},"shots":[{"order":1,"id":"closeup_front_neutral","group":"A_identity_core","label_es":"Primer plano frontal, expresión neutra","label_en":"Close-up, front, neutral","filename":"01_closeup_front_neutral","framing":"close-up, head and top of shoulders, eyes on the upper third line","camera":"85mm equivalent, f/2.8, camera at eye level, subject 1.5 m from lens","head":"facing the lens straight on, 0° yaw, 0° tilt","expression":"relaxed neutral, lips closed but not pressed, jaw unclenched","gaze":"directly into the lens","background":"identity backdrop","wardrobe":"base","purpose":"The anchor frame. Every other frame in the pack is judged against this one for identity drift.","aspect":"3:4"},{"order":2,"id":"closeup_3q_left_soft_smile","group":"A_identity_core","label_es":"Primer plano 3/4 izquierda, sonrisa suave","label_en":"Close-up, three-quarter left, soft smile","filename":"02_closeup_3q_left_soft_smile","framing":"close-up, head and top of shoulders","camera":"85mm equivalent, f/2.8, camera at eye level","head":"turned 35° to her left, both eyes fully visible, far eye not clipped by the nose","expression":"soft closed-lip smile, slight crease at the outer corners of the eyes","gaze":"into the lens","background":"identity backdrop","wardrobe":"base","purpose":"Primary three-quarter. The single most-used angle in avatar video.","aspect":"3:4"},{"order":3,"id":"closeup_3q_right_neutral","group":"A_identity_core","label_es":"Primer plano 3/4 derecha, expresión neutra","label_en":"Close-up, three-quarter right, neutral","filename":"03_closeup_3q_right_neutral","framing":"close-up, head and top of shoulders","camera":"85mm equivalent, f/2.8, camera at eye level","head":"turned 35° to her right, both eyes fully visible","expression":"relaxed neutral","gaze":"into the lens","background":"identity backdrop","wardrobe":"base","purpose":"Mirror of shot 02. Faces are asymmetric; without both sides the model averages them into a face that matches neither.","aspect":"3:4","lighting_override":"mirror the key so it stays on the near cheek"},{"order":4,"id":"profile_left","group":"A_identity_core","label_es":"Perfil izquierdo","label_en":"Full left profile","filename":"04_profile_left","framing":"close-up, head and neck","camera":"85mm equivalent, f/4, camera at eye level","head":"full 90° profile facing frame-left, nose tip clear of the far cheek line","expression":"neutral, lips closed","gaze":"level, straight ahead, not at the lens","background":"identity backdrop","wardrobe":"base","purpose":"Locks nose bridge, chin projection, jaw angle and ear shape — the features a front view cannot describe.","aspect":"3:4","lighting_override":"reposition the key to rake across the profile, keeping the nose shadow short and soft"},{"order":5,"id":"profile_right","group":"A_identity_core","label_es":"Perfil derecho","label_en":"Full right profile","filename":"05_profile_right","framing":"close-up, head and neck","camera":"85mm equivalent, f/4, camera at eye level","head":"full 90° profile facing frame-right","expression":"neutral, lips closed","gaze":"level, straight ahead","background":"identity backdrop","wardrobe":"base","purpose":"Completes the yaw sweep. With 01–05 the model has the head at 0°, ±35° and ±90°.","aspect":"3:4","lighting_override":"mirror the key so it rakes across the profile from the other side"},{"order":6,"id":"closeup_front_broad_smile","group":"A_identity_core","label_es":"Primer plano frontal, sonrisa amplia","label_en":"Close-up, front, broad smile","filename":"06_closeup_front_broad_smile","framing":"close-up, head and top of shoulders","camera":"85mm equivalent, f/2.8, camera at eye level","head":"facing the lens, 0° yaw","expression":"broad genuine smile, upper teeth visible, real Duchenne creasing around the eyes, cheeks lifted","gaze":"into the lens","background":"identity backdrop","wardrobe":"base","purpose":"Upper bound of the expression range, and the frame that fixes tooth shape and smile-line geometry so they stop changing between generations.","aspect":"3:4"},{"order":7,"id":"medium_offcamera_gaze","group":"B_expression_speech","label_es":"Plano medio, mirada fuera de cámara","label_en":"Medium shot, gaze off camera","filename":"07_medium_offcamera_gaze","framing":"medium shot, waist up, subject slightly off-centre with lookroom on the side she faces","camera":"50mm equivalent, f/2.8, camera at eye level","head":"turned 20° off axis","expression":"thoughtful, calm, lips closed","gaze":"off camera toward the lookroom side, eyes not to the lens","background":"identity backdrop or soft environment","wardrobe":"base","purpose":"Non-eye-contact reference. Without it, avatar video locks into an unbroken stare at the viewer.","aspect":"3:4"},{"order":8,"id":"medium_midspeech","group":"B_expression_speech","label_es":"Plano medio, hablando (media frase)","label_en":"Medium shot, mid-speech","filename":"08_medium_midspeech","framing":"medium shot, chest up","camera":"50mm equivalent, f/2.8, camera at eye level","head":"facing the lens, 10° yaw","expression":"caught mid-sentence, mouth open on a vowel, teeth partly visible, eyebrows slightly raised, animated but not exaggerated","gaze":"into the lens, as if addressing the viewer","background":"identity backdrop","wardrobe":"base","purpose":"The frame most avatar datasets forget. Lip-sync models trained only on closed mouths produce a rubbery, pasted-on mouth in video.","aspect":"3:4"},{"order":9,"id":"medium_front_hands_visible","group":"B_expression_speech","label_es":"Plano medio frontal, manos visibles y gesto natural","label_en":"Medium shot, front, hands in frame","filename":"09_medium_front_hands_visible","framing":"medium shot, waist up, both hands inside the frame and clear of the face","camera":"50mm equivalent, f/2.8, camera at eye level","head":"facing the lens","expression":"warm, engaged, slight smile","gaze":"into the lens","background":"identity backdrop","wardrobe":"base","purpose":"Fixes hand size, skin tone continuity between hand and face, and nail styling — the details that betray a synthetic avatar the moment it gestures.","aspect":"3:4"},{"order":10,"id":"fullbody_front_standing","group":"C_body_proportions","label_es":"Cuerpo entero, frontal, de pie","label_en":"Full body, front, standing","filename":"10_fullbody_front_standing","framing":"full height, head to feet, small margin above the head and below the shoes","camera":"35mm equivalent, f/4, camera at chest height so perspective does not stretch the legs","head":"facing the lens","expression":"relaxed, light smile","gaze":"into the lens","pose":"standing straight, weight evenly distributed, arms relaxed at her sides","background":"identity backdrop, full height","wardrobe":"base","purpose":"The mandatory full-height frame. This is what a video model reads for height, build and limb proportion.","aspect":"3:4","lighting_override":"open the key up to cover the full figure evenly, floor to head"},{"order":11,"id":"fullbody_3q_left_standing","group":"C_body_proportions","label_es":"Cuerpo entero, 3/4 izquierda, de pie","label_en":"Full body, three-quarter left, standing","filename":"11_fullbody_3q_left_standing","framing":"full height, head to feet","camera":"35mm equivalent, f/4, camera at chest height","head":"body turned 40° to her left, head turned back toward the lens","expression":"relaxed, light smile","gaze":"into the lens","pose":"standing, weight on the back leg, front shoulder slightly forward","background":"identity backdrop","wardrobe":"base","purpose":"Three-quarter body volume — shoulder depth and hip line, unreadable from a flat front view.","aspect":"3:4","lighting_override":"open the key up to cover the full figure"},{"order":12,"id":"fullbody_3q_right_standing","group":"C_body_proportions","label_es":"Cuerpo entero, 3/4 derecha, de pie","label_en":"Full body, three-quarter right, standing","filename":"12_fullbody_3q_right_standing","framing":"full height, head to feet","camera":"35mm equivalent, f/4, camera at chest height","head":"body turned 40° to her right, head turned back toward the lens","expression":"relaxed neutral","gaze":"into the lens","pose":"standing, weight on the back leg","background":"identity backdrop","wardrobe":"base","purpose":"Mirror of 11.","aspect":"3:4","lighting_override":"mirror the key and open it up to cover the full figure"},{"order":13,"id":"fullbody_side_left","group":"C_body_proportions","label_es":"Cuerpo entero, lateral izquierdo","label_en":"Full body, left side","filename":"13_fullbody_side_left","framing":"full height, head to feet","camera":"35mm equivalent, f/4, camera at chest height","head":"full 90° side view facing frame-left, head in line with the body","expression":"neutral","gaze":"straight ahead, not at the lens","pose":"standing straight, arms relaxed, natural posture with no forced military stance","background":"identity backdrop","wardrobe":"base","purpose":"Silhouette depth: posture, chest-to-back depth, how the hair sits off the shoulders.","aspect":"3:4","lighting_override":"rake the key from the camera side so the silhouette edge stays readable"},{"order":14,"id":"fullbody_side_right","group":"C_body_proportions","label_es":"Cuerpo entero, lateral derecho","label_en":"Full body, right side","filename":"14_fullbody_side_right","framing":"full height, head to feet","camera":"35mm equivalent, f/4, camera at chest height","head":"full 90° side view facing frame-right","expression":"neutral","gaze":"straight ahead","pose":"standing straight, arms relaxed","background":"identity backdrop","wardrobe":"base","purpose":"Mirror of 13. Completes the 360° body turnaround with shot 15.","aspect":"3:4","lighting_override":"mirror the key, raking from the camera side"},{"order":15,"id":"fullbody_back","group":"C_body_proportions","label_es":"Cuerpo entero, de espalda","label_en":"Full body, back view","filename":"15_fullbody_back","framing":"full height, head to feet, seen from directly behind","camera":"35mm equivalent, f/4, camera at chest height","head":"facing away from the lens, face not visible","expression":"n/a","gaze":"away","pose":"standing straight, arms relaxed at her sides","background":"identity backdrop","wardrobe":"base","purpose":"Back of the head, hair length and fall, shoulder width. Required for any camera move that orbits the avatar.","aspect":"3:4","lighting_override":"key from the camera side, soft, full figure"},{"order":16,"id":"seated_3q_medium","group":"D_pose_context","label_es":"Sentada, 3/4, plano medio-largo","label_en":"Seated, three-quarter, medium-long","filename":"16_seated_3q_medium","framing":"medium-long shot, head to mid-calf, seated","camera":"50mm equivalent, f/2.8, camera at seated eye level","head":"turned toward the lens, body 30° off axis","expression":"relaxed, warm, light smile","gaze":"into the lens","pose":"seated on a simple stool or chair, back straight but not stiff, hands resting on her thigh, knees angled away from the lens","background":"her own work environment, softly out of focus","wardrobe":"base","purpose":"Seated posture. Interview and testimonial video is shot seated; a dataset of only standing frames renders a seated avatar with broken proportions.","aspect":"3:4"},{"order":17,"id":"standing_relaxed_environment","group":"D_pose_context","label_es":"De pie, postura relajada, en su entorno","label_en":"Standing, relaxed, in her environment","filename":"17_standing_relaxed_environment","framing":"full height, head to feet, environment readable around her","camera":"35mm equivalent, f/2.8, camera at chest height","head":"facing the lens","expression":"confident, easy smile","gaze":"into the lens","pose":"standing with weight on one hip, one hand loose at her side, the other resting lightly on a surface, shoulders open","background":"her own work environment, full depth","wardrobe":"working","purpose":"The hero standing frame — natural contrapposto rather than the passive T-pose of shot 10.","aspect":"3:4"},{"order":18,"id":"work_consulting_client","group":"E_work_lifestyle","label_es":"Trabajo: atendiendo a una clienta, rostro despejado","label_en":"Work: consulting with a client, face clear","filename":"18_work_consulting_client","framing":"medium shot, subject in the foreground, the other person turned away from the lens or cropped out","camera":"35mm equivalent, f/2.2, camera at eye level","head":"three-quarter to the lens","expression":"listening, engaged, mid-conversation","gaze":"off camera toward the person she is talking to","pose":"leaning in slightly, hands gesturing below chin level and clear of the face","background":"her workplace","wardrobe":"working","purpose":"Professional context. The second person must never occlude the avatar's face or compete for focus.","aspect":"3:4"},{"order":19,"id":"work_hands_on_task","group":"E_work_lifestyle","label_es":"Trabajo: haciendo su oficio, manos ocupadas, rostro visible","label_en":"Work: hands on the craft, face visible","filename":"19_work_hands_on_task","framing":"medium shot, hands working inside the frame but well below the chin","camera":"50mm equivalent, f/2.2, camera at eye level","head":"tilted slightly down toward the task, chin lifted enough that the whole face stays visible to the lens","expression":"focused, absorbed, faint smile","gaze":"down at her hands","pose":"actively performing her craft","background":"her workplace","wardrobe":"working","purpose":"Downward-gaze reference with no occlusion. Hard constraint: hands, tools and product never cross the jawline.","aspect":"3:4"},{"order":20,"id":"lifestyle_window_light","group":"E_work_lifestyle","label_es":"Lifestyle: fuera del trabajo, luz de ventana","label_en":"Lifestyle: off duty, window light","filename":"20_lifestyle_window_light","framing":"medium close-up, chest up","camera":"50mm equivalent, f/2.0, camera at eye level","head":"three-quarter, turned slightly toward the window","expression":"relaxed, unposed, a small private smile","gaze":"off camera, out of the window","pose":"seated at a café or kitchen table, forearms on the table, shoulders dropped","background":"café or home interior, soft depth","wardrobe":"off-duty","purpose":"One frame under genuinely different light. It teaches the model how her skin tone behaves outside the studio setup, which is what keeps her from looking like a cutout when composited into a new scene.","aspect":"3:4","lighting_override":"a single large window to one side, the far cheek falling into open shade with no fill card"}]}</script>
+<script type="application/json" id="aag-realism">{"version":"1.0.0","name":"Realism presets — anti-AI-look","note":"Each preset supplies the four blocks that decide whether an image reads as a photograph or as 'an AI image': capture (body + lens + exposure), light (source, size, direction, falloff), grade (colour response), and texture (skin, grain, micro-detail). The suppression block is appended to every preset — it is written as positive photographic instruction rather than a negative list, because instruction-following image models handle 'matte skin with visible pores' far better than 'no plastic skin'.","suppression":{"skin":"real skin texture at pore level, visible fine lines at the outer eye and nasolabial fold, faint uneven pigmentation, a few small natural blemishes and moles left in place, matte finish with sebum shine only on the nose bridge and forehead, vellus hair catching the light along the jaw","symmetry":"natural facial asymmetry preserved — the two sides of the face are not mirrored, one eyelid sits marginally lower, the smile pulls slightly further on one side","hair":"individual flyaway strands escaping the hairline, hair not sculpted or airbrushed into a single mass","colour":"neutral colour grading, accurate white balance, restrained saturation, skin tone rendered as it would be on a calibrated monitor rather than warmed for effect","light":"one dominant light source with physically consistent shadow direction and soft natural falloff, catchlights matching the size and position of that source","optics":"moderate depth of field appropriate to the stated aperture, background separation from distance rather than from a synthetic blur, no glow bloom around edges","grade_discipline":"no teal-and-orange split tone, no HDR local contrast, no clarity or structure slider, no vignette added in post","retouch_discipline":"unretouched straight-out-of-camera frame, no frequency-separation smoothing, no eye or teeth whitening, no face slimming, no beauty filter","output":"a photograph, not an illustration, render, or 3D character"},"negative_terms":["oversaturated","HDR","plastic skin","waxy skin","airbrushed","beauty filter","instagram filter","porcelain complexion","flawless skin","glowing skin","perfectly symmetrical face","CGI","3D render","digital painting","illustration","anime","rim light halo","dramatic teal and orange grade","excessive bokeh","lens flare","heavy vignette","over-sharpened","text","watermark","logo","extra fingers","deformed hands"],"presets":[{"id":"studio_softbox_neutral","name":"Estudio softbox neutro","recommended_for":"Group A — identity core. The default for the six face-lock frames.","capture":"full-frame mirrorless body at 1/250s, ISO 200, RAW converted with a neutral profile — use the lens and aperture given in the SHOT block above","light":"one 120cm octabox as key at 45° camera-left and slightly above eye level, a single white bounce card at camera-right for a two-thirds-stop lift, no hair light, no rim","grade":"neutral grade, daylight white balance at 5500K, contrast curve close to linear, blacks lifted a touch to a soft charcoal rather than crushed","texture":"fine natural sensor grain retained, no noise reduction on skin","background":"seamless mid-grey paper, evenly lit, two stops under the subject","strength":1},{"id":"window_daylight_soft","name":"Luz de ventana natural","recommended_for":"Lifestyle, off-duty and seated frames. The most forgiving preset — hardest to make look synthetic.","capture":"full-frame mirrorless body at 1/160s, ISO 400 — use the lens and aperture given in the SHOT block above","light":"large north-facing window as the only source, camera-left, subject one metre in from the glass, the far side of the face falling into open shade with no fill","grade":"cool-neutral white balance around 6000K, gentle S-curve, highlights held well below clipping","texture":"visible grain from the higher ISO, natural micro-contrast","background":"real interior, softly out of focus from distance not from a filter","strength":1},{"id":"documentary_available","name":"Documental, luz disponible","recommended_for":"Work and lifestyle frames shot inside a real environment.","capture":"full-frame mirrorless body at 1/125s, ISO 800, handheld — use the lens and aperture given in the SHOT block above","light":"the room's own practical lights plus whatever daylight reaches it, mixed colour temperature left uncorrected the way a real reportage frame would be","grade":"documentary grade, slightly muted saturation, mildly warm shadows from the tungsten practicals, no colour separation applied in post","texture":"ISO 800 grain, a hint of motion softness in the extremities, imperfect focus plane","background":"the working environment itself, cluttered and real","strength":1},{"id":"editorial_clean","name":"Editorial limpio","recommended_for":"Full-height and turnaround frames where the silhouette must read cleanly.","capture":"full-frame mirrorless body at 1/200s, ISO 100 — use the lens and aperture given in the SHOT block above","light":"two large diffusion panels at 45° either side for near-shadowless even coverage across the full figure, key one stop over fill","grade":"clean neutral grade, true-to-life skin tone, no warming filter","texture":"high-resolution detail in fabric weave and skin, no smoothing","background":"seamless light-grey cyclorama lit evenly floor to ceiling","strength":1},{"id":"golden_hour_restrained","name":"Hora dorada contenida","recommended_for":"At most one or two frames. Use sparingly — warm low sun is the fastest route back to the AI look if overdone.","capture":"full-frame mirrorless body at 1/500s, ISO 100 — use the lens and aperture given in the SHOT block above","light":"low sun behind and to one side, a large white bounce returning soft light to the face, warm edge on the hair kept subtle and physically plausible","grade":"warm but disciplined — the warmth lives in the light itself, not in the grade; skin tone stays neutral, saturation held at natural levels","texture":"fine grain, slight veiling flare from the low sun where it is optically justified","background":"exterior, compressed and thrown out of focus by the long lens","strength":0.8},{"id":"smartphone_ugc","name":"UGC de móvil","recommended_for":"Optional swap for the lifestyle frames when the avatar's end use is social/UGC content rather than brand film.","capture":"captured on a modern smartphone main camera INSTEAD of the lens named in the SHOT block — 26mm equivalent at f/1.8, computational HDR left at its default, slight barrel distortion at the frame edge","light":"ordinary room light, whatever is available, no professional modifiers","grade":"the phone's own default processing — mild contrast, mild saturation, aggressive-but-natural noise handling","texture":"phone-sensor detail, faint smearing in the shadow areas, the look of a real casual photo","background":"an ordinary lived-in space","strength":0.9}]}</script>
+<script type="application/json" id="aag-seed-avatars">[{"schema_version":"1.0.0","id":"daniela","name":"Daniela Restrepo","created_at":"2026-08-07T00:00:00Z","updated_at":"2026-08-07T00:00:00Z","revision":1,"identity_revision":1,"tagline":"Dueña de salón en Medellín, 30 años. Cercana, práctica, buena con la cámara sin parecer modelo.","identity_lock":{"apparent_age":"30 years old — an adult face with settled features, not a smoothed twenty-something: faint expression lines already set at the outer corners of the eyes and between the brows","heritage":"Colombian, Medellín — mixed mestizo features, warm-toned","skin":{"tone":"warm light-brown, evenly tanned","undertone":"golden-olive","texture":"visible pores across the nose and cheeks, faint uneven pigmentation on the forehead, a small cluster of light freckles high on the left cheekbone, matte except for slight natural shine on the nose bridge","fitzpatrick":"IV"},"hair":{"colour":"dark chocolate brown, natural, with warm caramel sun-lift only in the lower third — not a salon balayage","texture":"type 2B wavy, medium density, slight natural frizz at the crown that is never smoothed away","length":"collarbone length, blunt-ish ends with soft face-framing layers","default_styling":"centre-left side part, worn loose and pushed behind the right ear, a few strands escaping at the temples"},"eyes":{"colour":"dark brown, almost black in low light, warm amber ring visible near the pupil in daylight","shape":"almond, slight downturn at the outer corner, medium-set, natural lash length with no extensions","brows":"full and naturally dense, softly arched, groomed but not over-shaped; the left brow sits about two millimetres higher than the right"},"face":{"shape":"oval tending to heart — width at the cheekbones, narrowing to a soft chin","cheekbones":"defined and rounded, not sculpted or hollow beneath","nose":"straight medium-width bridge, slightly rounded tip, nostrils narrow","mouth":"medium-full lips, upper lip slightly thinner than the lower, soft cupid's bow, natural rosy-brown lip colour","jaw_chin":"soft rounded jawline with a clean but not sharp definition, small chin with no cleft"},"distinguishing_marks":["a small dark mole roughly 1 cm below the outer corner of her RIGHT eye, on the cheekbone","a light freckle cluster high on the LEFT cheekbone, about six or seven freckles","a faint 4 mm pale scar through the outer end of the left eyebrow"],"body":{"height":"1.65 m","build":"medium, lightly athletic, natural waist, not slim-model proportions","posture":"upright and open, shoulders relaxed and back, chin level — the posture of someone used to standing all day","hands":"medium-sized working hands, short filed nails with a nude polish, no rings on the right hand, a thin gold band on the left index finger"},"grooming":"minimal everyday makeup — light skin tint that does not hide the freckles or pores, groomed brows, a touch of mascara, nude-rose balm on the lips. No contouring, no highlighter, no false lashes, no heavy eyeliner.","must_not":["do not slim the face or sharpen the jawline","do not lighten the skin tone or cool the undertone","do not remove the freckles, the mole, or the eyebrow scar","do not straighten the hair or turn it into a glossy blowout","do not add heavy glamour makeup, contouring or highlighter","do not render her as a fashion model — she reads as a real working woman in her thirties","do not make her younger than 30 or older than 34","do not add tattoos, piercings beyond a single small lobe piercing per ear, or dyed fashion colours"],"distinct_from":"Deliberately NOT the woman in any original reference photo this concept started from. Daniela is a newly authored, fictional person: different face shape, different hair length and texture, different marks, different build. If a source photo is supplied, use it only for lighting, mood and wardrobe language — never for facial likeness."},"persona":{"profession":"Hair stylist and owner of her own salon","business":"Salón Raíz — a small independent salon with four chairs","location":"Medellín, Colombia — Laureles neighbourhood","context":"Runs the business herself: cuts and colours, manages two employees, films her own content for the salon's social accounts between clients.","language":"Spanish (Colombian, paisa)","energy":"Warm and direct. Talks with her hands. Comfortable on camera because she is used to it, not because she is performing."},"style":{"wardrobe_base":"an off-white linen button-down shirt, sleeves rolled to just below the elbow, tucked loosely into straight-leg dark indigo jeans; simple tan leather sneakers","wardrobe_working":"a black linen salon apron with a chest pocket holding shears and a tail comb, sleeves rolled higher","wardrobe_offduty":"a soft terracotta ribbed knit top and dark jeans, no apron","accessories":"small thin gold hoop earrings, a fine gold chain at the collarbone, a slim leather-strap watch on the left wrist","palette":"warm neutrals — off-white, terracotta, indigo, black, tan leather, gold hardware","identity_backdrop":"seamless mid-grey studio paper, evenly lit, two stops darker than the subject","environments":["her salon: warm wood counters, a large street-facing window, black styling chairs, hanging plants, mirrors with warm bulb strips","the salon's small reception area with a terrazzo counter and a potted monstera","a Laureles café with a big window, wooden table, morning light"]},"realism":{"default_preset":"studio_softbox_neutral","group_presets":{"A_identity_core":"studio_softbox_neutral","B_expression_speech":"studio_softbox_neutral","C_body_proportions":"editorial_clean","D_pose_context":"window_daylight_soft","E_work_lifestyle":"documentary_available"},"extra_notes":"Keep her warm skin tone honest — the failure mode for this colouring is an over-warmed, over-saturated orange render. Grade neutral and let the golden undertone come from the skin itself, not from the white balance."},"identity_anchors":{"identity_token":"DANIELA-RESTREPO-30-CO-v1","seed":null,"master_reference_ids":[],"higgsfield_soul_id":null,"higgsfield_element_id":null,"openai_file_ids":[]},"master_references":[],"base_prompt":"DANIELA-RESTREPO-30-CO-v1 — the same single person in every frame. 30 years old — an adult face with settled features, not a smoothed twenty-something: faint expression lines already set at the outer corners of the eyes and between the brows, Colombian, Medellín — mixed mestizo features, warm-toned. warm light-brown, evenly tanned skin, golden-olive undertone, Fitzpatrick IV, visible pores across the nose and cheeks, faint uneven pigmentation on the forehead, a small cluster of light freckles high on the left cheekbone, matte except for slight natural shine on the nose bridge. dark chocolate brown, natural, with warm caramel sun-lift only in the lower third — not a salon balayage hair, type 2B wavy, medium density, slight natural frizz at the crown that is never smoothed away, collarbone length, blunt-ish ends with soft face-framing layers, centre-left side part, worn loose and pushed behind the right ear, a few strands escaping at the temples. dark brown, almost black in low light, warm amber ring visible near the pupil in daylight eyes, almond, slight downturn at the outer corner, medium-set, natural lash length with no extensions, full and naturally dense, softly arched, groomed but not over-shaped; the left brow sits about two millimetres higher than the right. oval tending to heart — width at the cheekbones, narrowing to a soft chin face, defined and rounded, not sculpted or hollow beneath, straight medium-width bridge, slightly rounded tip, nostrils narrow, medium-full lips, upper lip slightly thinner than the lower, soft cupid's bow, natural rosy-brown lip colour, soft rounded jawline with a clean but not sharp definition, small chin with no cleft. identifying marks that must appear in every frame: a small dark mole roughly 1 cm below the outer corner of her RIGHT eye, on the cheekbone; a light freckle cluster high on the LEFT cheekbone, about six or seven freckles; a faint 4 mm pale scar through the outer end of the left eyebrow. 1.65 m, medium, lightly athletic, natural waist, not slim-model proportions, upright and open, shoulders relaxed and back, chin level — the posture of someone used to standing all day, medium-sized working hands, short filed nails with a nude polish, no rings on the right hand, a thin gold band on the left index finger. minimal everyday makeup — light skin tint that does not hide the freckles or pores, groomed brows, a touch of mascara, nude-rose balm on the lips. No contouring, no highlighter, no false lashes, no heavy eyeliner.","shot_suite":"identity-pack-20","generation_defaults":{"backend":"openai","model":"gpt-image-1.5","size":"1024x1536","quality":"high","input_fidelity":"high","output_format":"png","background":"auto"},"history":[{"at":"2026-08-07T00:00:00Z","revision":1,"identity_revision":1,"change":"Card authored. Daniela Restrepo created as an original fictional person — explicitly distinct in face shape, hair, marks and build from any original reference photo. No master reference attached yet; attach one and promote it before the first full run for best identity stability.","identity_touched":true}]}]</script>
+
+<script src="lib/prompt.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

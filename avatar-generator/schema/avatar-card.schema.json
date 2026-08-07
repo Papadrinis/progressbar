@@ -1,0 +1,241 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://progressbar.local/schema/avatar-card.schema.json",
+  "title": "Avatar Card",
+  "description": "The persistent record of one avatar. Everything needed to regenerate the same person, in any tool, at any point in the future. The identity_lock block is the part that must never be edited casually — see the update policy in the skill.",
+  "type": "object",
+  "required": ["schema_version", "id", "name", "identity_lock", "base_prompt"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]{1,48}$",
+      "description": "Stable slug. Never changes, even if the display name does."
+    },
+    "name": { "type": "string", "description": "Display name." },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Bumped on every save. identity_lock changes additionally require identity_revision to bump."
+    },
+    "identity_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Bumped ONLY when identity_lock changes. Two images with the same identity_revision are guaranteed to have been generated from the same physical description."
+    },
+    "tagline": { "type": "string", "description": "One line: who this person is." },
+
+    "identity_lock": {
+      "type": "object",
+      "description": "The immutable core. Rendered verbatim into every prompt. Change nothing here without bumping identity_revision and re-shooting the master references.",
+      "required": ["apparent_age", "skin", "hair", "eyes", "face", "body"],
+      "additionalProperties": false,
+      "properties": {
+        "apparent_age": { "type": "string" },
+        "heritage": { "type": "string", "description": "Ancestry as it reads visually. Phrase descriptively, not as a demographic label." },
+        "skin": {
+          "type": "object",
+          "properties": {
+            "tone": { "type": "string" },
+            "undertone": { "type": "string" },
+            "texture": { "type": "string" },
+            "fitzpatrick": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "hair": {
+          "type": "object",
+          "properties": {
+            "colour": { "type": "string" },
+            "texture": { "type": "string" },
+            "length": { "type": "string" },
+            "default_styling": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "eyes": {
+          "type": "object",
+          "properties": {
+            "colour": { "type": "string" },
+            "shape": { "type": "string" },
+            "brows": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "face": {
+          "type": "object",
+          "properties": {
+            "shape": { "type": "string" },
+            "cheekbones": { "type": "string" },
+            "nose": { "type": "string" },
+            "mouth": { "type": "string" },
+            "jaw_chin": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "distinguishing_marks": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "The single highest-value field in the whole card. Specific, locatable marks are what let a human — and a model — verify identity across a set. Two or three is the sweet spot."
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "height": { "type": "string" },
+            "build": { "type": "string" },
+            "posture": { "type": "string" },
+            "hands": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "grooming": { "type": "string", "description": "Makeup, nails, facial hair. Kept minimal so it does not fight the realism presets." },
+        "must_not": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Explicit anti-drift rules — the traits the model keeps trying to add that would make this a different person."
+        },
+        "distinct_from": {
+          "type": "string",
+          "description": "Free text. Use when this avatar must be visibly NOT some other person, e.g. an original reference photo the concept started from."
+        }
+      }
+    },
+
+    "persona": {
+      "type": "object",
+      "description": "Non-visual context. Shapes wardrobe, environments and the work/lifestyle shots, but never overrides identity_lock.",
+      "additionalProperties": false,
+      "properties": {
+        "profession": { "type": "string" },
+        "business": { "type": "string" },
+        "location": { "type": "string" },
+        "context": { "type": "string" },
+        "language": { "type": "string" },
+        "energy": { "type": "string", "description": "How she carries herself — read by the expression and pose fields." }
+      }
+    },
+
+    "style": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "wardrobe_base": { "type": "string", "description": "Worn in every Group A/B/C frame. Frozen for the identity block." },
+        "wardrobe_working": { "type": "string" },
+        "wardrobe_offduty": { "type": "string" },
+        "accessories": { "type": "string" },
+        "palette": { "type": "string" },
+        "identity_backdrop": { "type": "string", "description": "The single background used across the identity-core block." },
+        "environments": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Real places this person is photographed in, used by Groups D and E."
+        }
+      }
+    },
+
+    "realism": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "default_preset": { "type": "string", "description": "Preset id from presets/realism.json." },
+        "group_presets": {
+          "type": "object",
+          "description": "Optional per-group override, keyed by shot-suite group id.",
+          "additionalProperties": { "type": "string" }
+        },
+        "extra_notes": { "type": "string" }
+      }
+    },
+
+    "identity_anchors": {
+      "type": "object",
+      "description": "The machine-side handles that pin identity across tools. Which ones exist depends on the backend in use — none of them are required for the card to be valid.",
+      "additionalProperties": false,
+      "properties": {
+        "identity_token": {
+          "type": "string",
+          "description": "Stable human/model-readable handle, e.g. 'DANIELA-R-30-CO-v1'. Embedded in every prompt as a naming anchor."
+        },
+        "seed": {
+          "type": ["integer", "null"],
+          "description": "Numeric seed, for backends that expose one. The OpenAI Images API does not — leave null there and rely on master references."
+        },
+        "master_reference_ids": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Local ids of the master reference images stored alongside the card."
+        },
+        "higgsfield_soul_id": { "type": ["string", "null"], "description": "Soul ID once trained. Works with soul_2 / soul_cinematic only, one per generation." },
+        "higgsfield_element_id": { "type": ["string", "null"], "description": "Reference Element id. Embed as <<<element_id>>> in prompt text." },
+        "openai_file_ids": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Uploaded file ids for the OpenAI images/edits endpoint, if pre-uploaded rather than sent inline."
+        }
+      }
+    },
+
+    "master_references": {
+      "type": "array",
+      "description": "The canonical images of this person. Reference #1 is the primary — it is sent on every generation.",
+      "items": {
+        "type": "object",
+        "required": ["ref_id", "role"],
+        "additionalProperties": false,
+        "properties": {
+          "ref_id": { "type": "string" },
+          "role": { "type": "string", "enum": ["primary_face", "secondary_face", "body", "wardrobe", "environment"] },
+          "source": { "type": "string", "enum": ["uploaded", "generated", "imported_url"] },
+          "uri": { "type": "string", "description": "Path, URL, or an idb: handle into the browser tool's local store." },
+          "shot_id": { "type": "string", "description": "Set when the reference is itself a generated frame from the suite." },
+          "note": { "type": "string" }
+        }
+      }
+    },
+
+    "base_prompt": {
+      "type": "string",
+      "description": "The rendered identity paragraph. Derived from identity_lock — regenerate it rather than hand-editing, so the card and the prompt can never disagree."
+    },
+
+    "shot_suite": {
+      "type": "string",
+      "description": "Id of the shot suite this avatar generates against.",
+      "default": "identity-pack-20"
+    },
+
+    "generation_defaults": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "backend": { "type": "string", "enum": ["openai", "higgsfield"] },
+        "model": { "type": "string" },
+        "size": { "type": "string", "enum": ["1024x1024", "1024x1536", "1536x1024", "auto"] },
+        "quality": { "type": "string", "enum": ["low", "medium", "high", "auto"] },
+        "input_fidelity": { "type": "string", "enum": ["high", "low"] },
+        "output_format": { "type": "string", "enum": ["png", "jpeg", "webp"] },
+        "background": { "type": "string", "enum": ["auto", "opaque", "transparent"] }
+      }
+    },
+
+    "history": {
+      "type": "array",
+      "description": "Append-only audit trail. Every card save writes one entry, so an identity change is always traceable to a date and a reason.",
+      "items": {
+        "type": "object",
+        "required": ["at", "revision", "change"],
+        "additionalProperties": false,
+        "properties": {
+          "at": { "type": "string", "format": "date-time" },
+          "revision": { "type": "integer" },
+          "identity_revision": { "type": "integer" },
+          "change": { "type": "string" },
+          "identity_touched": { "type": "boolean" }
+        }
+      }
+    }
+  }
+}
