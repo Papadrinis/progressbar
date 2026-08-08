@@ -26,7 +26,8 @@ async function loadData() {
   DATA.realism = readEmbedded('aag-realism');
   DATA.seeds = readEmbedded('aag-seed-avatars') || [];
 
-  if (location.protocol === 'file:') return;
+  /* The standalone single-file build has no sibling files to fetch. */
+  if (location.protocol === 'file:' || (globalThis.AAG_DEFAULTS || {}).standalone) return;
   const tryFetch = async (url) => {
     try {
       const res = await fetch(url, { cache: 'no-cache' });
@@ -76,12 +77,14 @@ const DEFAULT_SETTINGS = {
   demoMode: false,
 };
 
-let settings = { ...DEFAULT_SETTINGS };
+let settings = { ...DEFAULT_SETTINGS, ...(globalThis.AAG_DEFAULTS || {}) };
 let registry = { avatars: {}, activeId: null };
 
 function loadSettings() {
+  const base = { ...DEFAULT_SETTINGS, ...(globalThis.AAG_DEFAULTS || {}) };
   const raw = store.get(LS_SETTINGS);
-  if (raw) { try { settings = { ...DEFAULT_SETTINGS, ...JSON.parse(raw) }; } catch { /* keep defaults */ } }
+  settings = base;
+  if (raw) { try { settings = { ...base, ...JSON.parse(raw) }; } catch { /* keep defaults */ } }
 }
 function saveSettings() {
   const out = { ...settings };

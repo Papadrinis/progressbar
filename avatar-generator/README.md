@@ -73,6 +73,18 @@ prompts/               one .txt per shot, for auditing
 
 Run `node cli/generate-set.mjs --help` for the full flag list.
 
+## Single-file build
+
+```bash
+node cli/build-standalone.mjs              # dist/avatar-generator.html
+node cli/build-standalone.mjs --fragment   # body-only, for hosts that supply the skeleton
+node cli/build-standalone.mjs --demo false # ship with demo mode off
+```
+
+Inlines the CSS, both scripts and the preset snapshot into one file with no sibling requests and
+no network access at all — open it straight off disk, email it, or drop it anywhere with a strict
+content policy. Demo mode defaults to on so it is explorable the moment it opens.
+
 ---
 
 ## Layout
@@ -88,6 +100,7 @@ schema/avatar-card.schema.json   the card schema
 avatars/daniela.json             Daniela — the seeded avatar
 cli/generate-set.mjs             batch runner
 cli/sync-presets.mjs             refresh the snapshot embedded in index.html
+cli/build-standalone.mjs         bundle everything into one portable HTML file
 refs/<avatar-id>/                drop master references here; the CLI finds them
 out/<avatar-id>-r<rev>/          generated packs (gitignored)
 ```

@@ -30,8 +30,13 @@
   --shadow: 0 8px 30px rgba(0, 0, 0, .3);
 }
 
+/* Dark-first. Three viewer states have to resolve, not two: an explicit
+ * data-theme stamp either way, and the un-stamped "system" default where only
+ * prefers-color-scheme separates them. The media query is guarded so an
+ * explicit dark choice beats a light OS, and the attribute rule repeats the
+ * palette so an explicit light choice beats a dark OS. */
 @media (prefers-color-scheme: light) {
-  :root {
+  :root:not([data-theme="dark"]) {
     --bg: #f2f4f8;
     --panel: #ffffff;
     --panel-2: #f5f7fb;
@@ -43,6 +48,19 @@
     --muted: #66748a;
     --shadow: 0 8px 30px rgba(20, 30, 50, .08);
   }
+}
+
+:root[data-theme="light"] {
+  --bg: #f2f4f8;
+  --panel: #ffffff;
+  --panel-2: #f5f7fb;
+  --panel-3: #eceff5;
+  --line: #dde3ec;
+  --line-soft: #e8ecf3;
+  --ink: #141a23;
+  --ink-2: #3b4655;
+  --muted: #66748a;
+  --shadow: 0 8px 30px rgba(20, 30, 50, .08);
 }
 
 * { box-sizing: border-box; }
