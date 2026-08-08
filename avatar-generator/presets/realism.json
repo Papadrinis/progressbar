@@ -78,8 +78,8 @@
     },
     {
       "id": "editorial_clean",
-      "name": "Editorial limpio",
-      "recommended_for": "Full-height and turnaround frames where the silhouette must read cleanly.",
+      "name": "Realismo neutro editorial",
+      "recommended_for": "El preset por defecto de Daniela. Planos de cuerpo entero y turnaround donde la silueta tiene que leerse limpia, con grado neutro y sin calentar la piel.",
       "capture": "full-frame mirrorless body at 1/200s, ISO 100 — use the lens and aperture given in the SHOT block above",
       "light": "two large diffusion panels at 45° either side for near-shadowless even coverage across the full figure, key one stop over fill",
       "grade": "clean neutral grade, true-to-life skin tone, no warming filter",

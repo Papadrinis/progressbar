@@ -556,3 +556,130 @@ img.preview { max-width: 100%; border-radius: var(--r); display: block; margin: 
   .main { padding: 0; }
   .ficha { border: 0; box-shadow: none; }
 }
+
+/* ------------------------------------------------------- the ficha editor */
+/* Its own paper-and-ink system, matching the visual ficha above it, so the
+   whole "Editar ficha" region reads as one document zone rather than as app
+   chrome. Fixed palette in both themes for the same reason the sheet is. */
+
+.doc-zone {
+  --fc-page: #f3f1ec;
+  --fc-paper: #fbfaf7;
+  --fc-ink: #1b1a17;
+  --fc-ink-2: #3a3730;
+  --fc-muted: #6f6b63;
+  --fc-line: #e4e1d9;
+  --fc-field: #ffffff;
+  --fc-field-line: #d9d6cd;
+  --fc-accent: #2f6b4f;
+  --fc-accent-soft: #eaf1ec;
+}
+
+.sticky-actions {
+  position: sticky; top: calc(var(--topbar-h) + 46px); z-index: 20;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 11px 16px; margin-bottom: 16px;
+  background: var(--fc-paper); color: var(--fc-ink);
+  border: 1px solid var(--fc-line); border-radius: var(--r);
+  box-shadow: var(--shadow);
+}
+.sticky-actions .switch { color: var(--fc-muted); }
+.sticky-actions .switch input { accent-color: var(--fc-accent); }
+.sticky-actions button {
+  background: var(--fc-field); color: var(--fc-ink); border-color: var(--fc-field-line);
+}
+.sticky-actions button:hover:not(:disabled) { border-color: var(--fc-accent); }
+.sticky-actions button.primary {
+  background: var(--fc-accent); border-color: var(--fc-accent); color: #fff; font-weight: 600;
+}
+.sticky-actions button.primary:hover:not(:disabled) { background: #27593f; }
+
+.fc {
+  background: var(--fc-paper); color: var(--fc-ink);
+  border: 1px solid var(--fc-line); border-radius: var(--r-lg);
+  padding: 22px 24px 8px; margin-bottom: 16px;
+}
+.fc[disabled], .fc.is-locked { background: var(--fc-page); }
+
+.fc-head {
+  display: flex; align-items: flex-start; gap: 18px; flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.fc-eyebrow {
+  display: block; font-size: 11px; font-weight: 700;
+  letter-spacing: .11em; text-transform: uppercase; color: var(--fc-accent);
+  margin-bottom: 5px;
+}
+.fc-head h3 {
+  margin: 0; font-size: 23px; line-height: 1.2; letter-spacing: -.02em;
+  color: var(--fc-ink); text-wrap: balance; max-width: 18ch;
+}
+.fc-head .fc-aside { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+
+.fc-lock {
+  font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+  padding: 5px 11px; border-radius: 99px;
+  border: 1px solid var(--fc-field-line); background: var(--fc-field); color: var(--fc-muted);
+}
+.fc-lock[data-open="1"] { color: var(--fc-accent); border-color: var(--fc-accent); background: var(--fc-accent-soft); }
+
+/* Fields. Two columns on wide screens; long-form entries span the full width. */
+.fc-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px 22px; }
+@media (max-width: 760px) { .fc-grid { grid-template-columns: 1fr; } }
+.fc-grid .span-2 { grid-column: 1 / -1; }
+
+.fc-sub {
+  grid-column: 1 / -1;
+  font-size: 11px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase;
+  color: var(--fc-muted); margin: 16px 0 2px;
+  padding-bottom: 7px; border-bottom: 1px solid var(--fc-line);
+}
+
+.fc .field { gap: 7px; margin-bottom: 16px; color: var(--fc-muted); }
+.fc .field > span { font-size: 13.5px; font-weight: 400; color: var(--fc-muted); }
+.fc .f-input {
+  background: var(--fc-field); color: var(--fc-ink);
+  border: 1px solid var(--fc-field-line); border-radius: 10px;
+  padding: 11px 13px; font-size: 14px; line-height: 1.5;
+}
+.fc .f-input::placeholder { color: #a8a49b; }
+.fc .f-input:focus {
+  outline: 2px solid color-mix(in srgb, var(--fc-accent) 45%, transparent); outline-offset: 1px;
+  border-color: var(--fc-accent);
+}
+.fc fieldset[disabled] .f-input, .fc .f-input:disabled { background: var(--fc-page); color: var(--fc-ink-2); }
+.fc fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.fc .hint { color: var(--fc-muted); }
+.fc .hint code { background: var(--fc-page); color: var(--fc-ink-2); }
+
+.fc-select { display: flex; flex-direction: column; gap: 5px; min-width: 250px; }
+.fc-select > span { font-size: 11px; letter-spacing: .09em; text-transform: uppercase; color: var(--fc-muted); }
+.fc-select select {
+  background: var(--fc-field); color: var(--fc-ink);
+  border: 1px solid var(--fc-field-line); border-radius: 10px;
+  padding: 11px 13px; font-size: 15px;
+}
+
+.fc-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.fc-meta .pill {
+  background: var(--fc-field); border-color: var(--fc-field-line); color: var(--fc-muted);
+}
+.fc-meta .pill b { color: var(--fc-ink); }
+.fc-meta .pill.identity { border-color: color-mix(in srgb, var(--fc-accent) 45%, var(--fc-field-line)); }
+
+.doc-zone details.group {
+  background: var(--fc-paper); border-color: var(--fc-line); color: var(--fc-ink);
+}
+.doc-zone details.group > summary { color: var(--fc-muted); }
+.doc-zone pre.prompt-view {
+  background: var(--fc-page); border-color: var(--fc-line); color: var(--fc-ink-2);
+}
+.doc-zone ul.history { color: var(--fc-ink-2); }
+.doc-zone ul.history li { border-left-color: var(--fc-line); }
+.doc-zone ul.history .muted { color: var(--fc-muted); }
+.doc-zone .tag.bad { background: #fdeceb; border-color: #e8b4b0; color: #9a2f28; }
+
+@media (max-width: 640px) {
+  .fc { padding: 18px 16px 4px; }
+  .fc-head h3 { font-size: 20px; }
+}

@@ -45,17 +45,16 @@
     return presetById(realism, byGroup || r.default_preset);
   }
 
-  /* Slots: 'base' | 'working' | 'off-duty'. A working layer is additive by
-   * definition — it goes over the base outfit rather than replacing it. */
+  /* Slots: 'base' | 'working' | 'off-duty'. Each slot is a COMPLETE outfit, not
+   * a layer — an empty slot falls back to the base. Composing a layer on top of
+   * the base sounds tidier but produces contradictions the moment the work look
+   * also swaps a garment ("black top ... over that, a blazer over a camisole"). */
   function wardrobeFor(card, shot) {
     const st = card.style || {};
     switch (String(shot.wardrobe || 'base')) {
-      case 'working':
-        return [st.wardrobe_base, st.wardrobe_working].filter(Boolean).join('; over that, ') || '';
-      case 'off-duty':
-        return st.wardrobe_offduty || st.wardrobe_base || '';
-      default:
-        return st.wardrobe_base || '';
+      case 'working': return st.wardrobe_working || st.wardrobe_base || '';
+      case 'off-duty': return st.wardrobe_offduty || st.wardrobe_base || '';
+      default: return st.wardrobe_base || '';
     }
   }
 

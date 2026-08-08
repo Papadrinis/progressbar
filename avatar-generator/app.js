@@ -445,7 +445,9 @@ function downloadBlob(blob, filename) {
   document.body.appendChild(a);
   a.click();
   a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 4000);
+  /* Revoking while the browser is still writing the file aborts the download,
+     and a real 20-shot pack is tens of megabytes — give it room. */
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
 
 function toast(message, kind = 'info') {
@@ -704,6 +706,18 @@ const FICHA_STRIP = [
   'standing_relaxed_environment', 'work_hands_on_task', 'fullbody_front_standing', 'lifestyle_window_light',
 ];
 
+/** "between 29 and 32 — …" → "29–32 años"; "30 years old …" → "30 años". */
+function ageLabel(card) {
+  const text = String((card.identity_lock && card.identity_lock.apparent_age) || '');
+  const ages = [...text.matchAll(/\b(\d{2})\b/g)]
+    .map((m) => Number(m[1]))
+    .filter((n) => n >= 15 && n <= 99);
+  if (!ages.length) return '';
+  const lo = ages[0];
+  const hi = ages.find((n) => n > lo);
+  return hi ? `${lo}–${hi} años` : `${lo} años`;
+}
+
 async function renderFichaVisual() {
   const card = activeCard();
   const host = $('#ficha-visual');
@@ -720,10 +734,9 @@ async function renderFichaVisual() {
       : `<div><span>${esc(shot ? pad2(shot.order) : '—')}</span></div>`;
   }).join('');
 
-  const ageMatch = String((card.identity_lock && card.identity_lock.apparent_age) || '').match(/\d+/);
   const rows = [
     ['N', 'Nombre', card.name],
-    ['E', 'Edad', ageMatch ? ageMatch[0] + ' años' : ''],
+    ['E', 'Edad', ageLabel(card)],
     ['U', 'Ubicación', p.location],
     ['P', 'Profesión', p.profession],
     ['C', 'Personalidad', p.energy],
@@ -768,9 +781,25 @@ async function renderFichaVisual() {
 function fieldRow(label, path, value, opts = {}) {
   const attrs = `data-path="${esc(path)}" class="f-input"`;
   const control = opts.textarea
-    ? `<textarea ${attrs} rows="${opts.rows || 2}">${esc(value)}</textarea>`
-    : `<input ${attrs} type="text" value="${esc(value)}">`;
-  return `<label class="field"><span>${esc(label)}</span>${control}</label>`;
+    ? `<textarea ${attrs} rows="${opts.rows || 2}"${opts.placeholder ? ` placeholder="${esc(opts.placeholder)}"` : ''}>${esc(value)}</textarea>`
+    : `<input ${attrs} type="text" value="${esc(value)}"${opts.placeholder ? ` placeholder="${esc(opts.placeholder)}"` : ''}>`;
+  return `<label class="field${opts.wide ? ' span-2' : ''}"><span>${esc(label)}</span>${control}</label>`;
+}
+
+const sub = (label) => `<div class="fc-sub">${esc(label)}</div>`;
+
+/** One cream card. `aside` sits top-right of its header. */
+function fcard({ eyebrow, title, aside = '', body, locked = false, id = '' }) {
+  return `<section class="fc${locked ? ' is-locked' : ''}"${id ? ` id="${id}"` : ''}>
+    <header class="fc-head">
+      <div class="fc-title">
+        ${eyebrow ? `<span class="fc-eyebrow">${esc(eyebrow)}</span>` : ''}
+        <h3>${esc(title)}</h3>
+      </div>
+      ${aside ? `<div class="fc-aside">${aside}</div>` : ''}
+    </header>
+    ${body}
+  </section>`;
 }
 
 function renderCardForm() {
@@ -784,127 +813,141 @@ function renderCardForm() {
   const L = card.identity_lock;
   const presets = (DATA.realism && DATA.realism.presets) || [];
   const groups = Object.keys((DATA.shotSuite && DATA.shotSuite.groups) || {});
-  const unlocked = $('#identity-unlocked') && $('#identity-unlocked').checked;
+  const unlocked = !!($('#identity-unlocked') && $('#identity-unlocked').checked);
+
+  const presetOptions = (selected) =>
+    presets.map((p) => `<option value="${esc(p.id)}"${selected === p.id ? ' selected' : ''}>${esc(p.name)}</option>`).join('');
+
+  /* ---- card 1: the persistent ficha, with the realism preset in its header */
+  const realismSelect = `<label class="fc-select">
+    <span>Preset de realismo</span>
+    <select class="f-input" data-path="realism.default_preset">${presetOptions(get(card, 'realism.default_preset'))}</select>
+  </label>`;
+
+  const personaCard = fcard({
+    eyebrow: 'Ficha persistente',
+    title: 'Actualizar ficha sin perder identidad',
+    aside: realismSelect,
+    body: `<div class="fc-grid">
+      ${fieldRow('Nombre', 'name', card.name)}
+      ${fieldRow('Token de identidad', 'identity_anchors.identity_token', get(card, 'identity_anchors.identity_token') || '')}
+      ${fieldRow('Profesión', 'persona.profession', get(card, 'persona.profession') || '')}
+      ${fieldRow('Ubicación / contexto', 'persona.location', get(card, 'persona.location') || '')}
+      ${fieldRow('Negocio', 'persona.business', get(card, 'persona.business') || '')}
+      ${fieldRow('Idioma', 'persona.language', get(card, 'persona.language') || '')}
+      ${fieldRow('Tagline', 'tagline', card.tagline, { textarea: true, wide: true })}
+      ${fieldRow('Sobre ella', 'persona.context', get(card, 'persona.context') || '', { textarea: true, rows: 4, wide: true })}
+      ${fieldRow('Personalidad / energía', 'persona.energy', get(card, 'persona.energy') || '', { textarea: true, rows: 3 })}
+      ${fieldRow('Objetivo', 'persona.goal', get(card, 'persona.goal') || '', { textarea: true, rows: 3 })}
+      ${fieldRow('Lo que la representa (uno por línea)', 'persona.represents', (get(card, 'persona.represents') || []).join('\n'), { textarea: true, rows: 5, wide: true })}
+    </div>`,
+  });
+
+  /* ---- card 2: identity, locked unless the switch above is on */
+  const identityCard = fcard({
+    eyebrow: 'Núcleo inmutable',
+    title: 'Identidad',
+    locked: !unlocked,
+    aside: `<span class="fc-lock" data-open="${unlocked ? 1 : 0}">${unlocked ? 'Desbloqueada' : 'Bloqueada'}</span>`,
+    body: `<fieldset id="identity-block" ${unlocked ? '' : 'disabled'}>
+      <div class="fc-grid">
+        ${fieldRow('Edad', 'identity_lock.apparent_age', L.apparent_age, { textarea: true, rows: 3 })}
+        ${fieldRow('Origen / rasgos', 'identity_lock.heritage', L.heritage, { textarea: true, rows: 3 })}
+        ${fieldRow('Tono de piel', 'identity_lock.skin.tone', L.skin.tone)}
+        ${fieldRow('Pelo (largo)', 'identity_lock.hair.length', L.hair.length)}
+        ${fieldRow('Proporciones (altura)', 'identity_lock.body.height', L.body.height)}
+        ${fieldRow('Proporciones (complexión)', 'identity_lock.body.build', L.body.build)}
+
+        ${fieldRow('Bloqueo de identidad', 'identity_lock.distinct_from', L.distinct_from, { textarea: true, rows: 4, wide: true })}
+
+        ${sub('Piel')}
+        ${fieldRow('Subtono', 'identity_lock.skin.undertone', L.skin.undertone)}
+        ${fieldRow('Fitzpatrick', 'identity_lock.skin.fitzpatrick', L.skin.fitzpatrick)}
+        ${fieldRow('Textura', 'identity_lock.skin.texture', L.skin.texture, { textarea: true, rows: 3, wide: true })}
+
+        ${sub('Pelo')}
+        ${fieldRow('Color', 'identity_lock.hair.colour', L.hair.colour, { textarea: true, rows: 3 })}
+        ${fieldRow('Textura', 'identity_lock.hair.texture', L.hair.texture, { textarea: true, rows: 3 })}
+        ${fieldRow('Peinado por defecto', 'identity_lock.hair.default_styling', L.hair.default_styling, { textarea: true, rows: 2, wide: true })}
+
+        ${sub('Rostro')}
+        ${fieldRow('Forma', 'identity_lock.face.shape', L.face.shape)}
+        ${fieldRow('Pómulos', 'identity_lock.face.cheekbones', L.face.cheekbones)}
+        ${fieldRow('Nariz', 'identity_lock.face.nose', L.face.nose)}
+        ${fieldRow('Boca', 'identity_lock.face.mouth', L.face.mouth)}
+        ${fieldRow('Mandíbula y mentón', 'identity_lock.face.jaw_chin', L.face.jaw_chin)}
+        ${fieldRow('Ojos (color)', 'identity_lock.eyes.colour', L.eyes.colour)}
+        ${fieldRow('Ojos (forma)', 'identity_lock.eyes.shape', L.eyes.shape, { textarea: true, rows: 2 })}
+        ${fieldRow('Cejas', 'identity_lock.eyes.brows', L.eyes.brows, { textarea: true, rows: 2 })}
+
+        ${sub('Cuerpo y presencia')}
+        ${fieldRow('Postura', 'identity_lock.body.posture', L.body.posture, { textarea: true, rows: 2 })}
+        ${fieldRow('Manos', 'identity_lock.body.hands', L.body.hands, { textarea: true, rows: 2 })}
+        ${fieldRow('Maquillaje / grooming', 'identity_lock.grooming', L.grooming, { textarea: true, rows: 3, wide: true })}
+
+        ${sub('Anti-deriva')}
+        ${fieldRow('Marcas distintivas (una por línea)', 'identity_lock.distinguishing_marks', (L.distinguishing_marks || []).join('\n'), { textarea: true, rows: 3, wide: true })}
+        ${fieldRow('Reglas que el modelo no debe romper (una por línea)', 'identity_lock.must_not', (L.must_not || []).join('\n'), { textarea: true, rows: 7, wide: true })}
+      </div>
+    </fieldset>`,
+  });
+
+  /* ---- card 3: style */
+  const styleCard = fcard({
+    eyebrow: 'Vestuario y entorno',
+    title: 'Estilo',
+    body: `<div class="fc-grid">
+      ${fieldRow('Vestuario base (bloque de identidad)', 'style.wardrobe_base', get(card, 'style.wardrobe_base') || '', { textarea: true, rows: 3, wide: true })}
+      ${fieldRow('Vestuario de trabajo (atuendo completo; vacío = usa el base)', 'style.wardrobe_working', get(card, 'style.wardrobe_working') || '', { textarea: true, rows: 3 })}
+      ${fieldRow('Vestuario fuera del trabajo (atuendo completo; vacío = usa el base)', 'style.wardrobe_offduty', get(card, 'style.wardrobe_offduty') || '', { textarea: true, rows: 3 })}
+      ${fieldRow('Accesorios', 'style.accessories', get(card, 'style.accessories') || '', { textarea: true, rows: 3 })}
+      ${fieldRow('Paleta', 'style.palette', get(card, 'style.palette') || '', { textarea: true, rows: 3 })}
+      ${fieldRow('Fondo de identidad', 'style.identity_backdrop', get(card, 'style.identity_backdrop') || '', { textarea: true, rows: 2, wide: true })}
+      ${fieldRow('Entornos (uno por línea)', 'style.environments', (get(card, 'style.environments') || []).join('\n'), { textarea: true, rows: 7, wide: true })}
+    </div>`,
+  });
+
+  /* ---- card 4: realism overrides */
+  const realismCard = fcard({
+    eyebrow: 'Cómo se fotografía',
+    title: 'Realismo por bloque',
+    body: `<div class="fc-grid">
+      ${groups.map((g) => `
+        <label class="field"><span>${esc((DATA.shotSuite.groups_es ? g.replace(/^([A-E])_/, '$1 · ') : g).replace(/_/g, ' '))}</span>
+          <select class="f-input" data-path="realism.group_presets.${esc(g)}">
+            <option value="">(usar el preset por defecto)</option>
+            ${presetOptions(get(card, 'realism.group_presets.' + g))}
+          </select>
+        </label>`).join('')}
+      ${fieldRow('Notas extra', 'realism.extra_notes', get(card, 'realism.extra_notes') || '', { textarea: true, rows: 4, wide: true })}
+    </div>`,
+  });
+
+  /* ---- card 5: backend anchors */
+  const anchorsCard = fcard({
+    eyebrow: 'Según backend',
+    title: 'Anclas de identidad',
+    body: `<div class="fc-grid">
+      ${fieldRow('Higgsfield soul_id', 'identity_anchors.higgsfield_soul_id', get(card, 'identity_anchors.higgsfield_soul_id') || '')}
+      ${fieldRow('Higgsfield element_id', 'identity_anchors.higgsfield_element_id', get(card, 'identity_anchors.higgsfield_element_id') || '')}
+      <p class="hint span-2">La API de imágenes de OpenAI no expone <code>seed</code>. Aquí la identidad se fija con la
+        referencia maestra y el bloque de identidad, no con un número.</p>
+    </div>`,
+  });
 
   host.innerHTML = `
-    <div class="meta-line">
+    <div class="fc-meta">
       <span class="pill">id <b>${esc(card.id)}</b></span>
       <span class="pill">rev <b>${card.revision}</b></span>
       <span class="pill identity">identidad rev <b>${card.identity_revision}</b></span>
       <span class="pill">${esc((card.updated_at || '').slice(0, 10))}</span>
     </div>
 
-    <fieldset class="group">
-      <legend>Cabecera</legend>
-      <div class="grid2">
-        ${fieldRow('Nombre', 'name', card.name)}
-        ${fieldRow('Token de identidad', 'identity_anchors.identity_token', get(card, 'identity_anchors.identity_token') || '')}
-      </div>
-      ${fieldRow('Tagline', 'tagline', card.tagline, { textarea: true })}
-    </fieldset>
-
-    <fieldset class="group identity-block" id="identity-block" ${unlocked ? '' : 'disabled'}>
-      <legend>Identidad <span class="lock-note">— editar aquí crea una nueva revisión de identidad</span></legend>
-      <div class="grid2">
-        ${fieldRow('Edad aparente', 'identity_lock.apparent_age', L.apparent_age, { textarea: true })}
-        ${fieldRow('Origen / rasgos', 'identity_lock.heritage', L.heritage, { textarea: true })}
-      </div>
-      <h4>Piel</h4>
-      <div class="grid2">
-        ${fieldRow('Tono', 'identity_lock.skin.tone', L.skin.tone)}
-        ${fieldRow('Subtono', 'identity_lock.skin.undertone', L.skin.undertone)}
-        ${fieldRow('Fitzpatrick', 'identity_lock.skin.fitzpatrick', L.skin.fitzpatrick)}
-        ${fieldRow('Textura', 'identity_lock.skin.texture', L.skin.texture, { textarea: true })}
-      </div>
-      <h4>Pelo</h4>
-      <div class="grid2">
-        ${fieldRow('Color', 'identity_lock.hair.colour', L.hair.colour, { textarea: true })}
-        ${fieldRow('Textura', 'identity_lock.hair.texture', L.hair.texture, { textarea: true })}
-        ${fieldRow('Largo', 'identity_lock.hair.length', L.hair.length)}
-        ${fieldRow('Peinado por defecto', 'identity_lock.hair.default_styling', L.hair.default_styling, { textarea: true })}
-      </div>
-      <h4>Ojos y cejas</h4>
-      <div class="grid2">
-        ${fieldRow('Color', 'identity_lock.eyes.colour', L.eyes.colour)}
-        ${fieldRow('Forma', 'identity_lock.eyes.shape', L.eyes.shape)}
-        ${fieldRow('Cejas', 'identity_lock.eyes.brows', L.eyes.brows, { textarea: true })}
-      </div>
-      <h4>Rostro</h4>
-      <div class="grid2">
-        ${fieldRow('Forma', 'identity_lock.face.shape', L.face.shape)}
-        ${fieldRow('Pómulos', 'identity_lock.face.cheekbones', L.face.cheekbones)}
-        ${fieldRow('Nariz', 'identity_lock.face.nose', L.face.nose)}
-        ${fieldRow('Boca', 'identity_lock.face.mouth', L.face.mouth)}
-        ${fieldRow('Mandíbula y mentón', 'identity_lock.face.jaw_chin', L.face.jaw_chin)}
-      </div>
-      ${fieldRow('Marcas distintivas (una por línea)', 'identity_lock.distinguishing_marks', (L.distinguishing_marks || []).join('\n'), { textarea: true, rows: 3 })}
-      <h4>Cuerpo</h4>
-      <div class="grid2">
-        ${fieldRow('Altura', 'identity_lock.body.height', L.body.height)}
-        ${fieldRow('Complexión', 'identity_lock.body.build', L.body.build)}
-        ${fieldRow('Postura', 'identity_lock.body.posture', L.body.posture, { textarea: true })}
-        ${fieldRow('Manos', 'identity_lock.body.hands', L.body.hands, { textarea: true })}
-      </div>
-      ${fieldRow('Maquillaje / grooming', 'identity_lock.grooming', L.grooming, { textarea: true, rows: 3 })}
-      ${fieldRow('Reglas anti-deriva (una por línea)', 'identity_lock.must_not', (L.must_not || []).join('\n'), { textarea: true, rows: 6 })}
-      ${fieldRow('Distinta de', 'identity_lock.distinct_from', L.distinct_from, { textarea: true, rows: 3 })}
-    </fieldset>
-
-    <fieldset class="group">
-      <legend>Persona</legend>
-      <div class="grid2">
-        ${fieldRow('Profesión', 'persona.profession', get(card, 'persona.profession') || '')}
-        ${fieldRow('Negocio', 'persona.business', get(card, 'persona.business') || '')}
-        ${fieldRow('Ubicación', 'persona.location', get(card, 'persona.location') || '')}
-        ${fieldRow('Idioma', 'persona.language', get(card, 'persona.language') || '')}
-      </div>
-      ${fieldRow('Sobre ella (contexto)', 'persona.context', get(card, 'persona.context') || '', { textarea: true, rows: 4 })}
-      ${fieldRow('Energía / actitud', 'persona.energy', get(card, 'persona.energy') || '', { textarea: true })}
-      ${fieldRow('Objetivo', 'persona.goal', get(card, 'persona.goal') || '', { textarea: true })}
-      ${fieldRow('Lo que la representa (uno por línea)', 'persona.represents', (get(card, 'persona.represents') || []).join('\n'), { textarea: true, rows: 5 })}
-    </fieldset>
-
-    <fieldset class="group">
-      <legend>Estilo</legend>
-      ${fieldRow('Vestuario base (bloque de identidad)', 'style.wardrobe_base', get(card, 'style.wardrobe_base') || '', { textarea: true })}
-      ${fieldRow('Capa de trabajo — va encima de la base; déjalo vacío si no usa ninguna', 'style.wardrobe_working', get(card, 'style.wardrobe_working') || '', { textarea: true })}
-      ${fieldRow('Vestuario fuera del trabajo', 'style.wardrobe_offduty', get(card, 'style.wardrobe_offduty') || '', { textarea: true })}
-      <div class="grid2">
-        ${fieldRow('Accesorios', 'style.accessories', get(card, 'style.accessories') || '', { textarea: true })}
-        ${fieldRow('Paleta', 'style.palette', get(card, 'style.palette') || '', { textarea: true })}
-      </div>
-      ${fieldRow('Fondo de identidad', 'style.identity_backdrop', get(card, 'style.identity_backdrop') || '', { textarea: true })}
-      ${fieldRow('Entornos (uno por línea)', 'style.environments', (get(card, 'style.environments') || []).join('\n'), { textarea: true, rows: 6 })}
-    </fieldset>
-
-    <fieldset class="group">
-      <legend>Realismo</legend>
-      <label class="field"><span>Preset por defecto</span>
-        <select class="f-input" data-path="realism.default_preset">
-          ${presets.map((p) => `<option value="${esc(p.id)}"${get(card, 'realism.default_preset') === p.id ? ' selected' : ''}>${esc(p.name)}</option>`).join('')}
-        </select>
-      </label>
-      <div class="grid2">
-        ${groups.map((g) => `
-          <label class="field"><span>${esc(g.replace(/^[A-E]_/, '').replace(/_/g, ' '))}</span>
-            <select class="f-input" data-path="realism.group_presets.${esc(g)}">
-              <option value="">(usar por defecto)</option>
-              ${presets.map((p) => `<option value="${esc(p.id)}"${get(card, 'realism.group_presets.' + g) === p.id ? ' selected' : ''}>${esc(p.name)}</option>`).join('')}
-            </select>
-          </label>`).join('')}
-      </div>
-      ${fieldRow('Notas extra', 'realism.extra_notes', get(card, 'realism.extra_notes') || '', { textarea: true, rows: 3 })}
-    </fieldset>
-
-    <fieldset class="group">
-      <legend>Anclas de identidad (según backend)</legend>
-      <div class="grid2">
-        ${fieldRow('Higgsfield soul_id', 'identity_anchors.higgsfield_soul_id', get(card, 'identity_anchors.higgsfield_soul_id') || '')}
-        ${fieldRow('Higgsfield element_id', 'identity_anchors.higgsfield_element_id', get(card, 'identity_anchors.higgsfield_element_id') || '')}
-      </div>
-      <p class="hint">La API de imágenes de OpenAI no expone <code>seed</code>. Aquí la identidad se fija con la
-        referencia maestra y el bloque de identidad, no con un número.</p>
-    </fieldset>
+    ${personaCard}
+    ${identityCard}
+    ${styleCard}
+    ${realismCard}
+    ${anchorsCard}
 
     <details class="group">
       <summary>Prompt base generado</summary>
@@ -920,6 +963,7 @@ function renderCardForm() {
       </ul>
     </details>`;
 }
+
 
 const LIST_FIELDS = new Set([
   'identity_lock.distinguishing_marks', 'identity_lock.must_not',
@@ -1407,9 +1451,17 @@ function wire() {
   $('#btn-export-ficha').addEventListener('click', exportFichaVisual);
 
   /* the two distinct save paths */
+  /* Update in place rather than re-rendering — a re-render would discard any
+     unsaved edits sitting in the other cards. */
   $('#identity-unlocked').addEventListener('change', (e) => {
+    const open = e.target.checked;
     const block = $('#identity-block');
-    if (block) block.disabled = !e.target.checked;
+    if (block) {
+      block.disabled = !open;
+      block.closest('.fc').classList.toggle('is-locked', !open);
+      const chip = block.closest('.fc').querySelector('.fc-lock');
+      if (chip) { chip.dataset.open = open ? '1' : '0'; chip.textContent = open ? 'Desbloqueada' : 'Bloqueada'; }
+    }
   });
 
   $('#btn-save-card').addEventListener('click', async () => {
