@@ -1,0 +1,113 @@
+{
+  "version": "1.0.0",
+  "name": "Realism presets — anti-AI-look",
+  "note": "Each preset supplies the four blocks that decide whether an image reads as a photograph or as 'an AI image': capture (body + lens + exposure), light (source, size, direction, falloff), grade (colour response), and texture (skin, grain, micro-detail). The suppression block is appended to every preset — it is written as positive photographic instruction rather than a negative list, because instruction-following image models handle 'matte skin with visible pores' far better than 'no plastic skin'.",
+  "suppression": {
+    "skin": "real skin texture at pore level, visible fine lines at the outer eye and nasolabial fold, faint uneven pigmentation, a few small natural blemishes and moles left in place, matte finish with sebum shine only on the nose bridge and forehead, vellus hair catching the light along the jaw",
+    "symmetry": "natural facial asymmetry preserved — the two sides of the face are not mirrored, one eyelid sits marginally lower, the smile pulls slightly further on one side",
+    "hair": "individual flyaway strands escaping the hairline, hair not sculpted or airbrushed into a single mass",
+    "colour": "neutral colour grading, accurate white balance, restrained saturation, skin tone rendered as it would be on a calibrated monitor rather than warmed for effect",
+    "light": "one dominant light source with physically consistent shadow direction and soft natural falloff, catchlights matching the size and position of that source",
+    "optics": "moderate depth of field appropriate to the stated aperture, background separation from distance rather than from a synthetic blur, no glow bloom around edges",
+    "grade_discipline": "no teal-and-orange split tone, no HDR local contrast, no clarity or structure slider, no vignette added in post",
+    "retouch_discipline": "unretouched straight-out-of-camera frame, no frequency-separation smoothing, no eye or teeth whitening, no face slimming, no beauty filter",
+    "output": "a photograph, not an illustration, render, or 3D character"
+  },
+  "negative_terms": [
+    "oversaturated",
+    "HDR",
+    "plastic skin",
+    "waxy skin",
+    "airbrushed",
+    "beauty filter",
+    "instagram filter",
+    "porcelain complexion",
+    "flawless skin",
+    "glowing skin",
+    "perfectly symmetrical face",
+    "CGI",
+    "3D render",
+    "digital painting",
+    "illustration",
+    "anime",
+    "rim light halo",
+    "dramatic teal and orange grade",
+    "excessive bokeh",
+    "lens flare",
+    "heavy vignette",
+    "over-sharpened",
+    "text",
+    "watermark",
+    "logo",
+    "extra fingers",
+    "deformed hands"
+  ],
+  "presets": [
+    {
+      "id": "studio_softbox_neutral",
+      "name": "Estudio softbox neutro",
+      "recommended_for": "Group A — identity core. The default for the six face-lock frames.",
+      "capture": "full-frame mirrorless body at 1/250s, ISO 200, RAW converted with a neutral profile — use the lens and aperture given in the SHOT block above",
+      "light": "one 120cm octabox as key at 45° camera-left and slightly above eye level, a single white bounce card at camera-right for a two-thirds-stop lift, no hair light, no rim",
+      "grade": "neutral grade, daylight white balance at 5500K, contrast curve close to linear, blacks lifted a touch to a soft charcoal rather than crushed",
+      "texture": "fine natural sensor grain retained, no noise reduction on skin",
+      "background": "seamless mid-grey paper, evenly lit, two stops under the subject",
+      "strength": 1.0
+    },
+    {
+      "id": "window_daylight_soft",
+      "name": "Luz de ventana natural",
+      "recommended_for": "Lifestyle, off-duty and seated frames. The most forgiving preset — hardest to make look synthetic.",
+      "capture": "full-frame mirrorless body at 1/160s, ISO 400 — use the lens and aperture given in the SHOT block above",
+      "light": "large north-facing window as the only source, camera-left, subject one metre in from the glass, the far side of the face falling into open shade with no fill",
+      "grade": "cool-neutral white balance around 6000K, gentle S-curve, highlights held well below clipping",
+      "texture": "visible grain from the higher ISO, natural micro-contrast",
+      "background": "real interior, softly out of focus from distance not from a filter",
+      "strength": 1.0
+    },
+    {
+      "id": "documentary_available",
+      "name": "Documental, luz disponible",
+      "recommended_for": "Work and lifestyle frames shot inside a real environment.",
+      "capture": "full-frame mirrorless body at 1/125s, ISO 800, handheld — use the lens and aperture given in the SHOT block above",
+      "light": "the room's own practical lights plus whatever daylight reaches it, mixed colour temperature left uncorrected the way a real reportage frame would be",
+      "grade": "documentary grade, slightly muted saturation, mildly warm shadows from the tungsten practicals, no colour separation applied in post",
+      "texture": "ISO 800 grain, a hint of motion softness in the extremities, imperfect focus plane",
+      "background": "the working environment itself, cluttered and real",
+      "strength": 1.0
+    },
+    {
+      "id": "editorial_clean",
+      "name": "Realismo neutro editorial",
+      "recommended_for": "El preset por defecto de Daniela. Planos de cuerpo entero y turnaround donde la silueta tiene que leerse limpia, con grado neutro y sin calentar la piel.",
+      "capture": "full-frame mirrorless body at 1/200s, ISO 100 — use the lens and aperture given in the SHOT block above",
+      "light": "two large diffusion panels at 45° either side for near-shadowless even coverage across the full figure, key one stop over fill",
+      "grade": "clean neutral grade, true-to-life skin tone, no warming filter",
+      "texture": "high-resolution detail in fabric weave and skin, no smoothing",
+      "background": "seamless light-grey cyclorama lit evenly floor to ceiling",
+      "strength": 1.0
+    },
+    {
+      "id": "golden_hour_restrained",
+      "name": "Hora dorada contenida",
+      "recommended_for": "At most one or two frames. Use sparingly — warm low sun is the fastest route back to the AI look if overdone.",
+      "capture": "full-frame mirrorless body at 1/500s, ISO 100 — use the lens and aperture given in the SHOT block above",
+      "light": "low sun behind and to one side, a large white bounce returning soft light to the face, warm edge on the hair kept subtle and physically plausible",
+      "grade": "warm but disciplined — the warmth lives in the light itself, not in the grade; skin tone stays neutral, saturation held at natural levels",
+      "texture": "fine grain, slight veiling flare from the low sun where it is optically justified",
+      "background": "exterior, compressed and thrown out of focus by the long lens",
+      "strength": 0.8
+    },
+    {
+      "id": "smartphone_ugc",
+      "name": "UGC de móvil",
+      "recommended_for": "Optional swap for the lifestyle frames when the avatar's end use is social/UGC content rather than brand film.",
+      "capture": "captured on a modern smartphone main camera INSTEAD of the lens named in the SHOT block — 26mm equivalent at f/1.8, computational HDR left at its default, slight barrel distortion at the frame edge",
+      "light": "ordinary room light, whatever is available, no professional modifiers",
+      "grade": "the phone's own default processing — mild contrast, mild saturation, aggressive-but-natural noise handling",
+      "texture": "phone-sensor detail, faint smearing in the shadow areas, the look of a real casual photo",
+      "background": "an ordinary lived-in space",
+      "strength": 0.9
+    }
+  ]
+}

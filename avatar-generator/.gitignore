@@ -1,0 +1,9 @@
+# Generated packs — these are outputs, not source. Regenerate from the card.
+out/
+
+# Master reference images. Photos of a person do not belong in git by default;
+# remove this line if you deliberately want to version an avatar's references.
+refs/
+
+# Built bundles. Regenerate with: node cli/build-standalone.mjs
+dist/
