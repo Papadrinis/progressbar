@@ -426,15 +426,30 @@ function slugify(s) {
 }
 function outputKey(card, shot, revision) { return `${card.id}:r${revision}:${shot.id}`; }
 
-/* Object URLs are cached by key so repeated renders do not leak them. */
+/* Object URLs are cached per key and never swapped implicitly.
+ *
+ * Re-reading a record from IndexedDB yields a *different* Blob instance holding
+ * the same bytes, so keying the cache on blob identity meant every refresh
+ * revoked a URL that images on screen were still pointing at. Under a file://
+ * origin that surfaced as "Not allowed to load local resource: blob:null/…"
+ * and a thumbnail rendering blank. Content only truly changes when we write a
+ * new record, and that path calls invalidateUrl explicitly. */
 const urlCache = new Map();
+
 function objectUrl(key, blob) {
   const hit = urlCache.get(key);
-  if (hit && hit.blob === blob) return hit.url;
-  if (hit) URL.revokeObjectURL(hit.url);
+  if (hit) return hit;
   const url = URL.createObjectURL(blob);
-  urlCache.set(key, { blob, url });
+  urlCache.set(key, url);
   return url;
+}
+
+function invalidateUrl(key) {
+  const hit = urlCache.get(key);
+  if (!hit) return;
+  urlCache.delete(key);
+  /* Give any element still pointing at it a frame to be replaced first. */
+  setTimeout(() => URL.revokeObjectURL(hit), 2000);
 }
 
 function downloadBlob(blob, filename) {
@@ -629,6 +644,7 @@ async function runShots(list, { extra } = {}) {
         };
         await idbPut('outputs', record);
         outputIndex.set(revision + ':' + shot.id, record);
+        invalidateUrl('out:' + record.key);
         setShotStatus(shot.id, 'ok', settings.demoMode ? 'demo' : 'lista');
       } catch (err) {
         if (err.name === 'AbortError') { runState.statuses.delete(shot.id); patchShotCard(shot.id); return; }
@@ -1096,6 +1112,30 @@ function updateFilterCounts() {
   $('#btn-download-all').disabled = okN === 0;
   $('#btn-download-zip').disabled = okN === 0;
   renderFirstRun(okN);
+  renderDemoBanner();
+}
+
+/** Demo mode leaves every control working, so it has to say so out loud. */
+function renderDemoBanner() {
+  const el = $('#demo-banner');
+  if (!el) return;
+  el.hidden = !settings.demoMode;
+  if (el.hidden) return;
+
+  const card = activeCard();
+  const hasRefs = card && (card.master_references || []).length > 0;
+  /* Uploading a reference is a clear signal they want the real thing — say
+     plainly that it is being ignored, rather than leaving them to work it out
+     from a small "demo" label on a card. */
+  $('#demo-banner-title').textContent = hasRefs
+    ? 'Modo demo activo — tu referencia NO se está usando'
+    : 'Modo demo activo — no se está llamando a ninguna API';
+  $('#demo-banner-body').textContent = hasRefs
+    ? 'Has subido una referencia maestra, pero en modo demo los botones «Generar» y «Regenerar» solo dibujan '
+      + 'marcadores en tu navegador: no se envía nada al modelo y no se usa su cara. Sal del modo demo y conecta '
+      + 'una API key para generar las variaciones de verdad a partir de esa foto.'
+    : 'Las imágenes son marcadores de posición dibujados en tu navegador. Para generar a tu avatar de verdad hace '
+      + 'falta salir del modo demo y conectar una API key.';
 }
 
 /** The empty gallery reads as broken. Say why, and offer the one-click fix. */
@@ -1321,7 +1361,13 @@ async function addReferenceFiles(files) {
   await renderReferences();
   await renderFichaVisual();
   await renderSidebar();
-  toast(`${images.length} referencia(s) maestra(s) añadida(s).`, 'ok');
+  renderDemoBanner();
+
+  if (settings.demoMode) {
+    toast('Referencia añadida — pero estás en modo demo y no se usará. Sal del modo demo para generar con ella.', 'warn');
+  } else {
+    toast(`${images.length} referencia(s) maestra(s) añadida(s). Las tomas se generarán a partir de ella.`, 'ok');
+  }
 }
 
 /* ------------------------------------------------------------------- wire -- */
@@ -1452,8 +1498,13 @@ function wire() {
     const card = activeCard();
     if (!card) return;
     if (!confirm(`¿Borrar el avatar «${card.name}» y todas sus imágenes locales? Esto no se puede deshacer.`)) return;
-    for (const rec of await idbAll('outputs')) if (rec.avatarId === card.id) await idbDelete('outputs', rec.key);
-    for (const ref of card.master_references || []) await idbDelete('refs', ref.ref_id);
+    for (const rec of await idbAll('outputs')) {
+      if (rec.avatarId === card.id) { await idbDelete('outputs', rec.key); invalidateUrl('out:' + rec.key); }
+    }
+    for (const ref of card.master_references || []) {
+      await idbDelete('refs', ref.ref_id);
+      invalidateUrl('ref:' + ref.ref_id);
+    }
     delete registry.avatars[card.id];
     registry.activeId = Object.keys(registry.avatars)[0] || null;
     saveRegistry();
@@ -1549,6 +1600,7 @@ function wire() {
       saveRegistry();
     } else if (del) {
       await idbDelete('refs', del);
+      invalidateUrl('ref:' + del);
       card.master_references = card.master_references.filter((r) => r.ref_id !== del);
       card.identity_anchors.master_reference_ids = card.master_references.map((r) => r.ref_id);
       saveRegistry();
@@ -1606,6 +1658,19 @@ function wire() {
   });
 
   $('#btn-first-connect').addEventListener('click', () => switchTab('conexion'));
+
+  $('#btn-exit-demo').addEventListener('click', async () => {
+    settings.demoMode = false;
+    saveSettings();
+    renderSettings();
+    await renderSetTab();
+    if (!settings.apiKey) {
+      switchTab('conexion');
+      toast('Modo demo desactivado. Ahora hace falta una API key para generar.', 'warn');
+    } else {
+      toast('Modo demo desactivado. Las siguientes tomas se generan de verdad.', 'ok');
+    }
+  });
 
   $('#shot-filters').addEventListener('click', (e) => {
     const chip = e.target.closest('[data-filter]');

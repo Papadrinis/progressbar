@@ -65,6 +65,19 @@
       <button class="tab" data-tab="conexion" role="tab">Conexión</button>
     </nav>
 
+    <!-- Demo mode is easy to forget you are in, and every button keeps working,
+         so it has to announce itself and offer a one-click exit. -->
+    <div class="mode-banner" id="demo-banner" hidden>
+      <div class="fr-text">
+        <b id="demo-banner-title">Modo demo activo — no se está llamando a ninguna API</b>
+        <span id="demo-banner-body">Las imágenes son marcadores de posición dibujados en tu navegador. Para generar
+          a tu avatar de verdad hace falta salir del modo demo y conectar una API key.</span>
+      </div>
+      <div class="fr-actions">
+        <button class="primary" id="btn-exit-demo">Salir del modo demo</button>
+      </div>
+    </div>
+
     <!-- First-run call to action: the tool is useless-looking until something
          has been generated, so say so and offer the one-click way out. -->
     <div class="first-run" id="first-run" hidden>

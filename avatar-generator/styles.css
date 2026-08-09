@@ -706,3 +706,22 @@ img.preview { max-width: 100%; border-radius: var(--r); display: block; margin: 
 .first-run .fr-text b { font-size: 14.5px; }
 .first-run .fr-text span { font-size: 13px; color: var(--muted); max-width: 74ch; }
 .first-run .fr-actions { display: flex; gap: 9px; flex-wrap: wrap; }
+
+/* ------------------------------------------------------------ demo banner */
+/* Demo mode leaves every control working, so nothing about the UI tells you
+   the output is fake. This does, and it never scrolls out of the way. */
+
+.mode-banner[hidden] { display: none; }
+
+.mode-banner {
+  display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+  padding: 14px 18px; margin-bottom: 16px;
+  border: 1px solid color-mix(in srgb, var(--warn) 55%, var(--line));
+  border-radius: var(--r-lg);
+  background: color-mix(in srgb, var(--warn) 10%, var(--panel));
+}
+.mode-banner .fr-text b { color: var(--warn); }
+.mode-banner button.primary {
+  background: var(--warn); border-color: var(--warn); color: #241a04; font-weight: 600;
+}
+.mode-banner button.primary:hover:not(:disabled) { background: #e0a032; }
