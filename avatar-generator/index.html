@@ -65,6 +65,20 @@
       <button class="tab" data-tab="conexion" role="tab">Conexión</button>
     </nav>
 
+    <!-- First-run call to action: the tool is useless-looking until something
+         has been generated, so say so and offer the one-click way out. -->
+    <div class="first-run" id="first-run" hidden>
+      <div class="fr-text">
+        <b id="fr-title">Todavía no hay ninguna toma generada</b>
+        <span id="fr-body">En modo demo puedes rellenar las 20 al instante — sin clave y sin coste — para ver
+          cómo queda la galería, el visor y las descargas.</span>
+      </div>
+      <div class="fr-actions">
+        <button class="primary" id="btn-first-run">Rellenar las 20 en modo demo</button>
+        <button id="btn-first-connect">Conectar la API real</button>
+      </div>
+    </div>
+
     <div class="banner warn" id="file-warning" hidden>
       Estás abriendo el archivo con <code>file://</code>. Algunos navegadores bloquean el almacenamiento local aquí y
       nada persistirá entre recargas. Sirve la carpeta por HTTP (<code>python3 -m http.server</code>) o publícala en

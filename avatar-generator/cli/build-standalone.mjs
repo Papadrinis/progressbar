@@ -45,7 +45,7 @@ body = body
   .replace(/\s*<script src="app\.js"><\/script>/, '')
   .trim();
 
-const defaults = JSON.stringify({ standalone: true, demoMode: demo });
+const defaults = JSON.stringify({ standalone: true, demoMode: demo, autoDemo: demo });
 
 const scripts = [
   `<script>window.AAG_DEFAULTS = ${defaults};<\/script>`,

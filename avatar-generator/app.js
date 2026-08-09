@@ -1095,6 +1095,25 @@ function updateFilterCounts() {
   }
   $('#btn-download-all').disabled = okN === 0;
   $('#btn-download-zip').disabled = okN === 0;
+  renderFirstRun(okN);
+}
+
+/** The empty gallery reads as broken. Say why, and offer the one-click fix. */
+function renderFirstRun(okN) {
+  const el = $('#first-run');
+  if (!el) return;
+  const card = activeCard();
+  el.hidden = okN > 0 || !card || runState.running;
+  if (el.hidden) return;
+
+  const hasRefs = (card.master_references || []).length > 0;
+  $('#fr-title').textContent = `${card.name} todavía no tiene ninguna toma generada`;
+  $('#fr-body').textContent = settings.demoMode
+    ? 'Estás en modo demo: puedes rellenar las 20 al instante, sin clave y sin coste, para ver cómo quedan la galería, el visor y las descargas. Son marcadores de posición, no fotos suyas.'
+    : (hasRefs
+      ? 'Tienes una referencia maestra cargada. Genera la toma 01 primero, compruébala, y luego lanza las 19 restantes.'
+      : 'Sube una foto suya en Referencias y conecta la API — o activa el modo demo para recorrer el flujo entero sin gastar nada.');
+  $('#btn-first-run').textContent = settings.demoMode ? 'Rellenar las 20 en modo demo' : 'Activar modo demo y rellenar';
 }
 
 function renderShotGrid() {
@@ -1576,6 +1595,18 @@ function wire() {
 
   $('#btn-stop').addEventListener('click', () => { if (runState.abort) runState.abort.abort(); });
 
+  $('#btn-first-run').addEventListener('click', async () => {
+    if (!settings.demoMode) {
+      settings.demoMode = true;
+      saveSettings();
+      renderSettings();
+    }
+    switchTab('set');
+    await runShots(shots(), {});
+  });
+
+  $('#btn-first-connect').addEventListener('click', () => switchTab('conexion'));
+
   $('#shot-filters').addEventListener('click', (e) => {
     const chip = e.target.closest('[data-filter]');
     if (!chip) return;
@@ -1642,6 +1673,16 @@ async function boot() {
 
   if (!shots().length) toast('No se pudo cargar el shot suite.', 'bad');
   if (location.protocol === 'file:') $('#file-warning').hidden = false;
+
+  /* The shared standalone build is a preview: fill it on first open so it
+   * shows what a finished pack looks like instead of 20 empty placeholders.
+   * Only ever runs in demo mode, and only when nothing exists yet. */
+  const auto = (globalThis.AAG_DEFAULTS || {}).autoDemo;
+  if (auto && settings.demoMode && activeCard() && !shots().some((sh) => outputFor(sh.id))) {
+    toast('Rellenando con tomas de demostración…', 'info');
+    switchTab('set');
+    await runShots(shots(), {});
+  }
 }
 
 document.addEventListener('DOMContentLoaded', boot);

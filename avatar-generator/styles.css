@@ -237,6 +237,9 @@ button.link {
   width: 32px; height: 32px; padding: 0; display: grid; place-items: center;
   font-size: 18px; line-height: 1; border-radius: var(--r-sm);
 }
+/* display:grid outranks the UA's [hidden] rule — restore it, or the viewer
+   arrows stay on screen in the prompt modal. */
+.icon-btn[hidden] { display: none; }
 
 /* ------------------------------------------------------------------ inputs */
 
@@ -683,3 +686,23 @@ img.preview { max-width: 100%; border-radius: var(--r); display: block; margin: 
   .fc { padding: 18px 16px 4px; }
   .fc-head h3 { font-size: 20px; }
 }
+
+/* -------------------------------------------------------------- first run */
+/* Shown until the active avatar has at least one generated frame. An empty
+   gallery of numbered placeholders reads as broken; this says why and fixes it
+   in one click. */
+
+/* An explicit display beats the UA's [hidden] rule, so restore it. */
+.first-run[hidden] { display: none; }
+
+.first-run {
+  display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+  padding: 16px 18px; margin-bottom: 18px;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--line));
+  border-radius: var(--r-lg);
+  background: color-mix(in srgb, var(--accent) 8%, var(--panel));
+}
+.first-run .fr-text { display: flex; flex-direction: column; gap: 3px; min-width: 260px; flex: 1; }
+.first-run .fr-text b { font-size: 14.5px; }
+.first-run .fr-text span { font-size: 13px; color: var(--muted); max-width: 74ch; }
+.first-run .fr-actions { display: flex; gap: 9px; flex-wrap: wrap; }
