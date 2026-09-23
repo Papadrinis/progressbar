@@ -1,0 +1,25 @@
+{
+  "name": "planpy-ad",
+  "version": "1.0.0",
+  "description": "Anuncio vertical de PlanPy en Remotion (CO \u00b7 VIDA \u00b7 cierre)",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render": "remotion render src/index.ts PLANPY-CO-VIDA-CIERRE-VIDEO-V1 out/PLANPY_CO_VIDA_CIERRE_VIDEO_V1.mp4",
+    "typecheck": "tsc -p ."
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.527",
+    "@remotion/fonts": "4.0.527",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "^4.0.527",
+    "zod": "4.5.4"
+  },
+  "devDependencies": {
+    "@fontsource/caveat": "^5.3.0",
+    "@fontsource/inter": "^5.3.0",
+    "@types/react": "^18.3.31",
+    "typescript": "^7.0.2"
+  },
+  "private": true
+}
