@@ -225,6 +225,41 @@ pre.raw { white-space: pre-wrap; font-family: var(--mono); font-size: 12px; back
 .empty { padding: 40px 20px; text-align: center; color: var(--muted); border: 1px dashed var(--line); border-radius: 16px; }
 
 .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-weight: 600; z-index: 80; box-shadow: var(--shadow); max-width: calc(100% - 32px); }
+.lbl { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.add { border: 0; background: transparent; color: var(--brand-ink); font-weight: 700; font-size: 12.5px; padding: 0; cursor: pointer; text-transform: none; letter-spacing: 0; }
+.add:hover { text-decoration: underline; }
+.field-note { margin: -6px 0 10px 144px; }
+@media (max-width: 640px) { .field-note { margin-left: 0; } }
+.ai { border: 1px solid var(--brand); background: var(--sel-bg); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+.ai > label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--brand-ink); }
+.ai textarea { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 9px 11px; width: 100%; min-height: 56px; resize: vertical; }
+.ai-row { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.check { display: flex; gap: 6px; align-items: center; font-size: 13px; color: var(--muted); }
+.upl { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.imgbox video { width: 120px; border-radius: 10px; }
+.panel.wide { width: min(920px, 100%); }
+.onepager .op-title { font-size: 30px; font-weight: 800; letter-spacing: -.02em; color: var(--ink); margin: 6px 0 18px; }
+.op-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+@media (max-width: 720px) { .op-grid { grid-template-columns: 1fr; } }
+.op-col { display: flex; flex-direction: column; gap: 18px; }
+.onepager h4, .deepdive h4 { font-family: var(--body); font-size: 15px; font-weight: 700; margin: 0 0 4px; }
+.onepager p, .onepager ul { margin: 0; }
+.onepager ul { padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+.onepager ul.hooks { list-style: none; padding: 0; gap: 8px; }
+.op-media img, .op-media video { width: 100%; max-height: 420px; object-fit: cover; border-radius: 12px; margin-bottom: 8px; }
+.op-meta { display: grid; grid-template-columns: 90px 1fr; gap: 4px 10px; font-size: 13px; margin: 0; padding-top: 12px; border-top: 1px solid var(--line); }
+.op-meta dt { color: var(--muted); }
+.op-meta dd { margin: 0; }
+.deepdive { border: 1px solid var(--line); border-radius: 14px; padding: 22px; display: flex; flex-direction: column; gap: 10px; }
+.deepdive h2 { font-family: var(--body); font-size: 20px; font-weight: 700; }
+.deepdive p { margin: 0; line-height: 1.7; }
+.dd-tag { font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--brand-ink); }
+.dd-sum { font-size: 16px; }
+.dd-line { color: var(--muted); }
+.deepdive blockquote { margin: 6px 0; padding-left: 24px; font-style: italic; font-size: 16px; }
+.dd-avs { display: flex; gap: 10px; flex-wrap: wrap; }
+.dd-avs div { display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; width: 84px; }
+.dd-avs img, .dd-avs .ph { width: 84px; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 8px; background: var(--surface-2); }
 </style>
 
 <header class="top">
@@ -250,29 +285,75 @@ pre.raw { white-space: pre-wrap; font-family: var(--mono); font-size: 12px; back
 <script>
 (() => {
   // ---------- modelo ----------
+  // Cada campo: [clave, etiqueta, tipo, opciones/colección, guía para Claude]. Guía null = Claude no lo llena.
   const COLS = {
-    rubros: { label: 'Rubros', one: 'rubro', sub: ['tipo', 'mercado'], text: 'dolor', fields: [
-      ['nombre', 'Nombre', 'text'], ['tipo', 'Tipo', 'select', ['stock', 'agenda', 'mixto']], ['mercado', 'Mercado', 'select', ['CO', 'AR', 'ambos']],
-      ['escenario', 'Escenario (lo que se ve)', 'textarea'], ['dolor', 'Dolor principal', 'textarea'], ['features', 'Features que le sirven', 'refs', 'features']] },
-    personas: { label: 'Personas', one: 'persona', sub: ['arquetipo'], pill: 'eje', text: 'dolor', fields: [
-      ['nombre', 'Nombre', 'text'], ['arquetipo', 'Arquetipo', 'text'], ['eje', 'Eje', 'select', ['VIDA', 'ESCALA']], ['edad', 'Edad', 'text'], ['escala', 'Escala del negocio', 'text'],
-      ['rubro', 'Rubro', 'ref', 'rubros'], ['mercado', 'Mercado', 'select', ['CO', 'AR', 'ambos']], ['dolor', 'Dolor / tensión', 'textarea'], ['deseo', 'Resultado soñado', 'textarea'],
-      ['frase', 'Frase en su voz', 'textarea'], ['disparador', 'Disparador de compra', 'textarea'], ['no_decir', 'Lo que no se le dice', 'textarea'], ['plan', 'Plan de aterrizaje', 'text'],
-      ['angulos', 'Ángulos recomendados', 'refs', 'angulos']] },
-    angulos: { label: 'Ángulos', one: 'ángulo', sub: ['eje'], pill: 'estado', text: 'pregunta', fields: [
-      ['nombre', 'Nombre', 'text'], ['eje', 'Eje', 'text'], ['pregunta', 'Pregunta central', 'text'], ['mejor_para', 'Mejor para', 'text'],
-      ['gancho_co', 'Gancho Colombia (usted)', 'textarea'], ['gancho_ar', 'Gancho Argentina (vos)', 'textarea'], ['estado', 'Estado', 'text']] },
-    features: { label: 'Features', one: 'feature', sub: ['plan'], pill: 'estado', text: 'claim', fields: [
-      ['nombre', 'Nombre', 'text'], ['dispositivo', 'Dónde se muestra', 'text'], ['claim', 'Claim aprobado', 'textarea'], ['plan', 'Plan mínimo', 'text'],
-      ['estado', 'Estado', 'text'], ['pantalla', 'Pantalla sugerida (Remotion)', 'textarea']] },
-    avatares: { label: 'Avatares', one: 'avatar', sub: ['usado_en'], pill: 'estado', text: 'descripcion', img: 'imagen', fields: [
-      ['imagen', 'Foto de referencia', 'image'], ['nombre', 'Nombre', 'text'], ['persona', 'Persona', 'ref', 'personas'], ['rubro', 'Rubro', 'ref', 'rubros'],
-      ['descripcion', 'Descripción para el casting', 'textarea'], ['casting_job', 'Job de casting (Higgsfield)', 'text'], ['estado', 'Estado', 'select', ['aprobado', 'propuesto']], ['usado_en', 'Usado en', 'text']] },
-    estructuras: { label: 'Estructuras', one: 'estructura', sub: ['duracion'], text: 'mejor_para', steps: 'pasos', fields: [
-      ['nombre', 'Nombre', 'text'], ['pasos', 'Pasos (uno por línea)', 'list'], ['mejor_para', 'Mejor para', 'text'], ['duracion', 'Duración sugerida', 'text'], ['nota', 'Nota para PlanPy', 'textarea']] },
-    estilos: { label: 'Estilos de ad', one: 'estilo', sub: ['costo'], pill: 'estado', text: 'descripcion', fields: [
-      ['nombre', 'Nombre', 'text'], ['descripcion', 'Descripción', 'textarea'], ['pipeline', 'Pipeline', 'textarea'], ['costo', 'Costo aproximado', 'text'],
-      ['estado', 'Estado', 'select', ['probado', 'parcial', 'por probar']], ['usado_en', 'Usado en', 'text'], ['riesgos', 'Riesgos y reglas', 'textarea']] },
+    rubros: { label: 'Rubros', one: 'rubro', sub: ['tipo', 'mercado'], text: 'dolor', que: 'un rubro (tipo de negocio) donde vive el cliente de PlanPy', fields: [
+      ['nombre', 'Nombre', 'text', null, 'Nombre corto del rubro, p. ej. «Panadería de barrio»'],
+      ['tipo', 'Tipo', 'select', ['stock', 'agenda', 'mixto'], 'stock si vende mercadería, agenda si vende tiempo/turnos, mixto si ambas'],
+      ['mercado', 'Mercado', 'select', ['CO', 'AR', 'ambos'], 'Dónde es común'],
+      ['escenario', 'Escenario (lo que se ve)', 'textarea', null, 'El local real en una o dos frases visuales: materiales, objetos, luz. Humilde pero cuidado'],
+      ['dolor', 'Dolor principal', 'textarea', null, 'El dolor operativo típico del dueño de ese rubro, en una frase concreta'],
+      ['features', 'Features que le sirven', 'refs', 'features', 'Las 2 o 3 features de PlanPy más relevantes para este rubro']] },
+    personas: { label: 'Buyer personas', one: 'buyer persona', sub: ['edad', 'intencion'], pill: 'eje', text: 'resumen', ficha: true,
+      que: 'un buyer persona: un tipo de cliente (no una persona con nombre propio; el nombre propio lo lleva el avatar)', fields: [
+      ['nombre', 'Nombre del arquetipo', 'text', null, 'Nombre del arquetipo en 2–4 palabras, p. ej. «El Encerrado», «La Agenda en la Cabeza». Nunca un nombre propio'],
+      ['resumen', 'Buyer persona en una frase', 'textarea', null, 'Quién es y qué quiere, p. ej. «Dueño de tienda de 30 años que quiere digitalizar el negocio»'],
+      ['edad', 'Edad', 'text', null, 'Rango, p. ej. «25–45»'],
+      ['negocio', 'Negocio', 'text', null, 'Tamaño y equipo, p. ej. «1 local, 0–2 empleados»'],
+      ['intencion', 'Intención', 'text', null, 'Nivel de intención y su objeción, p. ej. «Alta (con objeción fuerte de tiempo)»'],
+      ['eje', 'Eje', 'select', ['VIDA', 'ESCALA'], 'VIDA si quiere el tiempo fuera del negocio; ESCALA si lo reinvierte para crecer'],
+      ['rubro', 'Rubro típico', 'ref', 'rubros', 'El rubro más representativo'],
+      ['mercado', 'Mercado', 'select', ['CO', 'AR', 'ambos'], 'Dónde vive'],
+      ['identidad', 'Identidad', 'textarea', null, 'Identity: 2–4 frases sobre quién es, cómo opera hoy (cuaderno, Excel, WhatsApp) y qué cree'],
+      ['tension', 'Tensión emocional', 'textarea', null, 'Emotional tension: lo que le pesa por dentro, sin culparlo (le fallaron las herramientas)'],
+      ['deseo', 'Resultado soñado', 'textarea', null, 'Dream outcome: una escena concreta de cómo se ve su vida cuando esto funciona'],
+      ['disparador', 'Disparador de compra', 'textarea', null, 'Purchase trigger: qué tendría que ver en un anuncio para decidir probar'],
+      ['cita', 'Cita en su voz', 'textarea', null, 'Una frase textual como la diría él o ella, con el registro del mercado'],
+      ['no_decir', 'Lo que no se le dice', 'textarea', null, 'Qué evitar en el copy para no ofenderlo o darle la razón a su miedo'],
+      ['plan', 'Plan de aterrizaje', 'text', null, 'Emprendedor, PYME o Pro según su escala'],
+      ['angulos', 'Ángulos recomendados', 'refs', 'angulos', 'Los 2 o 3 ángulos que mejor le hablan']] },
+    angulos: { label: 'Ángulos', one: 'ángulo', sub: ['eje'], pill: 'estado', text: 'sobre', ficha: true, que: 'un ángulo creativo (concepto) para anuncios de PlanPy, en formato one-pager', fields: [
+      ['nombre', 'Nombre del ángulo', 'text', null, 'Nombre corto y memorable, p. ej. «El cierre», «La agenda en la cabeza»'],
+      ['eje', 'Eje', 'select', ['VIDA', 'ESCALA', 'Transversal'], 'A qué eje sirve'],
+      ['sobre', 'About (qué es)', 'textarea', null, 'Describe el ángulo en 2–3 frases: la situación concreta y la tensión que dispara'],
+      ['por_que', 'Por qué va a funcionar', 'textarea', null, '3 razones, una por línea: qué lo hace atractivo, pertinente para el dueño y fuerte frente a otros ángulos'],
+      ['pregunta', 'Pregunta central', 'text', null, 'La pregunta que el dueño no puede responder, p. ej. «¿Ganó hoy?»'],
+      ['gancho_co', 'Hook copy · Colombia (usted)', 'textarea', null, '2 o 3 ganchos para Colombia, uno por línea, con usted; forma A (escena), B (pregunta), C (acuerdo incómodo) o D (número que no tiene)'],
+      ['gancho_ar', 'Hook copy · Argentina (vos)', 'textarea', null, '2 o 3 ganchos para Argentina, uno por línea, con voseo'],
+      ['visual', 'Visual (acción / situación)', 'textarea', null, 'La escena específica que se ve en los primeros segundos: quién, dónde, qué hace, a qué hora, encuadre. Sin pantallas legibles'],
+      ['visual_media', 'Visual de ejemplo (imagen, GIF o video)', 'media', null, null],
+      ['mejor_para', 'Mejor para', 'text', null, 'Tráfico frío, retargeting, mercado o rubro donde rinde más'],
+      ['estado', 'Estado', 'text', null, '«activo», o «activo · …» si depende de algo sin confirmar']] },
+    features: { label: 'Features', one: 'feature', sub: ['plan'], pill: 'estado', text: 'claim', que: 'una función de PlanPy que se muestra en anuncios', fields: [
+      ['nombre', 'Nombre', 'text', null, 'Nombre de la función'],
+      ['dispositivo', 'Dónde se muestra', 'text', null, 'Computador (gestión), celular (consulta) o ambos'],
+      ['claim', 'Claim aprobado', 'textarea', null, 'Una frase de beneficio sin cifras inventadas'],
+      ['plan', 'Plan mínimo', 'text', null, 'Emprendedor, PYME o Pro, o «sin confirmar»'],
+      ['estado', 'Estado', 'text', null, '«confirmado» solo si está en los datos confirmados; si no, «sin confirmar»'],
+      ['pantalla', 'Pantalla sugerida (Remotion)', 'textarea', null, 'Qué tarjeta de interfaz se superpone: título, filas de ejemplo, dispositivo']] },
+    avatares: { label: 'Avatares', one: 'avatar', sub: ['usado_en'], pill: 'estado', text: 'descripcion', img: 'imagen', que: 'un avatar: el personaje concreto, con nombre propio, que actúa en el anuncio y encarna a un buyer persona', fields: [
+      ['imagen', 'Foto de referencia', 'image', null, null],
+      ['nombre', 'Nombre del personaje', 'text', null, 'Nombre propio creíble para el mercado, p. ej. «Don Hernán», «Rocío»'],
+      ['persona', 'Buyer persona', 'ref', 'personas', 'El buyer persona que encarna'],
+      ['rubro', 'Rubro', 'ref', 'rubros', 'Su negocio'],
+      ['descripcion', 'Descripción para el casting', 'textarea', null, 'Prompt de casting documental: edad, rasgos, ropa de trabajo, local humilde pero cuidado, ciudad. Sin texto ni pantallas'],
+      ['casting_job', 'Job de casting (Higgsfield)', 'text', null, null],
+      ['estado', 'Estado', 'select', ['aprobado', 'propuesto'], null],
+      ['usado_en', 'Usado en', 'text', null, null]] },
+    estructuras: { label: 'Estructuras', one: 'estructura', sub: ['duracion'], text: 'mejor_para', steps: 'pasos', que: 'una estructura (framework) de anuncio de respuesta directa', fields: [
+      ['nombre', 'Nombre', 'text', null, 'Nombre del framework'],
+      ['pasos', 'Pasos (uno por línea)', 'list', null, 'Los pasos en orden, en inglés como se conocen'],
+      ['mejor_para', 'Mejor para', 'text', null, 'Para qué tipo de anuncio sirve'],
+      ['duracion', 'Duración sugerida', 'text', null, 'Rango en segundos'],
+      ['nota', 'Nota para PlanPy', 'textarea', null, 'Cómo aplicarlo a PlanPy respetando las reglas de marca']] },
+    estilos: { label: 'Estilos de ad', one: 'estilo', sub: ['costo'], pill: 'estado', text: 'descripcion', que: 'un estilo de producción de video', fields: [
+      ['nombre', 'Nombre', 'text', null, 'Nombre del estilo'],
+      ['descripcion', 'Descripción', 'textarea', null, 'Cómo se ve, en una o dos frases'],
+      ['pipeline', 'Pipeline', 'textarea', null, 'Herramientas en orden: generación de imagen, video (Higgsfield), voz, montaje en Remotion'],
+      ['costo', 'Costo aproximado', 'text', null, 'Estimado en créditos de Higgsfield (una toma de video de 5 s ≈ 60)'],
+      ['estado', 'Estado', 'select', ['probado', 'parcial', 'por probar'], 'Un estilo nuevo es «por probar»'],
+      ['usado_en', 'Usado en', 'text', null, null],
+      ['riesgos', 'Riesgos y reglas', 'textarea', null, 'Qué cuidar para respetar la marca']] },
   };
   const ORDER = Object.keys(COLS);
   const lib = Object.fromEntries(ORDER.map((k) => [k, []]));
@@ -358,6 +439,9 @@ pre.raw { white-space: pre-wrap; font-family: var(--mono); font-size: 12px; back
 
   const chip = (label, pressed, onclick, extra = {}) => h('button', { class: 'chip' + (extra.sug ? ' sug' : '') + (extra.dim ? ' dim' : ''), 'aria-pressed': String(!!pressed), onclick, title: extra.title }, label, extra.tag ? h('span', { class: 'tag' }, extra.tag) : null);
   const pick = (key, id) => { sel[key] = sel[key] === id ? null : id; save(); render(); };
+  // Etiqueta de un campo del brief con botón para crear un elemento nuevo (queda elegido al guardar).
+  const lblNew = (label, col, onNew) => h('div', { class: 'lbl' }, h('span', {}, label),
+    db ? h('button', { class: 'add', onclick: () => openEditor(col, null, { onSaved: (id) => { onNew(id); save(); } }), title: `Nuevo ${COLS[col].one}` }, '+ Nuevo') : null);
 
   function renderCrear() {
     const root = document.getElementById('view-crear');
@@ -367,6 +451,7 @@ pre.raw { white-space: pre-wrap; font-family: var(--mono); font-size: 12px; back
 
     // paso 1
     const byOrden = (c) => [...lib[c]].sort((a, b) => (a.orden ?? 999) - (b.orden ?? 999));
+    const personaSel = persona;
     const personas = byOrden('personas').sort((a, b) => (b.rubro === sel.rubro) - (a.rubro === sel.rubro));
     const avs = byOrden('avatares').sort((a, b) => ((b.persona === sel.persona) * 2 + (b.rubro === sel.rubro)) - ((a.persona === sel.persona) * 2 + (a.rubro === sel.rubro)));
     const angSel = byId('angulos', sel.angulo);
@@ -375,15 +460,16 @@ pre.raw { white-space: pre-wrap; font-family: var(--mono); font-size: 12px; back
       h('div', { class: 'step-head' }, h('span', { class: 'n' }, 'PASO 1'), h('h2', {}, 'Brief'), h('p', {}, 'Elija de la librería. El punto verde marca lo que recomienda la persona o el rubro elegido.')),
       h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Mercado'), h('div', {},
         h('div', { class: 'seg' }, ...[['CO', 'Colombia · usted'], ['AR', 'Argentina · vos']].map(([k, l]) => h('button', { 'aria-pressed': String(sel.mercado === k), onclick: () => { sel.mercado = k; save(); render(); } }, l))))),
-      h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Rubro'), h('div', { class: 'chips' },
+      h('div', { class: 'field' }, lblNew('Rubro', 'rubros', (id) => (sel.rubro = id)), h('div', { class: 'chips' },
         byOrden('rubros').map((r) => chip(r.nombre, sel.rubro === r.id, () => pick('rubro', r.id), { tag: r.tipo, dim: r.mercado && r.mercado !== 'ambos' && r.mercado !== sel.mercado })))),
-      h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Persona'), h('div', { class: 'cards' },
+      h('div', { class: 'field' }, lblNew('Buyer persona', 'personas', (id) => (sel.persona = id)), h('div', { class: 'cards' },
         personas.map((p) => h('button', { class: 'pcard', 'aria-pressed': String(sel.persona === p.id), onclick: () => pick('persona', p.id) },
-          h('span', { class: pillClass(p.eje) }, p.eje), h('strong', {}, p.nombre), h('span', { class: 'sub' }, p.arquetipo), h('span', { class: 'sub' }, [name('rubros', p.rubro), p.mercado].filter(Boolean).join(' · ')))))),
-      h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Ángulo'), h('div', {},
+          h('span', { class: pillClass(p.eje) }, p.eje), h('strong', {}, p.nombre), h('span', { class: 'sub' }, p.resumen), h('span', { class: 'sub mono' }, [p.edad, p.mercado].filter(Boolean).join(' · ')))))),
+      personaSel ? h('div', { class: 'hint field-note' }, h('i', {}, personaSel.cita ? `“${personaSel.cita}”` : ''), ' ', h('button', { class: 'add', onclick: () => openFicha('personas', personaSel.id) }, 'Ver deep dive')) : null,
+      h('div', { class: 'field' }, lblNew('Ángulo', 'angulos', (id) => (sel.angulo = id)), h('div', {},
         h('div', { class: 'chips' }, byOrden('angulos').map((a) => chip(a.nombre, sel.angulo === a.id, () => pick('angulo', a.id), { sug: sugAng.has(a.id), dim: /aparcado/i.test(a.estado), title: a.pregunta }))),
-        angSel ? h('div', { class: 'hint' }, h('b', {}, angSel.pregunta), ' · ', (sel.mercado === 'AR' ? angSel.gancho_ar : angSel.gancho_co) || angSel.mejor_para) : null)),
-      h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Features'), h('div', {},
+        angSel ? h('div', { class: 'hint' }, h('b', {}, angSel.pregunta || angSel.nombre), ' · ', angSel.sobre || angSel.mejor_para, ' ', h('button', { class: 'add', onclick: () => openFicha('angulos', angSel.id) }, 'Ver one-pager')) : null)),
+      h('div', { class: 'field' }, lblNew('Features', 'features', (id) => { if (sel.features.length < 3) sel.features = [...sel.features, id]; }), h('div', {},
         h('div', { class: 'chips' }, byOrden('features').map((f) => chip(f.nombre, sel.features.includes(f.id), () => {
           if (sel.features.includes(f.id)) sel.features = sel.features.filter((x) => x !== f.id);
           else if (sel.features.length >= 3) { toast('Máximo 3 features por anuncio'); return; }
@@ -391,11 +477,11 @@ pre.raw { white-space: pre-wrap; font-family: var(--mono); font-size: 12px; back
           save(); render();
         }, { sug: sugFeat.has(f.id), title: f.claim }))),
         h('div', { class: 'hint' }, 'Hasta 3. Un anuncio que muestra todo no muestra nada.'))),
-      h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Avatar'), h('div', { class: 'avatars' },
+      h('div', { class: 'field' }, lblNew('Avatar', 'avatares', (id) => (sel.avatar = id)), h('div', { class: 'avatars' },
         avs.map((a) => h('button', { class: 'av', 'aria-pressed': String(sel.avatar === a.id), onclick: () => pick('avatar', a.id) },
           a.imagen ? h('img', { src: imgSrc(a.imagen), alt: a.nombre, loading: 'lazy' }) : h('div', { class: 'ph' }, (a.nombre || '?').slice(0, 1)),
           h('div', { class: 't' }, h('strong', {}, a.nombre), h('span', { class: pillClass(a.estado) }, a.estado)))))),
-      h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Estructura'), h('div', {},
+      h('div', { class: 'field' }, lblNew('Estructura', 'estructuras', (id) => (sel.estructura = id)), h('div', {},
         h('div', { class: 'chips' }, byOrden('estructuras').map((e) => chip(e.nombre, sel.estructura === e.id, () => pick('estructura', e.id), { title: (e.pasos || []).join(' → ') }))),
         est ? h('div', { class: 'hint' }, h('b', {}, (est.pasos || []).join(' → ')), ' · ', est.mejor_para, est.duracion ? ` · ${est.duracion}` : '', est.nota ? h('div', {}, est.nota) : null) : null)),
       h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Duración'), h('div', {},
@@ -510,10 +596,10 @@ pre.raw { white-space: pre-wrap; font-family: var(--mono); font-size: 12px; back
       duracion_objetivo_seg: sel.duracion,
       eje: derivedEje().eje,
       rubro: pickFields(byId('rubros', sel.rubro), ['nombre', 'tipo', 'escenario', 'dolor']),
-      persona: pickFields(byId('personas', sel.persona), ['nombre', 'arquetipo', 'eje', 'edad', 'escala', 'dolor', 'deseo', 'frase', 'disparador', 'no_decir']),
-      angulo: pickFields(byId('angulos', sel.angulo), ['nombre', 'pregunta', 'gancho_co', 'gancho_ar', 'estado']),
+      buyer_persona: pickFields(byId('personas', sel.persona), ['nombre', 'resumen', 'eje', 'edad', 'negocio', 'intencion', 'identidad', 'tension', 'deseo', 'disparador', 'cita', 'no_decir']),
+      angulo: pickFields(byId('angulos', sel.angulo), ['nombre', 'sobre', 'por_que', 'pregunta', sel.mercado === 'AR' ? 'gancho_ar' : 'gancho_co', 'visual', 'estado']),
       features: sel.features.map((id) => pickFields(byId('features', id), ['nombre', 'dispositivo', 'claim', 'estado', 'pantalla'])),
-      avatar: pickFields(byId('avatares', sel.avatar), ['nombre', 'descripcion']),
+      avatar_personaje: pickFields(byId('avatares', sel.avatar), ['nombre', 'descripcion']),
       estructura: pickFields(est, ['nombre', 'pasos', 'nota']),
     };
     return `Eres el guionista de anuncios en video de PlanPy (vertical 9:16, Meta/TikTok). Escribe 3 guiones distintos (storyboards) para este brief. Cada uno con un gancho diferente.
@@ -522,7 +608,7 @@ ${REGLAS}
 
 Mercado y oferta: ${OFERTA[sel.mercado]}
 
-Brief (datos de la librería):
+Brief (datos de la librería). El buyer persona es el tipo de cliente; el avatar es el personaje concreto que actúa en el video (usa su nombre si el guion lo nombra):
 ${JSON.stringify(data, null, 1)}
 
 Usa los pasos de la estructura "${est?.nombre}" en orden (${(est?.pasos || []).join(' → ')}); puedes repartir un paso en dos bloques o juntar dos pasos cortos si la duración lo pide. El CTA va aparte, al final. La suma de "seg" de los bloques más el CTA debe acercarse a ${sel.duracion} s.
@@ -599,22 +685,83 @@ Responde SOLO con JSON con esta forma:
         sub ? h('div', { class: 'mono muted' }, sub) : null,
         c.steps ? h('div', { class: 'steps-inline' }, (d[c.steps] || []).map((s) => h('span', {}, s))) : null,
         d[c.text] ? h('p', {}, d[c.text]) : null);
-      return h('button', { class: 'item', onclick: () => openEditor(libCol, d.id) },
+      return h('button', { class: 'item', onclick: () => (c.ficha ? openFicha(libCol, d.id) : openEditor(libCol, d.id)) },
         c.img ? h('div', { class: 'with-img' }, d[c.img] ? h('img', { src: imgSrc(d[c.img]), alt: '' }) : null, body) : body);
     }));
     if (!items.length) grid.append(h('div', { class: 'empty' }, loaded ? (q ? 'Nada coincide con la búsqueda.' : 'Todavía no hay elementos.') : 'Cargando la librería…'));
   }
 
-  function openEditor(col, id) {
+  // ---------- COMPLETAR CON CLAUDE ----------
+  const HECHOS = `Datos confirmados de PlanPy: módulos de ventas, caja, inventario, clientes, proveedores, pedidos, reportes, agenda y reservas 24/7, facturación (alcance fiscal sin confirmar), programa de puntos, multiusuario con permisos, varias sedes y PlanPy IA (recomienda, no reporta). PWA: celular y computador, sin instalar nada. Planes: Emprendedor (1 sede, 2 usuarios), PYME (1–3 sedes, 5 usuarios, WhatsApp, IA), Pro (más de 3 sedes). Colombia desde $46.500/mes con plan anual; Argentina USD $15/mes con plan anual; 15 días gratis. Cliente ideal: dueño de 1 a 5 locales que opera con cuaderno, Excel, WhatsApp y memoria, y hace la gestión después de cerrar. Sin confirmar: control de fiados, tallas/variantes, descuento automático de inventario, importación desde Excel, modo sin internet.`;
+
+  async function completarConClaude(col, draft, idea, reescribir) {
+    const c = COLS[col];
+    const campos = c.fields.filter(([k, , , , guia]) => guia && (reescribir || k === 'nombre' || !hasVal(draft[k])));
+    if (!campos.length) return {};
+    const lista = campos.map(([k, label, type, extra, guia]) => {
+      let tipo = 'texto';
+      if (type === 'select') tipo = `uno de: ${extra.join(' | ')}`;
+      if (type === 'list') tipo = 'array de strings';
+      if (type === 'ref') tipo = `un id de: ${lib[extra].map((o) => `${o.id} (${o.nombre})`).join(', ')}`;
+      if (type === 'refs') tipo = `array de ids de: ${lib[extra].map((o) => `${o.id} (${o.nombre})`).join(', ')}`;
+      return `- "${k}" (${label}; ${tipo}): ${guia}`;
+    }).join('\n');
+    const escrito = Object.fromEntries(c.fields.filter(([k, , type]) => hasVal(draft[k]) && !['image', 'media'].includes(type)).map(([k]) => [k, draft[k]]));
+    const existentes = lib[col].map((o) => o.nombre).filter(Boolean).join(', ');
+    const prompt = `Eres el estratega creativo de PlanPy. Completa la ficha de ${c.que} para la librería de anuncios.
+
+${REGLAS}
+
+${HECHOS}
+
+Idea del usuario: "${idea || draft.nombre || ''}"
+Lo que ya está escrito (respétalo y no lo contradigas): ${JSON.stringify(escrito)}
+Ya existen en esta colección (no dupliques): ${existentes}
+
+Campos a completar:
+${lista}
+
+Escribe en español latinoamericano, concreto y sin relleno. No inventes cifras ni funciones fuera de los datos confirmados.
+Responde SOLO con un objeto JSON con exactamente esas claves.`;
+    const res = await sample.json(prompt, { cache: false });
+    if (!res || typeof res !== 'object' || Array.isArray(res)) throw { code: 'invalid_json' };
+    const out = {};
+    for (const [k, , type, extra] of campos) {
+      let v = res[k];
+      if (v == null) continue;
+      if (type === 'list') v = (Array.isArray(v) ? v : String(v).split('\n')).map((x) => String(x).trim()).filter(Boolean);
+      else if (type === 'refs') v = (Array.isArray(v) ? v : [v]).map(String).filter((x) => lib[extra].some((o) => o.id === x));
+      else if (type === 'ref') { v = String(v); if (!lib[extra].some((o) => o.id === v)) continue; }
+      else if (type === 'select') { v = String(v); if (!extra.includes(v)) continue; }
+      else v = Array.isArray(v) ? v.join('\n') : String(v);
+      if (k === 'nombre' && hasVal(draft.nombre) && !reescribir) continue;
+      out[k] = v;
+    }
+    return out;
+  }
+  const hasVal = (v) => (Array.isArray(v) ? v.length > 0 : v != null && String(v).trim() !== '');
+  const sampleErr = (e) => ({
+    not_granted: 'Esta página no tiene permiso para usar Claude. Recárguela y permítalo.', rate_limited: 'Demasiadas solicitudes seguidas. Espere un momento.',
+    invalid_json: 'La respuesta no vino en el formato esperado. Inténtelo otra vez.', refused: 'Claude no quiso completar esta idea. Reformúlela.',
+  }[e?.code] || 'No se pudo completar con Claude. Inténtelo otra vez.');
+
+  // ---------- EDITOR ----------
+  function openEditor(col, id, opts = {}) {
     const c = COLS[col];
     const orig = id ? byId(col, id) : null;
-    const draft = orig ? JSON.parse(JSON.stringify(orig)) : { orden: lib[col].length };
+    const draft = opts.draft || (orig ? JSON.parse(JSON.stringify(orig)) : { orden: lib[col].length });
     delete draft.id;
     const rootEl = document.getElementById('editor-root');
-    let confirmDel = false;
+    let confirmDel = false, pensando = false;
     const close = () => { rootEl.replaceChildren(); document.removeEventListener('keydown', onKey); };
-    const onKey = (e) => { if (e.key === 'Escape') close(); };
+    const onKey = (e) => { if (e.key === 'Escape' && !pensando) close(); };
     document.addEventListener('keydown', onKey);
+
+    const uploader = (k, accept, onDone) => h('input', { type: 'file', id: `ed-${col}-${k}`, accept, onchange: async (e) => {
+      const f = e.target.files?.[0]; if (!f) return;
+      try { const r = await assets.upload(f); onDone(r); toast('Archivo subido'); }
+      catch (err) { toast(err?.code === 'too_large' ? 'El archivo pesa más de 20 MB.' : err?.code === 'unsupported_type' ? 'Formato no admitido.' : 'No se pudo subir el archivo.'); }
+    } });
 
     const fieldEl = ([k, label, type, extra]) => {
       const fid = `ed-${col}-${k}`;
@@ -630,17 +777,14 @@ Responde SOLO con JSON con esta forma:
           draft[k] = (draft[k] || []).includes(o.id) ? draft[k].filter((x) => x !== o.id) : [...(draft[k] || []), o.id]; paint();
         })));
         paint(); input = box;
-      } else if (type === 'image') {
+      } else if (type === 'image' || type === 'media') {
         const box = h('div', { class: 'imgbox' });
-        const paint = () => {
-          const file = h('input', { type: 'file', id: fid, accept: 'image/jpeg,image/png,image/webp', onchange: async (e) => {
-            const f = e.target.files?.[0]; if (!f) return;
-            try { const r = await assets.upload(f); draft[k] = r.id; paint(); toast('Foto subida'); }
-            catch (err) { toast(err?.code === 'too_large' ? 'La foto pesa más de 20 MB.' : err?.code === 'unsupported_type' ? 'Use JPG, PNG o WebP.' : 'No se pudo subir la foto.'); }
-          } });
-          box.replaceChildren(draft[k] ? h('img', { src: imgSrc(draft[k]), alt: '' }) : h('div', { class: 'ph' }),
-            assets ? h('div', {}, file) : h('span', { class: 'muted' }, 'Solo los editores pueden subir fotos.'));
-        };
+        const paint = () => box.replaceChildren(
+          draft[k] ? mediaEl(draft[k], draft[k + '_tipo']) : h('div', { class: 'ph' }),
+          assets ? h('div', { class: 'upl' },
+            uploader(k, type === 'media' ? 'image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm' : 'image/jpeg,image/png,image/webp', (r) => { draft[k] = r.id; if (type === 'media') draft[k + '_tipo'] = r.contentType; paint(); }),
+            draft[k] ? h('button', { class: 'add', onclick: () => { draft[k] = ''; delete draft[k + '_tipo']; paint(); } }, 'Quitar') : null)
+            : h('span', { class: 'muted' }, 'Solo los editores pueden subir archivos.'));
         paint(); input = box;
       }
       return h('div', { class: 'fgroup' }, h('label', { for: fid }, label), input);
@@ -649,20 +793,95 @@ Responde SOLO con JSON con esta forma:
     const onSave = async () => {
       if (!(draft.nombre || '').trim()) { toast('Ponga un nombre'); return; }
       const docId = id || `${slug(draft.nombre)}-${Math.random().toString(36).slice(2, 6)}`;
-      try { await db.doc(`${col}/${docId}`).set(draft); toast(id ? 'Guardado' : `${c.one[0].toUpperCase() + c.one.slice(1)} añadido`); close(); }
-      catch (e) { toast(dbErr(e)); }
+      try {
+        await db.doc(`${col}/${docId}`).set(draft);
+        toast(id ? 'Guardado' : `${c.one[0].toUpperCase() + c.one.slice(1)} añadido`);
+        close(); opts.onSaved?.(docId); render();
+      } catch (e) { toast(dbErr(e)); }
     };
     const delBtn = h('button', { class: 'btn danger', onclick: async () => {
       if (!confirmDel) { confirmDel = true; delBtn.textContent = '¿Eliminar de verdad? Pulse otra vez'; return; }
       try { await db.doc(`${col}/${id}`).delete(); toast('Eliminado'); close(); } catch (e) { toast(dbErr(e)); }
     } }, 'Eliminar');
 
-    rootEl.replaceChildren(h('div', { class: 'editor', onclick: (e) => { if (e.target.classList.contains('editor')) close(); } },
+    // Caja de Claude: una idea en una frase → completa los campos vacíos (o todos).
+    const puedeIA = !!sample && c.fields.some((f) => f[4]);
+    const ideaId = `ed-${col}-idea`;
+    const aiBox = puedeIA ? h('div', { class: 'ai' },
+      h('label', { for: ideaId }, 'Completar con Claude'),
+      h('textarea', { id: ideaId, placeholder: col === 'personas' ? 'Ej.: dueño de tienda de 30 años que quiere digitalizar el negocio' : col === 'angulos' ? 'Ej.: el dueño que no puede tomarse vacaciones porque todo está en su cabeza' : `Describa ${c.one === 'avatar' ? 'el personaje' : 'la idea'} en una frase`, oninput: (e) => (draft.__idea = e.target.value) }, draft.__idea || ''),
+      h('div', { class: 'ai-row' },
+        h('label', { class: 'check' }, h('input', { type: 'checkbox', id: `ed-${col}-reescribir`, checked: !!draft.__reescribir, onchange: (e) => (draft.__reescribir = e.target.checked) }), 'Reescribir también lo que ya está lleno'),
+        h('button', { class: 'btn lime small', id: `ed-${col}-ia`, onclick: async (e) => {
+          const idea = (draft.__idea || '').trim();
+          if (!idea && !hasVal(draft.nombre)) { toast('Escriba la idea o al menos el nombre'); return; }
+          pensando = true; e.target.disabled = true; e.target.textContent = 'Pensando… (20–40 s)';
+          try {
+            const patch = await completarConClaude(col, draft, idea, !!draft.__reescribir);
+            Object.assign(draft, patch);
+            toast(Object.keys(patch).length ? `Claude completó ${Object.keys(patch).length} campos. Revíselos antes de guardar.` : 'No había campos vacíos para completar.');
+            pensando = false; openEditor(col, id, { ...opts, draft });
+          } catch (err) { pensando = false; e.target.disabled = false; e.target.textContent = 'Completar'; toast(sampleErr(err)); }
+        } }, 'Completar'))) : null;
+
+    const cleanDraft = () => { delete draft.__idea; delete draft.__reescribir; };
+    const saveBtn = h('button', { class: 'btn', disabled: !db, onclick: () => { cleanDraft(); onSave(); } }, 'Guardar');
+    rootEl.replaceChildren(h('div', { class: 'editor', onclick: (e) => { if (e.target.classList.contains('editor') && !pensando) close(); } },
       h('div', { class: 'panel', role: 'dialog', 'aria-modal': 'true', 'aria-label': orig ? orig.nombre : `Nuevo ${c.one}` },
         h('div', { class: 'panel-head' }, h('h3', {}, orig ? orig.nombre : `Nuevo ${c.one}`), h('button', { class: 'btn ghost small', onclick: close }, 'Cerrar')),
+        aiBox,
         c.fields.map(fieldEl),
-        h('div', { class: 'panel-foot' }, h('button', { class: 'btn', disabled: !db, onclick: onSave }, 'Guardar'), orig ? delBtn : null))));
-    rootEl.querySelector('input, textarea, select')?.focus();
+        h('div', { class: 'panel-foot' }, saveBtn, orig ? delBtn : null))));
+    if (!opts.draft) rootEl.querySelector(puedeIA && !orig ? `#${ideaId}` : 'input, textarea, select')?.focus();
+  }
+
+  const mediaEl = (id, tipo) => (/^video/.test(tipo || '') ? h('video', { src: imgSrc(id), muted: true, loop: true, autoplay: true, playsinline: true, controls: true }) : h('img', { src: imgSrc(id), alt: '' }));
+
+  // ---------- FICHAS (one-pager de ángulo, deep dive de buyer persona) ----------
+  function openFicha(col, id) {
+    const d = byId(col, id);
+    if (!d) return;
+    const rootEl = document.getElementById('editor-root');
+    const close = () => { rootEl.replaceChildren(); document.removeEventListener('keydown', onKey); };
+    const onKey = (e) => { if (e.key === 'Escape') close(); };
+    document.addEventListener('keydown', onKey);
+    const lines = (t) => String(t || '').split('\n').map((x) => x.replace(/^[-•*]\s*/, '').trim()).filter(Boolean);
+    const usar = h('button', { class: 'btn small', onclick: () => { if (col === 'angulos') sel.angulo = id; else sel.persona = id; save(); close(); setView('crear'); } }, 'Usar en un anuncio');
+    const editar = h('button', { class: 'btn ghost small', disabled: !db, onclick: () => openEditor(col, id) }, 'Editar');
+    let body;
+    if (col === 'angulos') {
+      const hooks = [...lines(d.gancho_co).map((x) => ['CO', x]), ...lines(d.gancho_ar).map((x) => ['AR', x])];
+      body = h('div', { class: 'onepager' },
+        h('h2', { class: 'op-title' }, `${d.nombre} — One pager`),
+        h('div', { class: 'op-grid' },
+          h('div', { class: 'op-col' },
+            h('section', {}, h('h4', {}, 'About (qué es)'), h('p', {}, d.sobre || '—')),
+            h('section', {}, h('h4', {}, 'Por qué va a funcionar'), lines(d.por_que).length ? h('ul', {}, lines(d.por_que).map((x) => h('li', {}, x))) : h('p', {}, '—')),
+            h('section', {}, h('h4', {}, 'Hook copy'), hooks.length ? h('ul', { class: 'hooks' }, hooks.map(([m, x]) => h('li', {}, h('span', { class: 'pill' }, m), ' ', x))) : h('p', {}, '—'))),
+          h('div', { class: 'op-col' },
+            h('section', {}, h('h4', {}, 'Visual'),
+              d.visual_media ? h('div', { class: 'op-media' }, mediaEl(d.visual_media, d.visual_media_tipo)) : null,
+              h('p', {}, d.visual || 'Describa la acción o situación, o suba una imagen, GIF o video desde «Editar».')),
+            h('dl', { class: 'op-meta' }, [['Eje', d.eje], ['Pregunta', d.pregunta], ['Mejor para', d.mejor_para], ['Estado', d.estado]].filter(([, v]) => v).flatMap(([k, v]) => [h('dt', {}, k), h('dd', {}, v)])))));
+    } else {
+      const n = [...lib.personas].sort((a, b) => (a.orden ?? 999) - (b.orden ?? 999)).findIndex((x) => x.id === id) + 1;
+      const avs = lib.avatares.filter((a) => a.persona === id);
+      const row = (k, v) => (v ? h('p', {}, h('b', {}, k + ': '), v) : null);
+      body = h('div', { class: 'deepdive' },
+        h('div', { class: 'dd-tag' }, 'Persona Deep Dive'),
+        h('h2', {}, `${n}: ${d.nombre}`),
+        d.resumen ? h('p', { class: 'dd-sum' }, d.resumen) : null,
+        h('p', { class: 'dd-line' }, [d.edad && `Edad ${d.edad}`, d.negocio, d.intencion && `Intención: ${d.intencion}`].filter(Boolean).join(' | ')),
+        row('Identidad', d.identidad), row('Tensión emocional', d.tension), row('Resultado soñado', d.deseo), row('Disparador de compra', d.disparador),
+        d.cita ? h('blockquote', {}, `“${d.cita}”`) : null,
+        row('Lo que no se le dice', d.no_decir),
+        h('p', { class: 'dd-line' }, [d.eje && `Eje ${d.eje}`, name('rubros', d.rubro), d.mercado, d.plan && `Plan ${d.plan}`].filter(Boolean).join(' · ')),
+        avs.length ? h('div', {}, h('h4', {}, 'Avatares que lo encarnan'), h('div', { class: 'dd-avs' }, avs.map((a) => h('div', {}, a.imagen ? h('img', { src: imgSrc(a.imagen), alt: '' }) : h('div', { class: 'ph' }), h('span', {}, a.nombre))))) : null);
+    }
+    rootEl.replaceChildren(h('div', { class: 'editor', onclick: (e) => { if (e.target.classList.contains('editor')) close(); } },
+      h('div', { class: 'panel wide', role: 'dialog', 'aria-modal': 'true', 'aria-label': d.nombre },
+        h('div', { class: 'panel-head' }, h('span', { class: 'mono muted' }, COLS[col].one), h('div', { class: 'cmd' }, usar, editar, h('button', { class: 'btn ghost small', onclick: close }, 'Cerrar'))),
+        body)));
   }
 
   // ---------- PEDIDOS ----------
