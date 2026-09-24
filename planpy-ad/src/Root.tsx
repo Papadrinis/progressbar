@@ -6,10 +6,22 @@ import {PlanpyAdV5, adV5Schema, durationV5, FPS_V5} from './v5/AdV5';
 import {PlanpyAdV6, adV6Schema, durationV6, FPS_V6} from './v6/AdV6';
 import {PlanpyAdV7, DURATION_V7, durationV7, FPS_V7} from './v7/AdV7';
 import {PlanpyAdV9, durationV9, FPS_V9} from './v9/AdV9';
+import {calcularSparkPy, FPS_SPARKPY, SparkPy, SparkPyProps} from './ad/SparkPy';
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      {/* SparkPy — composición única guiada por datos: public/ads/<ad>.json (prop "ad"). */}
+      <Composition
+        id="SPARKPY"
+        component={SparkPy}
+        calculateMetadata={calcularSparkPy}
+        durationInFrames={300}
+        fps={FPS_SPARKPY}
+        width={1080}
+        height={1920}
+        defaultProps={{ad: 'v10-a'} as SparkPyProps}
+      />
       {/* V1 — Don Hernán, tienda de barrio, Bogotá. Spot de marca, 25 s. */}
       <Composition
         id="PLANPY-CO-VIDA-CIERRE-VIDEO-V1"

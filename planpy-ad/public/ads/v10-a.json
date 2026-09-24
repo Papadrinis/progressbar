@@ -1,0 +1,234 @@
+{
+  "id": "PLANPY_CO_VIDA_ROPA_V10_A",
+  "titulo": "V10-A · El cuaderno no le contesta (tienda de ropa)",
+  "bloques": [
+    {
+      "id": "h",
+      "voz": "voz/v10/a-h.mp3",
+      "locucion": "Una clienta pregunta si le queda la blusa en talla M… y usted va a buscar en el cuaderno.",
+      "toma": "v10/shot1.mp4",
+      "lineas": [
+        "Una clienta pregunta si le",
+        "queda la blusa en talla M…",
+        "y usted va a buscar",
+        "en el cuaderno."
+      ],
+      "claves": [
+        "talla",
+        "cuaderno"
+      ],
+      "cola": 8,
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": "35%",
+          "texto": "¿Talla M? 🤔",
+          "x": 760,
+          "y": 1500,
+          "giro": 6,
+          "tamano": 66,
+          "fondo": "#ffd400",
+          "sfx": "boing",
+          "volumenSfx": 0.4
+        },
+        {
+          "tipo": "sfx",
+          "en": 4,
+          "nombre": "scribble",
+          "volumen": 0.35
+        }
+      ],
+      "duracion": 5.878
+    },
+    {
+      "id": "p",
+      "voz": "voz/v10/a-p.mp3",
+      "locucion": "El cuaderno lo guarda todo. Pero no le contesta nada.",
+      "toma": "v10/shot2.mp4",
+      "lineas": [
+        "El cuaderno lo guarda todo.",
+        "Pero no le contesta nada."
+      ],
+      "claves": [
+        "todo",
+        "nada"
+      ],
+      "cola": 8,
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": "60%",
+          "texto": "📒 … 🤷‍♀️",
+          "x": 540,
+          "y": 1560,
+          "giro": -4,
+          "tamano": 62,
+          "fondo": "#ff4d4d",
+          "color": "#fff",
+          "sfx": "boing",
+          "volumenSfx": 0.35
+        }
+      ],
+      "duracion": 3.709
+    },
+    {
+      "id": "a",
+      "voz": "voz/v10/a-a.mp3",
+      "locucion": "Y mientras busca, la clienta se va.",
+      "toma": "v10/shot3.mp4",
+      "lineas": [
+        "Y mientras busca,",
+        "la clienta se va."
+      ],
+      "claves": [
+        "va"
+      ],
+      "cola": 12,
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": "55%",
+          "texto": "👋 Se fue",
+          "x": 760,
+          "y": 1300,
+          "giro": 6,
+          "tamano": 66,
+          "fondo": "#ffffff"
+        },
+        {
+          "tipo": "sfx",
+          "en": "50%",
+          "nombre": "ding",
+          "volumen": 0.3
+        }
+      ],
+      "duracion": 2.351
+    },
+    {
+      "id": "s1",
+      "voz": "voz/v10/a-s1.mp3",
+      "locucion": "Con Planpi, su mercancía queda en el computador. La busca y sabe qué tiene.",
+      "toma": "v10/shot4.mp4",
+      "lineas": [
+        "Con PlanPy, su mercancía",
+        "queda en el computador.",
+        "La busca y sabe qué tiene."
+      ],
+      "claves": [
+        "mercancía",
+        "sabe"
+      ],
+      "extras": [
+        {
+          "tipo": "tarjeta",
+          "en": 22,
+          "formato": "computador",
+          "titulo": "Blusa verde de lino",
+          "seccion": "Inventario",
+          "filas": [
+            [
+              "Talla S",
+              "2 unid."
+            ],
+            [
+              "Talla M",
+              "3 unid."
+            ],
+            [
+              "Talla L",
+              "0 unid."
+            ],
+            [
+              "Precio",
+              "$89.900"
+            ]
+          ],
+          "resaltar": 1
+        }
+      ],
+      "duracion": 5.564
+    },
+    {
+      "id": "s2",
+      "voz": "voz/v10/a-s2.mp3",
+      "locucion": "Y desde el celular la consulta cuando quiera, a cualquier hora.",
+      "toma": "v10/shot5.mp4",
+      "lineas": [
+        "Y desde el celular la consulta",
+        "cuando quiera,",
+        "a cualquier hora."
+      ],
+      "claves": [
+        "celular",
+        "cualquier"
+      ],
+      "cola": 16,
+      "extras": [
+        {
+          "tipo": "tarjeta",
+          "en": 8,
+          "formato": "celular",
+          "titulo": "Blusa verde de lino",
+          "seccion": "Inventario",
+          "filas": [
+            [
+              "Talla M",
+              "3 unid."
+            ],
+            [
+              "Talla L",
+              "0 unid."
+            ],
+            [
+              "Vendidas hoy",
+              "4"
+            ]
+          ],
+          "resaltar": 0
+        }
+      ],
+      "duracion": 3.161
+    }
+  ],
+  "cierre": {
+    "voz": "voz/cta.mp3",
+    "cola": 50,
+    "locucion": "Pruébelo quince días gratis, en planpi punto io.",
+    "duracion": 3.474
+  },
+  "fuentes": [
+    {
+      "ruta": "voz/v10/a-h.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20260924_182423_5d42203b-de93-47f9-b5a9-7ccbe4109ebb.mp3",
+      "nota": "Xavier (ElevenLabs) · texto con «Planpi»"
+    },
+    {
+      "ruta": "voz/v10/a-p.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20260924_182422_41b1ec90-a87d-4426-b79c-0a93175b6aa2.mp3",
+      "nota": "Xavier (ElevenLabs) · texto con «Planpi»"
+    },
+    {
+      "ruta": "voz/v10/a-a.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20260924_182423_7a5ad870-04da-4fc5-a42c-e4cc2bf6615d.mp3",
+      "nota": "Xavier (ElevenLabs) · texto con «Planpi»"
+    },
+    {
+      "ruta": "voz/v10/a-s1.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20260924_182421_9a246159-2bf6-4ca0-8aac-382dc9b884b1.mp3",
+      "nota": "Xavier (ElevenLabs) · texto con «Planpi»"
+    },
+    {
+      "ruta": "voz/v10/a-s2.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20260924_182422_a8f7abd0-9745-41a7-bab6-3bdcdb8f1390.mp3",
+      "nota": "Xavier (ElevenLabs) · texto con «Planpi»"
+    }
+  ],
+  "receta": {
+    "mercado": "CO (usted)",
+    "eje": "VIDA",
+    "guion": "guiones/ropa-v10.md",
+    "voz": "Higgsfield text2speech_v2 · elevenlabs · Xavier 43173c95-3ec8-446a-a162-6504332c578b",
+    "casting": "gpt_image_2_5 · high · 2k · 9:16",
+    "video": "seedance_2_5 · omni_reference · 5 s · 1080p · sin audio"
+  }
+}

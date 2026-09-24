@@ -1,0 +1,253 @@
+{
+  "id": "PLANPY_CO_VIDA_ROPA_V10_E",
+  "titulo": "V10-E · Sábado sumando el cuaderno (tienda de ropa)",
+  "bloques": [
+    {
+      "id": "h",
+      "voz": "voz/v10/e-h.mp3",
+      "locucion": "Sábado, ocho de la noche. Cerró la tienda… y ahora le toca sumar el cuaderno.",
+      "toma": "v10/shot6.mp4",
+      "lineas": [
+        "Sábado, 8 de la noche.",
+        "Cerró la tienda…",
+        "y ahora le toca",
+        "sumar el cuaderno."
+      ],
+      "claves": [
+        "sábado",
+        "sumar"
+      ],
+      "cola": 8,
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": "25%",
+          "texto": "🕗 Sábado 8 p. m.",
+          "x": 780,
+          "y": 1500,
+          "giro": 6,
+          "tamano": 66,
+          "fondo": "#ff4d4d",
+          "color": "#fff"
+        },
+        {
+          "tipo": "sfx",
+          "en": 2,
+          "nombre": "tick",
+          "volumen": 0.45
+        }
+      ],
+      "duracion": 5.721
+    },
+    {
+      "id": "p",
+      "voz": "voz/v10/e-p.mp3",
+      "locucion": "Efectivo, transferencias, lo que fió… y la cuenta no le da.",
+      "toma": "v10/shot7.mp4",
+      "lineas": [
+        "Efectivo, transferencias,",
+        "lo que fió…",
+        "y la cuenta no le da."
+      ],
+      "claves": [
+        "cuenta"
+      ],
+      "cola": 8,
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": "30%",
+          "texto": "💵 Efectivo",
+          "x": 300,
+          "y": 1400,
+          "giro": -6,
+          "tamano": 54,
+          "fondo": "#ffffff",
+          "sfx": "pop",
+          "volumenSfx": 0.35
+        },
+        {
+          "tipo": "sticker",
+          "en": "45%",
+          "texto": "📲 Transferencias",
+          "x": 760,
+          "y": 1500,
+          "giro": 5,
+          "tamano": 54,
+          "fondo": "#ffffff",
+          "sfx": "pop",
+          "volumenSfx": 0.35
+        },
+        {
+          "tipo": "sticker",
+          "en": "85%",
+          "texto": "≠ No cuadra",
+          "x": 540,
+          "y": 1650,
+          "giro": -3,
+          "tamano": 70,
+          "fondo": "#ff4d4d",
+          "color": "#fff",
+          "sfx": "boing",
+          "volumenSfx": 0.45
+        }
+      ],
+      "duracion": 4.284
+    },
+    {
+      "id": "a",
+      "voz": "voz/v10/e-a.mp3",
+      "locucion": "Mientras sus amigas ya salieron, usted sigue sumando.",
+      "toma": "v10/shot8.mp4",
+      "lineas": [
+        "Mientras sus amigas ya salieron,",
+        "usted sigue sumando."
+      ],
+      "claves": [
+        "amigas",
+        "sumando"
+      ],
+      "cola": 10,
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": 4,
+          "texto": "💬 Las amigas: ¿Vienes? 🎉",
+          "x": 540,
+          "y": 1180,
+          "giro": -2,
+          "tamano": 50,
+          "fondo": "#ffffff",
+          "sfx": "ping",
+          "volumenSfx": 0.45
+        }
+      ],
+      "duracion": 3.004
+    },
+    {
+      "id": "s1",
+      "voz": "voz/v10/e-s1.mp3",
+      "locucion": "Con Planpi, cada venta queda registrada en el momento.",
+      "toma": "v10/shot4.mp4",
+      "lineas": [
+        "Con PlanPy, cada venta",
+        "queda registrada",
+        "en el momento."
+      ],
+      "claves": [
+        "venta",
+        "momento"
+      ],
+      "extras": [
+        {
+          "tipo": "tarjeta",
+          "en": 18,
+          "formato": "computador",
+          "titulo": "Ventas de hoy",
+          "seccion": "Ventas",
+          "filas": [
+            [
+              "10:42 a. m. · Blusa verde M",
+              "$89.900"
+            ],
+            [
+              "12:15 p. m. · Jean azul 30",
+              "$119.900"
+            ],
+            [
+              "3:08 p. m. · Vestido flores S",
+              "$134.500"
+            ],
+            [
+              "Total",
+              "$344.300"
+            ]
+          ],
+          "resaltar": 3
+        }
+      ],
+      "duracion": 3.239
+    },
+    {
+      "id": "s2",
+      "voz": "voz/v10/e-s2.mp3",
+      "locucion": "Y el cierre lo ve en el celular, en unos diez minutos.",
+      "toma": "v10/shot9.mp4",
+      "lineas": [
+        "Y el cierre lo ve en el celular,",
+        "en unos 10 minutos."
+      ],
+      "claves": [
+        "10"
+      ],
+      "cola": 16,
+      "extras": [
+        {
+          "tipo": "tarjeta",
+          "en": 8,
+          "formato": "celular",
+          "titulo": "Cierre del sábado",
+          "seccion": "Caja",
+          "filas": [
+            [
+              "Efectivo",
+              "$212.400"
+            ],
+            [
+              "Transferencias",
+              "$131.900"
+            ],
+            [
+              "Total del día",
+              "$344.300"
+            ]
+          ],
+          "resaltar": 2,
+          "listo": "Caja cerrada ✓"
+        }
+      ],
+      "duracion": 3.161
+    }
+  ],
+  "cierre": {
+    "voz": "voz/cta.mp3",
+    "cola": 50,
+    "locucion": "Pruébelo quince días gratis, en planpi punto io.",
+    "duracion": 3.474
+  },
+  "fuentes": [
+    {
+      "ruta": "voz/v10/e-h.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20260924_182422_7d7227e0-1752-4710-b268-20725847e789.mp3",
+      "nota": "Xavier (ElevenLabs) · texto con «Planpi»"
+    },
+    {
+      "ruta": "voz/v10/e-p.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20260924_182427_0302851d-e0d2-460f-a546-8425f219d3f7.mp3",
+      "nota": "Xavier (ElevenLabs) · texto con «Planpi»"
+    },
+    {
+      "ruta": "voz/v10/e-a.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20260924_182427_7be84377-dec9-46cd-a650-5f194b2fe90e.mp3",
+      "nota": "Xavier (ElevenLabs) · texto con «Planpi»"
+    },
+    {
+      "ruta": "voz/v10/e-s1.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20260924_182427_5c97289d-86aa-4e3a-b4d1-0490e7efffd2.mp3",
+      "nota": "Xavier (ElevenLabs) · texto con «Planpi»"
+    },
+    {
+      "ruta": "voz/v10/e-s2.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20260924_182427_64a4a9dc-48b7-4042-901f-5877fcd97dc0.mp3",
+      "nota": "Xavier (ElevenLabs) · texto con «Planpi»"
+    }
+  ],
+  "receta": {
+    "mercado": "CO (usted)",
+    "eje": "VIDA",
+    "guion": "guiones/ropa-v10.md",
+    "voz": "Higgsfield text2speech_v2 · elevenlabs · Xavier 43173c95-3ec8-446a-a162-6504332c578b",
+    "casting": "gpt_image_2_5 · high · 2k · 9:16",
+    "video": "seedance_2_5 · omni_reference · 5 s · 1080p · sin audio"
+  }
+}

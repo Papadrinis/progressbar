@@ -16,11 +16,13 @@
     "render:v7": "remotion render src/index.ts PLANPY-CO-VIDA-AGENDA-BARBERIA-V7-H1 out/PLANPY_CO_VIDA_AGENDA_BARBERIA_V7_H1.mp4",
     "render:v8": "remotion render src/index.ts PLANPY-CO-VIDA-AGENDA-MASCOTAS-V8-H1 out/PLANPY_CO_VIDA_AGENDA_MASCOTAS_V8_H1.mp4",
     "render:v9": "remotion render src/index.ts PLANPY-CO-VIDA-PROVEEDORES-V9-C out/PLANPY_CO_VIDA_PROVEEDORES_V9_C.mp4 --crf=23 && remotion render src/index.ts PLANPY-CO-VIDA-PROVEEDORES-V9-A out/PLANPY_CO_VIDA_PROVEEDORES_V9_A.mp4 --crf=23",
-    "render:v10": "remotion render src/index.ts PLANPY-CO-VIDA-ROPA-V10-A out/PLANPY_CO_VIDA_ROPA_V10_A.mp4 --crf=23 && remotion render src/index.ts PLANPY-CO-VIDA-ROPA-V10-E out/PLANPY_CO_VIDA_ROPA_V10_E.mp4 --crf=23"
+    "render:v10": "remotion render src/index.ts PLANPY-CO-VIDA-ROPA-V10-A out/PLANPY_CO_VIDA_ROPA_V10_A.mp4 --crf=23 && remotion render src/index.ts PLANPY-CO-VIDA-ROPA-V10-E out/PLANPY_CO_VIDA_ROPA_V10_E.mp4 --crf=23",
+    "sparkpy": "node scripts/sparkpy.mjs"
   },
   "dependencies": {
     "@remotion/cli": "^4.0.527",
     "@remotion/fonts": "4.0.527",
+    "@remotion/media-utils": "4.0.527",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "remotion": "^4.0.527",

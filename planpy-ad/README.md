@@ -172,3 +172,23 @@ Misma estructura y edición que la H1 de barbería V6, sobre 6 tomas realistas (
 - Groomer de referencia: job `315180e5-7ca1-4c3b-bbfc-e9e4f3ec165e`. Tomas en `public/v8/`.
 - Toma 4: Seedance cambió la cara dos veces (jobs 1d007bb8, 18b60bd0); se usa el fotograma aprobado
   (`shot4.png`) con push-in lento. Si una toma deriva de identidad, esa es la salida más barata.
+
+---
+
+# SparkPy — anuncios guiados por datos (a partir de V11)
+
+Desde V11 no se escribe un `.tsx` por versión: cada anuncio es un `public/ads/<ad>.json` y una sola
+composición, `SPARKPY` (`src/ad/SparkPy.tsx`), lo monta. El proceso completo (brief → guiones → voz →
+casting → fotogramas → tomas → montaje → render) está en el skill de Claude Code
+`.claude/skills/sparkpy/` (`/sparkpy`). Formato del JSON: `.claude/skills/sparkpy/references/plantilla-json.md`.
+
+```bash
+npm run sparkpy -- lista              # anuncios disponibles
+npm run sparkpy -- descargar v10-a    # baja voces/tomas de "fuentes" y mide las voces
+npm run sparkpy -- revisar v10-a      # archivos, legibilidad, reglas de marca
+npm run sparkpy -- muestras v10-a     # out/v10-a/<bloque>.png para aprobar
+npm run sparkpy -- render v10-a       # out/PLANPY_CO_VIDA_ROPA_V10_A.mp4 (crf 23)
+```
+
+`v10-a.json` y `v10-e.json` son V10-A y V10-E portados: misma duración (797 y 758 frames) y los mismos
+fotogramas que las composiciones hechas a mano.

@@ -1,5 +1,8 @@
 # Handoff — convertir el generador de ads de PlanPy en una herramienta de Claude Code
 
+> **Hecho:** la herramienta existe y se llama **SparkPy**: skill `.claude/skills/sparkpy/`, composición
+> `SPARKPY` (`src/ad/`), anuncios en `public/ads/<ad>.json` y CLI `npm run sparkpy`. Ver el README.
+
 Este archivo resume lo aprendido en la sesión donde se hicieron V1–V10, para arrancar el nuevo chat sin perder contexto.
 Rama: `claude/lucid-hawking-44c0xr` · Proyecto: `planpy-ad/`.
 
