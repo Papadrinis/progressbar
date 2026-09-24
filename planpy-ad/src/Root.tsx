@@ -4,6 +4,7 @@ import {PlanpyAdV2, adV2Schema, DURATION_V2, FPS_V2} from './v2/AdV2';
 import {PlanpyAdV4, adV4Schema, DURATION_V4, FPS_V4} from './v4/AdV4';
 import {PlanpyAdV5, adV5Schema, durationV5, FPS_V5} from './v5/AdV5';
 import {PlanpyAdV6, adV6Schema, durationV6, FPS_V6} from './v6/AdV6';
+import {PlanpyAdV7, DURATION_V7, FPS_V7} from './v7/AdV7';
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -75,6 +76,8 @@ export const RemotionRoot: React.FC = () => {
           defaultProps={{rubro}}
         />
       ))}
+      {/* V7 — barbería H1 con tomas realistas de Higgsfield. */}
+      <Composition id="PLANPY-CO-VIDA-AGENDA-BARBERIA-V7-H1" component={PlanpyAdV7} durationInFrames={DURATION_V7} fps={FPS_V7} width={1080} height={1920} />
     </>
   );
 };
