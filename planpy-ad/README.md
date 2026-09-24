@@ -112,3 +112,24 @@ exporta las tres versiones con voz (`*_V4_VOZ.mp4`).
 | inventario-s1 | Con PlanPy, lo busca y sabe cuánto le queda. |
 | inventario-s2 | Y desde el celular, consulta lo que tiene. |
 | cta | Pruébelo quince días gratis, en PlanPy punto io. |
+
+---
+
+# V5 — PAS montado sobre la voz (la versión vigente)
+
+`PLANPY_CO_VIDA_PAS_{CIERRE|CAJA|INVENTARIO}_V5` · 18–20 s · `npm run render:v5`
+
+- **Ritmo:** cada bloque dura lo que dura su frase + un respiro (3 frames antes, 5 después). La voz va
+  al 107 % (`playbackRate`, sin cambiar el tono). Resultado: 18–20 s en vez de 26 s.
+- **Subtítulos sincronizados:** la frase entra completa y la palabra que se dice se resalta en verde de marca.
+- **Entrada de cada bloque:** punch-in con desenfoque (6 frames) + whoosh; el primero con destello e impacto.
+- **Efectos:** billetes que caen (flick), círculo en el cuaderno (scribble), notificación, clic + ding en
+  el computador, tecleo en el inventario, pop del celular, riser antes del CTA y pops en el cierre.
+- **Música:** cama pop/lo-fi a 112 BPM con ducking (baja mientras habla la voz) y fade out.
+- **Billetes colombianos estilizados:** colores y denominaciones de la serie actual, sin retratos,
+  textos oficiales ni elementos de seguridad.
+- **Pronunciación:** los clips con el nombre se generaron escribiendo "Planpi"; en pantalla se escribe PlanPy.
+
+Efectos y música son síntesis propia (`npm run sonido` → `scripts/sonido.py`), sin licencias de terceros.
+Para pauta, se puede reemplazar `public/music/cama-112bpm.wav` por una pista de la Sound Collection de Meta
+(gratis para anuncios de Facebook e Instagram) con el mismo nombre.
