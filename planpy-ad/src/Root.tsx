@@ -5,6 +5,7 @@ import {PlanpyAdV4, adV4Schema, DURATION_V4, FPS_V4} from './v4/AdV4';
 import {PlanpyAdV5, adV5Schema, durationV5, FPS_V5} from './v5/AdV5';
 import {PlanpyAdV6, adV6Schema, durationV6, FPS_V6} from './v6/AdV6';
 import {PlanpyAdV7, DURATION_V7, durationV7, FPS_V7} from './v7/AdV7';
+import {PlanpyAdV9, durationV9, FPS_V9} from './v9/AdV9';
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -79,6 +80,9 @@ export const RemotionRoot: React.FC = () => {
       {/* V7 — barbería H1 con tomas realistas de Higgsfield. */}
       <Composition id="PLANPY-CO-VIDA-AGENDA-BARBERIA-V7-H1" component={PlanpyAdV7} durationInFrames={DURATION_V7} fps={FPS_V7} width={1080} height={1920} defaultProps={{rubro: 'barberia' as const}} />
       <Composition id="PLANPY-CO-VIDA-AGENDA-MASCOTAS-V8-H1" component={PlanpyAdV7} durationInFrames={durationV7('mascotas')} fps={FPS_V7} width={1080} height={1920} defaultProps={{rubro: 'mascotas' as const}} />
+      {/* V9 — proveedores que llaman en la noche (VIDA), versiones C y A. */}
+      <Composition id="PLANPY-CO-VIDA-PROVEEDORES-V9-C" component={PlanpyAdV9} durationInFrames={durationV9('C')} fps={FPS_V9} width={1080} height={1920} defaultProps={{version: 'C' as const}} />
+      <Composition id="PLANPY-CO-VIDA-PROVEEDORES-V9-A" component={PlanpyAdV9} durationInFrames={durationV9('A')} fps={FPS_V9} width={1080} height={1920} defaultProps={{version: 'A' as const}} />
     </>
   );
 };
