@@ -5,11 +5,12 @@ import {Cuaderno} from '../components/Cuaderno';
 import {Texture} from '../components/Texture';
 import {Desktop} from '../v4/Desktop';
 import {Emoji, FlyAway, Sticker, Whip, WordPop, useShake} from './kit';
-import {AgendaDesktop, Cita, CierrePyme, NotifStack, ReminderScreen} from './screens';
+import {AgendaDesktop, Cita, CierreDesde, NotifStack, ReminderScreen} from './screens';
 import {BarberChair, Barberia, Busy, CitaPhone, Dog, Foam, Gotas, Noche, Puerta, PetShop, Salon, Secador, Tina, WallClock} from './scenes';
 
 // PLANPY_CO_VIDA_AGENDA_{BARBERIA|SALON|MASCOTAS}_V6_H1 — servicios: agenda 24/7 + recordatorio por WhatsApp.
 // PAS + CTA montado sobre la voz; subtítulo palabra por palabra, stickers, efectos y música alegre.
+// CTA: siempre el precio más barato (desde $46.500 al mes con el plan anual).
 export const FPS_V6 = 30;
 const RATE = 1.1;
 
@@ -519,7 +520,7 @@ export const PlanpyAdV6: React.FC<z.infer<typeof adV6Schema>> = ({rubro}) => {
           <Sequence key={b.i} from={b.from} durationInFrames={b.len}>
             {b.clip === 'cta' ? (
               <Whip dir={1}>
-                <CierrePyme />
+                <CierreDesde />
                 {[2, 10, 22, 40].map((a) => (
                   <Sfx key={a} at={a} name="pop" volume={0.4} />
                 ))}

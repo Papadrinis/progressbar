@@ -116,8 +116,8 @@ export const AgendaDesktop: React.FC<{cols: string[]; hours: string[]; citas: Ci
   );
 };
 
-// Cierre de marca para servicios: el gancho es agenda + WhatsApp → se nombra el plan PYME.
-export const CierrePyme: React.FC = () => {
+// Cierre de marca: SIEMPRE el precio más barato ("desde"), por decisión del dueño de marca.
+export const CierreDesde: React.FC = () => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const up = (d: number) => {
@@ -130,13 +130,12 @@ export const CierrePyme: React.FC = () => {
         <Img src={staticFile('logo-horizontal.png')} style={{width: 520}} />
       </div>
       <div style={{...up(10), marginTop: 80, fontSize: 108, fontWeight: 800, letterSpacing: -3, lineHeight: 1}}>15 días gratis.</div>
-      <div style={{...up(18), marginTop: 44, fontSize: 36, fontWeight: 800, color: BRAND_GREEN}}>AGENDA + WHATSAPP</div>
-      <div style={{...up(22), marginTop: 8, fontSize: 50, fontWeight: 600, lineHeight: 1.2}}>
-        Plan PYME: <b>$93.000 al mes</b>
+      <div style={{...up(20), marginTop: 50, fontSize: 52, fontWeight: 600, lineHeight: 1.2}}>
+        Desde <b>$46.500 al mes</b>
         <br />
         con el plan anual.
       </div>
-      <div style={{...up(26), marginTop: 14, fontSize: 34, color: '#5c574f'}}>Plan mensual: $124.000 al mes.</div>
+      <div style={{...up(26), marginTop: 14, fontSize: 34, color: '#5c574f'}}>Plan mensual: desde $62.000 al mes.</div>
       <div style={{...up(32), marginTop: 50, fontSize: 36, color: '#2b2824'}}>En computador y celular, sin instalar nada.</div>
       <div style={{...up(40), marginTop: 70, height: 130, borderRadius: 30, background: '#141414', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 46, fontWeight: 800}}>
         Pruébelo en <span style={{color: BRAND_GREEN, marginLeft: 14}}>planpy.io</span>

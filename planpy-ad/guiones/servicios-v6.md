@@ -1,7 +1,7 @@
 # PlanPy · Servicios — guiones V6 (PAS + CTA)
 
 Mercado **Colombia (usted)** · Eje **VIDA** · Persona base: **La Agenda en la Cabeza** · Ángulo 10 (agenda) ·
-Aterrizaje: **plan PYME** (el gancho es agenda + WhatsApp, que no están en Emprendedor).
+Precio en CTA: **siempre el más barato** — desde $46.500 al mes con el plan anual.
 Formato 9:16, 20–22 s, misma edición que V5: la voz marca el ritmo, subtítulo sincronizado, punch + whoosh
 por bloque, música con ducking. Voz: Xavier (en la locución, "PlanPy" se escribe "Planpi").
 
@@ -96,13 +96,13 @@ toallas, frascos de champú, perros esperando con la correa puesta.
 Fondo papel, logo, botón oscuro (el logo está en cuadro, así que no va verde lima).
 
 - **15 días gratis.**
-- Agenda y WhatsApp: **plan PYME, $93.000 al mes con el plan anual.**
-- Plan mensual: $124.000 al mes.
+- **Desde $46.500 al mes** con el plan anual.
+- Plan mensual: desde $62.000 al mes.
 - En computador y celular, sin instalar nada.
 - **planpy.io**
 
-Se nombra el plan porque la agenda y el WhatsApp son el gancho entero: si alguien entra por este anuncio
-y se da de alta en Emprendedor, no encuentra lo que vino a buscar.
+**Regla del dueño de marca (2026-09-24): en el CTA va siempre el precio más barato posible**, con
+"desde", aunque el gancho sea una función de un plan superior.
 
 ## Visuales nuevos a construir en Remotion
 

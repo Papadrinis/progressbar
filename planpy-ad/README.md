@@ -145,4 +145,4 @@ Edición más juguetona que V5: subtítulo que aparece palabra por palabra con p
 verde, stickers y emojis que rebotan, transiciones de barrido, escenas ilustradas (barbería con poste
 giratorio, salón con secador, perro enjabonado), efectos (reloj, vibración, secador, rayón de disco,
 ladridos, agua, sacudida, boing, caja registradora) y música alegre a 124 BPM con ducking.
-CTA con el plan PYME nombrado (agenda + WhatsApp no están en Emprendedor).
+CTA con el precio más barato ("desde $46.500 al mes con el plan anual"): regla fija del dueño de marca.
