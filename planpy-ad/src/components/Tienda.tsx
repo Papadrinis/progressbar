@@ -21,7 +21,7 @@ const Shelf: React.FC<{y: number; seed: number}> = ({y, seed}) => {
   );
 };
 
-export const Tienda: React.FC<{lampOffAt?: number}> = ({lampOffAt = Infinity}) => {
+export const Tienda: React.FC<{lampOffAt?: number; blur?: number}> = ({lampOffAt = Infinity, blur = 9}) => {
   const frame = useCurrentFrame();
   // La luz parpadea una vez al apagarse, como un tubo real.
   const lamp =
@@ -32,7 +32,7 @@ export const Tienda: React.FC<{lampOffAt?: number}> = ({lampOffAt = Infinity}) =
   return (
     <AbsoluteFill style={{background: NIGHT, overflow: 'hidden'}}>
       <AbsoluteFill style={{transform: `scale(${push})`}}>
-        <AbsoluteFill style={{filter: 'blur(9px)', opacity: 0.22 + 0.5 * lamp}}>
+        <AbsoluteFill style={{filter: `blur(${blur}px)`, opacity: 0.22 + 0.5 * lamp}}>
           <Shelf y={120} seed={1} />
           <Shelf y={340} seed={4} />
           <Shelf y={560} seed={2} />

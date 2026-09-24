@@ -14,8 +14,16 @@ const LINES = [
   {t: 'Caja ............... 316.450 ?'},
 ];
 
-export const Cuaderno: React.FC<{writeStart?: number}> = ({writeStart = 0}) => {
+export type CuadernoLine = {t: string; bold?: boolean};
+
+// circleAt: frame en que se dibuja, a mano, un círculo sobre la última línea.
+export const Cuaderno: React.FC<{writeStart?: number; lines?: CuadernoLine[]; circleAt?: number}> = ({
+  writeStart = 0,
+  lines = LINES,
+  circleAt,
+}) => {
   const frame = useCurrentFrame();
+  const circle = circleAt === undefined ? 0 : interpolate(frame, [circleAt, circleAt + 16], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   return (
     <div
       style={{
@@ -37,7 +45,7 @@ export const Cuaderno: React.FC<{writeStart?: number}> = ({writeStart = 0}) => {
         color: INK,
       }}
     >
-      {LINES.map((l, i) => {
+      {lines.map((l, i) => {
         const start = writeStart + i * 12;
         const chars = Math.floor(interpolate(frame, [start, start + 14], [0, l.t.length], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'}));
         return (
@@ -46,6 +54,11 @@ export const Cuaderno: React.FC<{writeStart?: number}> = ({writeStart = 0}) => {
           </div>
         );
       })}
+      {circleAt !== undefined ? (
+        <svg style={{position: 'absolute', left: 80, top: 44 + (lines.length - 1) * 73 - 14, overflow: 'visible'}} width="700" height="100">
+          <ellipse cx="340" cy="50" rx="360" ry="52" fill="none" stroke="#c0392b" strokeWidth="6" strokeLinecap="round" pathLength={1} strokeDasharray="1" strokeDashoffset={1 - circle} transform="rotate(-2 340 50)" />
+        </svg>
+      ) : null}
     </div>
   );
 };

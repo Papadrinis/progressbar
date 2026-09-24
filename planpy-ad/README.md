@@ -59,3 +59,32 @@ Mismo cuerpo en las tres; solo cambia 0–2 s (test limpio de una variable).
 
 Locución: acento colombiano, ~78 palabras (ritmo rápido). Se pasa como prop `voiceover` (archivo en `public/`).
 El panel ya no muestra "Fiados pendientes": el control de fiados no está confirmado como función.
+
+---
+
+# V4 — PAS, 26 s, un ángulo por video (la versión vigente)
+
+`PLANPY_CO_VIDA_PAS_{CIERRE|CAJA|INVENTARIO}_V4` · 1080×1920 · 26 s · `npm run render:v4`
+
+**Cambios de producto:** la gestión se hace en el **computador del mostrador** (PlanPy en el navegador);
+el **celular es de consulta** (ver cómo le fue, desde la casa). Esto actualiza el no negociable #1 de
+`planpy-marca`, que decía "siempre en un celular".
+
+**Reglas de edición:** cada tarjeta dura al menos (palabras ÷ 3) + 1 s, máx. 2 líneas, texto sobre caja
+oscura; una acción por plano de interfaz, cursor lento, resultado sostenido; acercamiento al área que
+importa del monitor; temblor de cámara a la mitad.
+
+| Bloque | Tiempo | CIERRE | CAJA | INVENTARIO |
+|---|---|---|---|---|
+| **P** Problema | 0–3,7 s | ¿Cuánto ganó hoy? | La caja no cuadró. Otra vez. | —¿Tiene aceite? —Déjeme mirar atrás… |
+| **A** Agitación | 3,7–7,7 s | El cuaderno no le responde eso. | ¿Un cambio mal dado? ¿Un gasto sin anotar? | Ir a mirar: ese es su inventario. |
+| **A** | 7,7–11,2 s | Y otra noche, llega tarde a comer. | Y usted, recontando a las 11 p. m. | Y se entera cuando ya se acabó. |
+| **S** Computador | 11,2–16,2 s | Con PlanPy, cierra la caja en unos 10 minutos. | Con PlanPy, cada venta y cada gasto, registrados. | Con PlanPy, lo busca y sabe cuánto le queda. |
+| **S** Celular | 16,2–20 s | Y desde la casa, mira cómo le fue. | Y desde la casa, mira cómo le fue. | Y desde el celular, consulta lo que tiene. |
+| **CTA** | 20–26 s | 15 días gratis · Desde $46.500 al mes con el plan anual · Plan mensual $62.000 · En computador y celular, sin instalar nada · planpy.io | ← igual | ← igual |
+
+**Locución sugerida (acento colombiano, ~55 palabras):**
+
+- *CIERRE:* ¿Cuánto ganó hoy? No lo que hay en la caja: lo que le quedó. El cuaderno no le responde eso. Y otra noche, llega tarde a comer. Con PlanPy, maneja la tienda desde el computador y cierra la caja en unos diez minutos. Y desde la casa, mira cómo le fue en el celular. Pruébelo quince días gratis en planpy.io.
+- *CAJA:* La caja no cuadró. Otra vez. ¿Un cambio mal dado? ¿Un gasto que no anotó? Sin registro, no hay cómo saberlo. Con PlanPy, cada venta y cada gasto quedan registrados en el computador. Y desde la casa, mira cómo le fue en el celular. Pruébelo quince días gratis en planpy.io.
+- *INVENTARIO:* —¿Tiene aceite? —Déjeme mirar atrás. Si para saber qué le queda tiene que ir a mirar, ese es su inventario. Y se entera cuando ya se acabó. Con PlanPy, lo busca en el computador y sabe cuánto le queda. Y desde el celular, lo consulta donde esté. Pruébelo quince días gratis en planpy.io.

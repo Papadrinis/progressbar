@@ -5,7 +5,7 @@ import {Texture} from '../components/Texture';
 // Cierre de marca. El logo está en cuadro, así que manda #3DB55C y el CTA NO lleva lima.
 // Precio CO (hechos-verificados.md, 2026-09-08): 15 días gratis por delante del precio;
 // cuota con plan anual y recurrente mensual en el mismo plano.
-export const Cierre: React.FC = () => {
+export const Cierre: React.FC<{devices?: string}> = ({devices = 'Funciona en el celular, sin instalar nada.'}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const at = (d: number) => spring({frame: frame - d, fps, config: {damping: 200}, durationInFrames: 16});
@@ -27,7 +27,7 @@ export const Cierre: React.FC = () => {
         </div>
         <div style={{...up(30), marginTop: 18, fontSize: 36, color: '#5c574f'}}>Plan mensual: $62.000 al mes.</div>
         <div style={{...up(40), marginTop: 70, fontSize: 38, lineHeight: 1.45, color: '#2b2824'}}>
-          Funciona en el celular, sin instalar nada.
+          {devices}
           <br />
           Más de 1.000 comercios ya lo usan.
         </div>

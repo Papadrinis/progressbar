@@ -1,6 +1,7 @@
 import {Composition} from 'remotion';
 import {PlanpyAd, planpyAdSchema, AD_DURATION, FPS} from './PlanpyAd';
 import {PlanpyAdV2, adV2Schema, DURATION_V2, FPS_V2} from './v2/AdV2';
+import {PlanpyAdV4, adV4Schema, DURATION_V4, FPS_V4} from './v4/AdV4';
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -28,6 +29,20 @@ export const RemotionRoot: React.FC = () => {
           height={1920}
           schema={adV2Schema}
           defaultProps={{hook, voiceover: null, music: null}}
+        />
+      ))}
+      {/* V4 — PAS, 26 s. Computador = gestión, celular = consulta. Un ángulo por video. */}
+      {(['cierre', 'caja', 'inventario'] as const).map((angle) => (
+        <Composition
+          key={angle}
+          id={`PLANPY-CO-VIDA-PAS-${angle.toUpperCase()}-V4`}
+          component={PlanpyAdV4}
+          durationInFrames={DURATION_V4}
+          fps={FPS_V4}
+          width={1080}
+          height={1920}
+          schema={adV4Schema}
+          defaultProps={{angle, voiceover: null, music: null}}
         />
       ))}
     </>

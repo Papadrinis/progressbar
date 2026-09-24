@@ -6,7 +6,8 @@
     "studio": "remotion studio src/index.ts",
     "render": "remotion render src/index.ts PLANPY-CO-VIDA-CIERRE-VIDEO-V1 out/PLANPY_CO_VIDA_CIERRE_VIDEO_V1.mp4",
     "typecheck": "tsc -p .",
-    "render:v2": "remotion render src/index.ts PLANPY-CO-VIDA-CIERRE-VIDEO-V2-H1 out/PLANPY_CO_VIDA_CIERRE_VIDEO_V2_H1.mp4 && remotion render src/index.ts PLANPY-CO-VIDA-CIERRE-VIDEO-V2-H2 out/PLANPY_CO_VIDA_CIERRE_VIDEO_V2_H2.mp4 && remotion render src/index.ts PLANPY-CO-VIDA-CIERRE-VIDEO-V2-H3 out/PLANPY_CO_VIDA_CIERRE_VIDEO_V2_H3.mp4"
+    "render:v2": "remotion render src/index.ts PLANPY-CO-VIDA-CIERRE-VIDEO-V2-H1 out/PLANPY_CO_VIDA_CIERRE_VIDEO_V2_H1.mp4 && remotion render src/index.ts PLANPY-CO-VIDA-CIERRE-VIDEO-V2-H2 out/PLANPY_CO_VIDA_CIERRE_VIDEO_V2_H2.mp4 && remotion render src/index.ts PLANPY-CO-VIDA-CIERRE-VIDEO-V2-H3 out/PLANPY_CO_VIDA_CIERRE_VIDEO_V2_H3.mp4",
+    "render:v4": "remotion render src/index.ts PLANPY-CO-VIDA-PAS-CIERRE-V4 out/PLANPY_CO_VIDA_PAS_CIERRE_V4.mp4 && remotion render src/index.ts PLANPY-CO-VIDA-PAS-CAJA-V4 out/PLANPY_CO_VIDA_PAS_CAJA_V4.mp4 && remotion render src/index.ts PLANPY-CO-VIDA-PAS-INVENTARIO-V4 out/PLANPY_CO_VIDA_PAS_INVENTARIO_V4.mp4"
   },
   "dependencies": {
     "@remotion/cli": "^4.0.527",
