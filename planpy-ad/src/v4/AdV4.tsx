@@ -170,7 +170,7 @@ export const PlanpyAdV4: React.FC<z.infer<typeof adV4Schema>> = ({angle, voz, vo
             pop={beat === 'p'}
           />
           {voz ? (
-            <Sequence from={6} layout="none">
+            <Sequence from={beat === 'p' ? 0 : 6} layout="none">
               <Audio src={staticFile(`voz/${vozClip(angle, beat)}.mp3`)} />
             </Sequence>
           ) : null}
