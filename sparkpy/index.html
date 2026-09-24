@@ -265,6 +265,22 @@ pre.raw { white-space: pre-wrap; font-family: var(--mono); font-size: 12px; back
 .k2 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-right: 4px; }
 .chip.mini { padding: 2px 9px; font-size: 12.5px; cursor: default; }
 .av .sub { font-size: 12px; color: var(--muted); }
+.tpls { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+.tpl { text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 8px; cursor: pointer; display: flex; flex-direction: column; gap: 4px; }
+.tpl:hover { border-color: var(--brand); }
+.tpl[aria-pressed="true"] { border-color: var(--brand); box-shadow: inset 0 0 0 1px var(--brand); background: var(--sel-bg); }
+.tpl img, .tpl .ph { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 8px; background: var(--surface-2); }
+.tpl .ph { display: flex; flex-direction: column; justify-content: center; gap: 4px; padding: 10px; }
+.tpl .ph span { font-family: var(--mono); font-size: 10.5px; color: var(--muted); background: var(--surface); border-radius: 4px; padding: 2px 5px; width: fit-content; }
+.tpl strong { font-size: 13px; line-height: 1.25; }
+.tpl .sub { font-size: 11.5px; color: var(--muted); }
+.frames { display: flex; gap: 10px; align-items: flex-end; margin: 12px 0 6px; flex-wrap: wrap; }
+.frame { width: 96px; max-width: 100%; border: 1.5px solid var(--line); border-radius: 8px; background: var(--surface-2); position: relative; display: flex; align-items: center; justify-content: center; padding: 6px; overflow: hidden; }
+.frame:has(+ .frame), .frame { flex: none; }
+.fr-tag { position: absolute; top: 4px; left: 5px; font-family: var(--mono); font-size: 10px; color: var(--muted); }
+.fr-txt { font-family: var(--display); font-weight: 800; font-size: 11px; line-height: 1.15; text-align: center; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.bench { display: flex; gap: 10px; align-items: center; }
+.bench img { width: 64px; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 8px; }
 </style>
 
 <header class="top">
@@ -349,17 +365,27 @@ pre.raw { white-space: pre-wrap; font-family: var(--mono); font-size: 12px; back
       ['casting_job', 'Job de casting (Higgsfield)', 'text', null, null],
       ['estado', 'Estado', 'select', ['aprobado', 'propuesto'], null],
       ['usado_en', 'Usado en', 'text', null, null]] },
-    estructuras: { label: 'Estructuras', one: 'estructura', sub: ['duracion'], text: 'mejor_para', steps: 'pasos', que: 'una estructura (framework) de anuncio de respuesta directa', fields: [
-      ['nombre', 'Nombre', 'text', null, 'Nombre del framework'],
-      ['pasos', 'Pasos (uno por línea)', 'list', null, 'Los pasos en orden, en inglés como se conocen'],
-      ['mejor_para', 'Mejor para', 'text', null, 'Para qué tipo de anuncio sirve'],
-      ['duracion', 'Duración sugerida', 'text', null, 'Rango en segundos'],
-      ['nota', 'Nota para PlanPy', 'textarea', null, 'Cómo aplicarlo a PlanPy respetando las reglas de marca']] },
-    estilos: { label: 'Estilos de ad', one: 'estilo', sub: ['costo'], pill: 'estado', text: 'descripcion', que: 'un estilo de producción de video', fields: [
+    // Campo con 6.º elemento ('video' | 'imagen'): solo se muestra para ese tipo.
+    estructuras: { label: 'Estructuras y templates', one: 'estructura', sub: ['duracion', 'formatos'], pill: 'tipo', text: 'mejor_para', steps: 'pasos', img: 'referencia',
+      que: 'una estructura de anuncio: si es de video, un framework de guion de respuesta directa; si es de imagen, un template de anuncio estático (layout y zonas de copy) reutilizable para PlanPy', fields: [
+      ['tipo', 'Tipo', 'select', ['video', 'imagen'], null],
+      ['nombre', 'Nombre', 'text', null, 'Nombre corto y reconocible del framework o template'],
+      ['referencia', 'Imagen de referencia (benchmark)', 'image', null, null, 'imagen'],
+      ['descripcion', 'Cómo se ve', 'textarea', null, 'El template en 1–2 frases: qué capta el usuario de un vistazo en el feed', 'imagen'],
+      ['zonas', 'Zonas de copy (una por línea)', 'list', null, 'Los textos del template en orden de lectura, como nombres cortos en minúscula y sin tildes (p. ej. titular, antes, despues, cta). Máximo 6', 'imagen'],
+      ['layout', 'Layout y jerarquía', 'textarea', null, 'Composición: dónde va cada zona, tamaños relativos, qué ocupa la foto o la interfaz, elementos gráficos (línea divisoria, burbujas, checks). Adaptable a 1:1, 4:5 y 9:16', 'imagen'],
+      ['produccion', 'Cómo se produce', 'select', ['foto IA + texto', 'código (UI nativa)', 'foto IA + UI en código'], 'Código (UI nativa) si todo es interfaz (chat, comentario, notificación); foto IA + texto si hay persona o escena', 'imagen'],
+      ['formatos', 'Formatos recomendados', 'text', null, 'Los que mejor le quedan, de: 1:1, 4:5, 9:16, 1.91:1', 'imagen'],
+      ['pasos', 'Pasos (uno por línea)', 'list', null, 'Los pasos en orden, en inglés como se conocen', 'video'],
+      ['mejor_para', 'Mejor para', 'text', null, 'Para qué objetivo o tipo de audiencia sirve'],
+      ['duracion', 'Duración sugerida', 'text', null, 'Rango en segundos', 'video'],
+      ['nota', 'Nota para PlanPy', 'textarea', null, 'Cómo aplicarlo a PlanPy respetando las reglas de marca (claims, cuaderno, precio)']] },
+    estilos: { label: 'Estilos de ad', one: 'estilo', sub: ['tipo', 'costo'], pill: 'estado', text: 'descripcion', que: 'un estilo de producción de anuncios (video, imagen estática o ambos)', fields: [
       ['nombre', 'Nombre', 'text', null, 'Nombre del estilo'],
+      ['tipo', 'Sirve para', 'select', ['video', 'imagen', 'ambos'], 'Si sirve para video, para imagen estática o para ambos'],
       ['descripcion', 'Descripción', 'textarea', null, 'Cómo se ve, en una o dos frases'],
-      ['pipeline', 'Pipeline', 'textarea', null, 'Herramientas en orden: generación de imagen, video (Higgsfield), voz, montaje en Remotion'],
-      ['costo', 'Costo aproximado', 'text', null, 'Estimado en créditos de Higgsfield (una toma de video de 5 s ≈ 60)'],
+      ['pipeline', 'Pipeline', 'textarea', null, 'Herramientas en orden: generación de imagen (GPT Image 2.5), video (Seedance), voz, montaje o composición en código (Remotion)'],
+      ['costo', 'Costo aproximado', 'text', null, 'Estimado en créditos de Higgsfield (toma de video de 5 s ≈ 60; imagen ≈ 2)'],
       ['estado', 'Estado', 'select', ['probado', 'parcial', 'por probar'], 'Un estilo nuevo es «por probar»'],
       ['usado_en', 'Usado en', 'text', null, null],
       ['riesgos', 'Riesgos y reglas', 'textarea', null, 'Qué cuidar para respetar la marca']] },
@@ -375,7 +401,7 @@ pre.raw { white-space: pre-wrap; font-family: var(--mono); font-size: 12px; back
     set(k, v) { try { localStorage.setItem('sparkpy:' + k, JSON.stringify(v)); } catch {} },
   };
 
-  const sel = Object.assign({ mercado: 'CO', rubro: null, persona: null, angulo: null, features: [], avatar: null, estructura: null, duracion: 25 }, store.get('sel', {}));
+  const sel = Object.assign({ tipo: 'video', formatos: ['4:5'], mercado: 'CO', rubro: null, persona: null, angulo: null, features: [], avatar: null, estructura: null, duracion: 25 }, store.get('sel', {}));
   let opciones = [], elegido = null, guion = null, estilo = store.get('estilo', null), pedidoCreado = null, generando = null, errorGen = null, rawGen = '';
   let view = store.get('view', 'crear'), libCol = store.get('libCol', 'rubros'), libQ = '';
 
@@ -443,7 +469,11 @@ pre.raw { white-space: pre-wrap; font-family: var(--mono); font-size: 12px; back
     const p = byId('personas', sel.persona);
     return out;
   };
-  const ready = () => sel.rubro && sel.persona && sel.angulo && sel.estructura;
+  const esImagen = () => sel.tipo === 'imagen';
+  const tipoDe = (e) => e?.tipo || 'video';
+  const estiloSirve = (st) => { const t = st?.tipo || 'video'; return t === 'ambos' || t === sel.tipo; };
+  const FORMATOS = [['1:1', 'Feed cuadrado'], ['4:5', 'Feed vertical'], ['9:16', 'Stories y Reels'], ['1.91:1', 'Horizontal / link']];
+  const ready = () => sel.rubro && sel.persona && sel.angulo && sel.estructura && tipoDe(byId('estructuras', sel.estructura)) === sel.tipo && (!esImagen() || sel.formatos.length);
 
   // Avatar propuesto: el actor que mejor encaja con el buyer persona (edad, mercado) y ya tiene cara aprobada.
   const rango = (txt) => { const n = String(txt || '').match(/\d+/g); return n ? [+n[0], +(n[1] || n[0])] : null; };
@@ -465,8 +495,8 @@ pre.raw { white-space: pre-wrap; font-family: var(--mono); font-size: 12px; back
   const chip = (label, pressed, onclick, extra = {}) => h('button', { class: 'chip' + (extra.sug ? ' sug' : '') + (extra.dim ? ' dim' : ''), 'aria-pressed': String(!!pressed), onclick, title: extra.title }, label, extra.tag ? h('span', { class: 'tag' }, extra.tag) : null);
   const pick = (key, id) => { sel[key] = sel[key] === id ? null : id; save(); render(); };
   // Etiqueta de un campo del brief con botón para crear un elemento nuevo (queda elegido al guardar).
-  const lblNew = (label, col, onNew) => h('div', { class: 'lbl' }, h('span', {}, label),
-    db ? h('button', { class: 'add', onclick: () => openEditor(col, null, { onSaved: (id) => { onNew(id); save(); } }), title: `Nuevo ${COLS[col].one}` }, '+ Nuevo') : null);
+  const lblNew = (label, col, onNew, draft) => h('div', { class: 'lbl' }, h('span', {}, label),
+    db ? h('button', { class: 'add', onclick: () => openEditor(col, null, { draft: draft ? { ...draft, orden: lib[col].length } : undefined, onSaved: (id) => { onNew(id); save(); } }), title: `Nuevo ${COLS[col].one}` }, '+ Nuevo') : null);
 
   function renderCrear() {
     const root = document.getElementById('view-crear');
@@ -490,6 +520,14 @@ pre.raw { white-space: pre-wrap; font-family: var(--mono); font-size: 12px; back
 
     const s1 = h('div', { class: 'step' },
       h('div', { class: 'step-head' }, h('span', { class: 'n' }, 'PASO 1'), h('h2', {}, 'Brief'), h('p', {}, 'Elija de la librería. El punto verde marca lo que recomienda la persona o el rubro elegido.')),
+      h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Tipo de anuncio'), h('div', {},
+        h('div', { class: 'seg' }, ...[['video', 'Video'], ['imagen', 'Imagen estática']].map(([k, l]) => h('button', { 'aria-pressed': String(sel.tipo === k), onclick: () => {
+          if (sel.tipo === k) return;
+          sel.tipo = k;
+          if (tipoDe(byId('estructuras', sel.estructura)) !== k) sel.estructura = null;
+          if (!estiloSirve(byId('estilos', estilo))) estilo = null;
+          opciones = []; elegido = null; guion = null; errorGen = null; save(); render();
+        } }, l))))),
       h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Mercado'), h('div', {},
         h('div', { class: 'seg' }, ...[['CO', 'Colombia · usted'], ['AR', 'Argentina · vos']].map(([k, l]) => h('button', { 'aria-pressed': String(sel.mercado === k), onclick: () => { sel.mercado = k; save(); render(); } }, l))))),
       h('div', { class: 'field' }, lblNew('Rubro', 'rubros', (id) => (sel.rubro = id)), h('div', { class: 'chips' },
@@ -511,33 +549,45 @@ pre.raw { white-space: pre-wrap; font-family: var(--mono); font-size: 12px; back
         avList.length > 4 ? h('button', { class: 'add', style: 'margin-top:8px', onclick: () => { verTodosAv = !verTodosAv; render(); } }, verTodosAv ? 'Ver menos' : `Ver los ${avList.length} avatares`) : null)),
       h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Features'), h('div', { class: 'hint', style: 'margin:0;padding-top:6px' },
         guion?.features?.length ? ['El guion elegido muestra: ', h('b', {}, guion.features.map((f) => name('features', f) || f).join(', ')), '.'] : 'No hace falta elegirlas: Claude escoge 1 o 2 según el rubro, el buyer persona y el ángulo, y las verá en cada guion.')),
-      h('div', { class: 'field' }, lblNew('Estructura', 'estructuras', (id) => (sel.estructura = id)), h('div', {},
-        h('div', { class: 'chips' }, byOrden('estructuras').map((e) => chip(e.nombre, sel.estructura === e.id, () => pick('estructura', e.id), { title: (e.pasos || []).join(' → ') }))),
-        est ? h('div', { class: 'hint' }, h('b', {}, (est.pasos || []).join(' → ')), ' · ', est.mejor_para, est.duracion ? ` · ${est.duracion}` : '', est.nota ? h('div', {}, est.nota) : null) : null)),
-      h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Duración'), h('div', {},
-        h('div', { class: 'seg' }, ...[15, 20, 25, 30, 45, 60].map((s) => h('button', { 'aria-pressed': String(sel.duracion === s), onclick: () => { sel.duracion = s; save(); render(); } }, s + ' s'))))),
+      esImagen()
+        ? h('div', { class: 'field' }, lblNew('Template', 'estructuras', (id) => (sel.estructura = id), { tipo: 'imagen' }), h('div', {},
+            h('div', { class: 'tpls' }, byOrden('estructuras').filter((e) => tipoDe(e) === 'imagen').map((e) => h('button', { class: 'tpl', 'aria-pressed': String(sel.estructura === e.id), onclick: () => pick('estructura', e.id) },
+              e.referencia ? h('img', { src: imgSrc(e.referencia), alt: '', loading: 'lazy' }) : h('div', { class: 'ph' }, (e.zonas || []).slice(0, 3).map((z) => h('span', {}, z))),
+              h('strong', {}, e.nombre), h('span', { class: 'sub' }, e.produccion || '')))),
+            est && tipoDe(est) === 'imagen' ? h('div', { class: 'hint' }, h('b', {}, 'Zonas: ', (est.zonas || []).join(' · ')), ' — ', est.descripcion || '', est.nota ? h('div', {}, est.nota) : null) : null))
+        : h('div', { class: 'field' }, lblNew('Estructura', 'estructuras', (id) => (sel.estructura = id), { tipo: 'video' }), h('div', {},
+            h('div', { class: 'chips' }, byOrden('estructuras').filter((e) => tipoDe(e) === 'video').map((e) => chip(e.nombre, sel.estructura === e.id, () => pick('estructura', e.id), { title: (e.pasos || []).join(' → ') }))),
+            est && tipoDe(est) === 'video' ? h('div', { class: 'hint' }, h('b', {}, (est.pasos || []).join(' → ')), ' · ', est.mejor_para, est.duracion ? ` · ${est.duracion}` : '', est.nota ? h('div', {}, est.nota) : null) : null)),
+      esImagen()
+        ? h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Formato'), h('div', {},
+            h('div', { class: 'chips' }, FORMATOS.map(([f, l]) => chip(f, sel.formatos.includes(f), () => {
+              sel.formatos = sel.formatos.includes(f) ? sel.formatos.filter((x) => x !== f) : [...sel.formatos, f]; save(); render();
+            }, { tag: l }))),
+            h('div', { class: 'hint' }, est?.formatos ? ['Recomendados para este template: ', h('b', {}, est.formatos), '. '] : '', 'Puede elegir varios: el mismo anuncio se adapta a cada formato.')))
+        : h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Duración'), h('div', {},
+            h('div', { class: 'seg' }, ...[15, 20, 25, 30, 45, 60].map((d) => h('button', { 'aria-pressed': String(sel.duracion === d), onclick: () => { sel.duracion = d; save(); render(); } }, d + ' s'))))),
     );
 
     // paso 2
     const s2 = h('div', { class: 'step' },
-      h('div', { class: 'step-head' }, h('span', { class: 'n' }, 'PASO 2'), h('h2', {}, 'Guiones'), h('p', {}, 'Tres opciones de storyboard con la estructura elegida. Elija una y edítela.')));
-    if (!sample) s2.append(h('div', { class: 'empty' }, 'Generar guiones necesita abrir esta página en claude.ai y permitir que use Claude.'));
-    else if (generando) s2.append(h('div', { class: 'thinking' }, h('span', { class: 'dot' }), h('span', {}, rawGen ? `Escribiendo… ${rawGen.length} caracteres` : 'Pensando los guiones… tarda entre 20 y 60 segundos.'), h('button', { class: 'btn ghost small', onclick: () => generando?.abort() }, 'Detener')));
+      h('div', { class: 'step-head' }, h('span', { class: 'n' }, 'PASO 2'), h('h2', {}, esImagen() ? 'Copy' : 'Guiones'), h('p', {}, esImagen() ? 'Tres propuestas de copy para las zonas del template, con el visual de cada una. Elija una y edítela.' : 'Tres opciones de storyboard con la estructura elegida. Elija una y edítela.')));
+    if (!sample) s2.append(h('div', { class: 'empty' }, 'Generar con Claude necesita abrir esta página en claude.ai y permitir que use Claude.'));
+    else if (generando) s2.append(h('div', { class: 'thinking' }, h('span', { class: 'dot' }), h('span', {}, rawGen ? `Escribiendo… ${rawGen.length} caracteres` : (esImagen() ? 'Pensando el copy…' : 'Pensando los guiones…') + ' tarda entre 20 y 60 segundos.'), h('button', { class: 'btn ghost small', onclick: () => generando?.abort() }, 'Detener')));
     else if (errorGen) s2.append(h('div', { class: 'claims' }, errorGen), rawGen ? h('pre', { class: 'raw' }, rawGen) : null);
-    if (!generando && !opciones.length && sample && !errorGen) s2.append(h('div', { class: 'empty' }, ready() ? 'Todo listo: pulse «Generar 3 guiones».' : 'Complete rubro, persona, ángulo y estructura.'));
-    if (opciones.length) s2.append(h('div', { class: 'options' }, opciones.map((o, i) => renderOption(o, i))));
+    if (!generando && !opciones.length && sample && !errorGen) s2.append(h('div', { class: 'empty' }, ready() ? `Todo listo: pulse «${esImagen() ? 'Generar 3 copys' : 'Generar 3 guiones'}».` : `Complete rubro, buyer persona, ángulo, ${esImagen() ? 'template y formato' : 'estructura'}.`));
+    if (opciones.length) s2.append(h('div', { class: 'options' }, opciones.map((o, i) => (o.copy ? renderOptionImg(o, i) : renderOption(o, i)))));
 
     // paso 3
     const s3 = h('div', { class: 'step' },
-      h('div', { class: 'step-head' }, h('span', { class: 'n' }, 'PASO 3'), h('h2', {}, 'Estilo de ad'), h('p', {}, 'Cómo se va a producir. El costo es en créditos de Higgsfield.')),
-      h('div', { class: 'styles' }, byOrden('estilos').map((s) => h('button', { class: 'style', 'aria-pressed': String(estilo === s.id), onclick: () => { estilo = estilo === s.id ? null : s.id; save(); render(); } },
+      h('div', { class: 'step-head' }, h('span', { class: 'n' }, 'PASO 3'), h('h2', {}, 'Estilo de ad'), h('p', {}, esImagen() ? 'Cómo se va a producir la imagen. El costo es en créditos de Higgsfield.' : 'Cómo se va a producir. El costo es en créditos de Higgsfield.')),
+      h('div', { class: 'styles' }, byOrden('estilos').filter(estiloSirve).map((s) => h('button', { class: 'style', 'aria-pressed': String(estilo === s.id), onclick: () => { estilo = estilo === s.id ? null : s.id; save(); render(); } },
         h('strong', {}, s.nombre), h('p', {}, s.descripcion),
         h('div', { class: 'meta' }, h('span', { class: pillClass(s.estado) }, s.estado), h('span', { class: 'cost' }, s.costo))))));
 
     // paso 4
     const est2 = byId('estilos', estilo);
     const s4 = h('div', { class: 'step' },
-      h('div', { class: 'step-head' }, h('span', { class: 'n' }, 'PASO 4'), h('h2', {}, 'Enviar a producción'), h('p', {}, 'El pedido queda en la cola. En Claude Code, /sparkpy lo toma y produce el video con aprobaciones en cada etapa.')));
+      h('div', { class: 'step-head' }, h('span', { class: 'n' }, 'PASO 4'), h('h2', {}, 'Enviar a producción'), h('p', {}, 'El pedido queda en la cola. En Claude Code, /sparkpy lo toma y lo produce con aprobaciones en cada etapa.')));
     if (pedidoCreado) {
       const cmd = `/sparkpy pedido ${pedidoCreado}`;
       s4.append(h('div', { class: 'done' }, h('strong', {}, 'Pedido en cola'),
@@ -545,7 +595,7 @@ pre.raw { white-space: pre-wrap; font-family: var(--mono); font-size: 12px; back
         h('div', { class: 'muted' }, 'Péguelo en Claude Code dentro del repositorio del proyecto.'),
         h('div', {}, h('button', { class: 'btn ghost small', onclick: () => { pedidoCreado = null; opciones = []; elegido = null; guion = null; render(); } }, 'Empezar otro anuncio'))));
     } else {
-      const falta = [!guion && 'un guion', !est2 && 'un estilo'].filter(Boolean);
+      const falta = [!guion && (esImagen() ? 'un copy' : 'un guion'), !est2 && 'un estilo'].filter(Boolean);
       s4.append(
         h('div', { class: 'fgroup' }, h('label', { for: 'nota-pedido' }, 'Nota para producción (opcional)'), h('textarea', { id: 'nota-pedido', placeholder: 'Ej.: reutilizar la toma del computador de V10; versión corta para retargeting.' })),
         h('button', { class: 'btn block', disabled: !!falta.length || !db, onclick: crearPedido }, falta.length ? `Falta elegir ${falta.join(' y ')}` : 'Enviar a producción'));
@@ -558,13 +608,40 @@ pre.raw { white-space: pre-wrap; font-family: var(--mono); font-size: 12px; back
     const aside = h('aside', { class: 'aside' },
       h('div', { class: 'recipe' }, h('h3', {}, 'Receta del anuncio'),
         h('dl', {}, row('Mercado', sel.mercado === 'AR' ? 'Argentina' : 'Colombia'), row('Eje', eje), row('Rubro', name('rubros', sel.rubro)), row('Persona', name('personas', sel.persona)),
-          row('Ángulo', name('angulos', sel.angulo)), row('Features', guion?.features?.length ? guion.features.map((f) => name('features', f) || f).join(', ') : (opciones.length ? 'según el guion' : 'las elige Claude')), row('Avatar', name('avatares', avatarActual())),
-          row('Estructura', name('estructuras', sel.estructura)), row('Duración', sel.duracion + ' s'), row('Estilo', est2?.nombre)),
+          row('Ángulo', name('angulos', sel.angulo)), row('Features', guion?.features?.length ? guion.features.map((f) => name('features', f) || f).join(', ') : (opciones.length ? 'según la opción' : 'las elige Claude')), row('Avatar', name('avatares', avatarActual())),
+          row('Tipo', esImagen() ? 'Imagen estática' : 'Video'), row(esImagen() ? 'Template' : 'Estructura', name('estructuras', sel.estructura)), esImagen() ? row('Formato', sel.formatos.join(', ')) : row('Duración', sel.duracion + ' s'), row('Estilo', est2?.nombre)),
         fl.length ? h('div', { class: 'flags' }, fl.map((f) => h('div', {}, f))) : null,
-        h('button', { class: 'btn block lime', disabled: !ready() || !sample || !!generando, onclick: generar }, opciones.length ? 'Generar otras 3' : 'Generar 3 guiones'),
+        h('button', { class: 'btn block lime', disabled: !ready() || !sample || !!generando, onclick: generar }, opciones.length ? 'Generar otras 3' : esImagen() ? 'Generar 3 copys' : 'Generar 3 guiones'),
         h('button', { class: 'btn block ghost small', onclick: () => { Object.assign(sel, { rubro: null, persona: null, angulo: null, avatar: null, avatarManual: false, estructura: null }); opciones = []; elegido = null; guion = null; errorGen = null; save(); render(); } }, 'Limpiar selección')));
 
     root.append(h('div', { class: 'create' }, h('div', {}, s1, s2, s3, s4), aside));
+  }
+
+  function renderOptionImg(o, i) {
+    const isSel = elegido === i;
+    const g = isSel ? guion : o;
+    const est = byId('estructuras', sel.estructura);
+    const zonas = [...new Set([...(est?.zonas || []), ...Object.keys(g.copy || {})])];
+    const val = (z) => (Array.isArray(g.copy?.[z]) ? g.copy[z].join('\n') : g.copy?.[z] || '');
+    const edit = (z) => h('textarea', { 'aria-label': z, oninput: (e) => { const v = e.target.value; g.copy[z] = Array.isArray(o.copy?.[z]) ? v.split('\n').filter((x) => x.trim()) : v; } }, val(z));
+    const editF = (f) => h('textarea', { 'aria-label': f, oninput: (e) => (g[f] = e.target.value) }, g[f] || '');
+    const principal = val(zonas[0] || '') || o.titulo || '';
+    const ratio = { '1:1': '1 / 1', '4:5': '4 / 5', '9:16': '9 / 16', '1.91:1': '1.91 / 1' };
+    return h('article', { class: 'opt', 'aria-current': String(isSel) },
+      h('div', { class: 'opt-head' },
+        h('div', {}, h('h3', {}, `${String.fromCharCode(65 + i)} · ${o.titulo || 'Opción'}`), h('p', { class: 'idea' }, o.idea || '')),
+        isSel ? h('span', { class: 'pill ok' }, 'Elegido · editable') : h('button', { class: 'btn small', onclick: () => { elegido = i; guion = JSON.parse(JSON.stringify(o)); guion.copy = guion.copy || {}; render(); } }, 'Elegir este copy')),
+      h('div', { class: 'frames', 'aria-hidden': 'true' }, sel.formatos.map((f) => h('div', { class: 'frame', style: `aspect-ratio:${ratio[f] || '4 / 5'}` }, h('span', { class: 'fr-tag' }, f), h('span', { class: 'fr-txt' }, principal.split('\n')[0])))),
+      h('div', { class: 'opt-meta' },
+        (g.features || []).length ? h('div', {}, h('span', { class: 'k2' }, 'Features'), (g.features || []).map((f) => h('span', { class: 'chip mini' }, name('features', f) || f))) : null,
+        g.look ? h('div', {}, h('span', { class: 'k2' }, `Look de ${name('avatares', avatarActual()) || 'el avatar'}`), [g.look.vestuario, g.look.escenario].filter(Boolean).join(' · ')) : null),
+      h('div', { class: 'board-wrap' }, h('table', { class: 'board' },
+        h('thead', {}, h('tr', {}, ['Zona', 'Copy'].map((x) => h('th', {}, x)))),
+        h('tbody', {},
+          zonas.map((z) => h('tr', {}, h('td', { class: 'paso' }, z), h('td', { class: 'pant' }, isSel ? edit(z) : val(z).split('\n').map((l) => h('div', {}, l))))),
+          h('tr', {}, h('td', { class: 'paso' }, 'Visual'), h('td', {}, isSel ? editF('visual') : g.visual || '—')),
+          h('tr', {}, h('td', { class: 'paso' }, 'Interfaz'), h('td', { class: 'muted' }, isSel ? editF('interfaz') : g.interfaz || '—'))))),
+      (o.claims_a_confirmar || []).length ? h('div', { class: 'claims' }, h('b', {}, 'Confirmar antes de pautar: '), o.claims_a_confirmar.join(' · ')) : null);
   }
 
   function renderOption(o, i) {
@@ -652,13 +729,43 @@ Responde SOLO con JSON con esta forma:
 {"opciones":[{"titulo":"nombre corto","idea":"una frase","gancho_forma":"A|B|C|D","bloques":[{"paso":"nombre del paso","voz":"locución con Planpi","pantalla":["línea 1","línea 2"],"claves":["palabra"],"toma":"qué se ve (persona, acción, encuadre; sin pantallas legibles)","interfaz":"tarjeta o sticker que pone Remotion, o vacío","seg":4}],"cta":{"voz":"...","pantalla":"...","seg":4},"features":["id"],"look":{"vestuario":"ropa del avatar en este anuncio","escenario":"el local y la luz"},"claims_a_confirmar":["..."]}]}`;
   }
 
+  function buildPromptImg() {
+    const est = byId('estructuras', sel.estructura);
+    const data = {
+      mercado: sel.mercado,
+      formatos: sel.formatos,
+      eje: derivedEje().eje,
+      rubro: pickFields(byId('rubros', sel.rubro), ['nombre', 'tipo', 'escenario', 'dolor']),
+      buyer_persona: pickFields(byId('personas', sel.persona), ['nombre', 'resumen', 'eje', 'edad', 'negocio', 'intencion', 'identidad', 'tension', 'deseo', 'disparador', 'cita', 'no_decir']),
+      angulo: pickFields(byId('angulos', sel.angulo), ['nombre', 'sobre', 'por_que', 'pregunta', sel.mercado === 'AR' ? 'gancho_ar' : 'gancho_co', 'visual', 'estado']),
+      features_disponibles: [...lib.features].sort((a, b) => (a.orden ?? 999) - (b.orden ?? 999)).map((f) => ({ id: f.id, ...pickFields(f, ['nombre', 'dispositivo', 'claim', 'estado']), sugerida_para_el_rubro: (byId('rubros', sel.rubro)?.features || []).includes(f.id) || undefined })),
+      avatar: pickFields(byId('avatares', avatarActual()), ['nombre', 'edad', 'genero', 'ciudad', 'rasgos', 'estilo']),
+      template: pickFields(est, ['nombre', 'descripcion', 'zonas', 'layout', 'produccion', 'nota']),
+    };
+    return `Eres el copywriter de anuncios estáticos de PlanPy para Meta y TikTok. Escribe 3 propuestas distintas de copy para el template "${est?.nombre}", cada una con un gancho diferente.
+
+${REGLAS}
+
+Reglas del anuncio estático: se lee en 2 segundos en el feed. Titular de máximo 8 palabras; ninguna zona de más de 20 palabras salvo que el template sea un chat o un comentario (ahí, mensajes cortos y naturales, como los escribiría la gente). Si hay zona de oferta o CTA, usa la oferta exacta del mercado. En pantalla se escribe "PlanPy" y "planpy.io". Nada de testimonios presentados como clientes reales: si el template es de opinión o comentario, la voz es la del buyer persona o una pregunta real del público, nunca una reseña inventada.
+
+Mercado y oferta: ${OFERTA[sel.mercado]}
+
+Brief (datos de la librería). El avatar es el actor recurrente que aparece en la imagen si el template lleva persona: define su look (vestuario y escenario del rubro).
+${JSON.stringify(data, null, 1)}
+
+Llena exactamente las zonas del template (${(est?.zonas || []).join(', ')}). Una zona que sea una lista (mensajes de chat, filas de una tabla, puntos) va como array de strings. Elige 1 o 2 features (por id) de features_disponibles que resuelvan el dolor del ángulo; evita las «sin confirmar» o anótalas en claims_a_confirmar.
+
+Responde SOLO con JSON con esta forma:
+{"opciones":[{"titulo":"nombre corto","idea":"una frase","gancho_forma":"A|B|C|D","copy":{"<zona>":"texto o array"},"visual":"qué muestra la imagen: persona, acción, encuadre, escenario; sin texto y sin pantallas legibles","interfaz":"elementos de interfaz o UI nativa que se dibujan en código, o vacío","features":["id"],"look":{"vestuario":"...","escenario":"..."},"claims_a_confirmar":["..."]}]}`;
+  }
+
   async function generar() {
     if (!sample || !ready()) return;
     const ctl = new AbortController();
     generando = ctl; errorGen = null; rawGen = ''; render();
     try {
-      const res = await sample.json(buildPrompt(), { signal: ctl.signal, cache: false, onText: ({ text }) => { rawGen = text; const el = document.querySelector('.thinking span:nth-child(2)'); if (el) el.textContent = `Escribiendo… ${text.length} caracteres`; } });
-      const ops = Array.isArray(res?.opciones) ? res.opciones.filter((o) => Array.isArray(o?.bloques)) : [];
+      const res = await sample.json(esImagen() ? buildPromptImg() : buildPrompt(), { signal: ctl.signal, cache: false, onText: ({ text }) => { rawGen = text; const el = document.querySelector('.thinking span:nth-child(2)'); if (el) el.textContent = `Escribiendo… ${text.length} caracteres`; } });
+      const ops = Array.isArray(res?.opciones) ? res.opciones.filter((o) => (esImagen() ? o?.copy && typeof o.copy === 'object' : Array.isArray(o?.bloques))) : [];
       if (!ops.length) throw { code: 'invalid_json', text: JSON.stringify(res) };
       opciones = ops; elegido = null; guion = null; rawGen = '';
     } catch (e) {
@@ -680,11 +787,11 @@ Responde SOLO con JSON con esta forma:
     const snap = (col, id) => { const d = byId(col, id); return d ? { id, nombre: d.nombre } : null; };
     const nota = document.getElementById('nota-pedido')?.value || '';
     const doc = {
-      creado: new Date().toISOString(), estado: 'en cola', mercado: sel.mercado, eje: derivedEje().eje, duracion: sel.duracion,
+      creado: new Date().toISOString(), estado: 'en cola', tipo: sel.tipo, mercado: sel.mercado, eje: derivedEje().eje, ...(esImagen() ? { formatos: sel.formatos } : { duracion: sel.duracion }),
       rubro: snap('rubros', sel.rubro), persona: snap('personas', sel.persona), angulo: snap('angulos', sel.angulo),
       features: (guion.features || []).map((f) => snap('features', f)).filter(Boolean),
       avatar: (() => { const a = byId('avatares', avatarActual()); return a ? { id: a.id, nombre: a.nombre, casting_job: a.casting_job || '', rasgos: a.rasgos || '', imagen: a.imagen || '', look: guion.look || null } : null; })(),
-      estructura: snap('estructuras', sel.estructura), estilo: est ? { id: est.id, nombre: est.nombre, pipeline: est.pipeline } : null,
+      estructura: (() => { const e = byId('estructuras', sel.estructura); return e ? { id: e.id, nombre: e.nombre, tipo: tipoDe(e), ...(tipoDe(e) === 'imagen' ? pickFields(e, ['zonas', 'layout', 'produccion', 'referencia']) : {}) } : null; })(), estilo: est ? { id: est.id, nombre: est.nombre, pipeline: est.pipeline } : null,
       guion, nota, titulo: guion.titulo || 'Anuncio',
     };
     try {
@@ -704,7 +811,7 @@ Responde SOLO con JSON con esta forma:
     const search = h('input', { class: 'search', type: 'search', id: 'lib-search', placeholder: `Buscar en ${c.label.toLowerCase()}`, value: libQ, oninput: (e) => { libQ = e.target.value; renderLibItems(); } });
     const grid = h('div', { class: 'items', id: 'lib-items' });
     const main = h('div', {},
-      h('div', { class: 'libtools' }, h('h2', {}, c.label), search, h('button', { class: 'btn', disabled: !db, onclick: () => openEditor(libCol, null) }, `Añadir ${c.one}`)),
+      h('div', { class: 'libtools' }, h('h2', {}, c.label), search, libCol === 'estructuras' ? h('button', { class: 'btn ghost', disabled: !db, onclick: () => openEditor('estructuras', null, { draft: { tipo: 'imagen', orden: lib.estructuras.length } }) }, 'Template desde benchmark') : null, h('button', { class: 'btn', disabled: !db, onclick: () => openEditor(libCol, null) }, `Añadir ${c.one}`)),
       grid);
     root.append(h('div', { class: 'lib' }, nav, main));
     renderLibItems();
@@ -719,7 +826,7 @@ Responde SOLO con JSON con esta forma:
       const sub = c.sub.map((k) => d[k]).filter(Boolean).join(' · ');
       const body = h('div', {}, h('div', { class: 'row' }, h('strong', {}, d.nombre), c.pill && d[c.pill] ? h('span', { class: pillClass(d[c.pill]) }, shortPill(d[c.pill])) : null),
         sub ? h('div', { class: 'mono muted' }, sub) : null,
-        c.steps ? h('div', { class: 'steps-inline' }, (d[c.steps] || []).map((s) => h('span', {}, s))) : null,
+        c.steps ? h('div', { class: 'steps-inline' }, (d[c.steps] || d.zonas || []).map((s) => h('span', {}, s))) : null,
         d[c.text] ? h('p', {}, d[c.text]) : null);
       return h('button', { class: 'item', onclick: () => (c.ficha ? openFicha(libCol, d.id) : openEditor(libCol, d.id)) },
         c.img ? h('div', { class: 'with-img' }, d[c.img] ? h('img', { src: imgSrc(d[c.img]), alt: '' }) : null, body) : body);
@@ -730,9 +837,11 @@ Responde SOLO con JSON con esta forma:
   // ---------- COMPLETAR CON CLAUDE ----------
   const HECHOS = `Datos confirmados de PlanPy: módulos de ventas, caja, inventario, clientes, proveedores, pedidos, reportes, agenda y reservas 24/7, facturación (alcance fiscal sin confirmar), programa de puntos, multiusuario con permisos, varias sedes y PlanPy IA (recomienda, no reporta). PWA: celular y computador, sin instalar nada. Planes: Emprendedor (1 sede, 2 usuarios), PYME (1–3 sedes, 5 usuarios, WhatsApp, IA), Pro (más de 3 sedes). Colombia desde $46.500/mes con plan anual; Argentina USD $15/mes con plan anual; 15 días gratis. Cliente ideal: dueño de 1 a 5 locales que opera con cuaderno, Excel, WhatsApp y memoria, y hace la gestión después de cerrar. Sin confirmar: control de fiados, tallas/variantes, descuento automático de inventario, importación desde Excel, modo sin internet.`;
 
-  async function completarConClaude(col, draft, idea, reescribir) {
+  const camposVisibles = (col, draft) => COLS[col].fields.filter((f) => !f[5] || (draft.tipo || 'video') === f[5]);
+
+  async function completarConClaude(col, draft, idea, reescribir, imagen) {
     const c = COLS[col];
-    const campos = c.fields.filter(([k, , , , guia]) => guia && (reescribir || k === 'nombre' || !hasVal(draft[k])));
+    const campos = camposVisibles(col, draft).filter(([k, , , , guia]) => guia && (reescribir || k === 'nombre' || !hasVal(draft[k])));
     if (!campos.length) return {};
     const lista = campos.map(([k, label, type, extra, guia]) => {
       let tipo = 'texto';
@@ -742,7 +851,7 @@ Responde SOLO con JSON con esta forma:
       if (type === 'refs') tipo = `array de ids de: ${lib[extra].map((o) => `${o.id} (${o.nombre})`).join(', ')}`;
       return `- "${k}" (${label}; ${tipo}): ${guia}`;
     }).join('\n');
-    const escrito = Object.fromEntries(c.fields.filter(([k, , type]) => hasVal(draft[k]) && !['image', 'media'].includes(type)).map(([k]) => [k, draft[k]]));
+    const escrito = Object.fromEntries(camposVisibles(col, draft).filter(([k, , type]) => hasVal(draft[k]) && !['image', 'media'].includes(type)).map(([k]) => [k, draft[k]]));
     const existentes = lib[col].map((o) => o.nombre).filter(Boolean).join(', ');
     const prompt = `Eres el estratega creativo de PlanPy. Completa la ficha de ${c.que} para la librería de anuncios.
 
@@ -750,7 +859,9 @@ ${REGLAS}
 
 ${HECHOS}
 
-Idea del usuario: "${idea || draft.nombre || ''}"
+${imagen ? `Te adjunto una imagen de referencia: un anuncio de otra marca (benchmark) que al usuario le gusta. Extrae su ESTRUCTURA reutilizable (layout, jerarquía, zonas de texto, elementos gráficos, recurso creativo) y conviértela en un template para PlanPy. No copies su marca, sus colores ni su texto; nómbralo por el recurso, no por la marca.
+
+` : ''}Idea del usuario: "${idea || draft.nombre || (imagen ? 'template a partir de la imagen de referencia' : '')}"
 Lo que ya está escrito (respétalo y no lo contradigas): ${JSON.stringify(escrito)}
 Ya existen en esta colección (no dupliques): ${existentes}
 
@@ -759,7 +870,7 @@ ${lista}
 
 Escribe en español latinoamericano, concreto y sin relleno. No inventes cifras ni funciones fuera de los datos confirmados.
 Responde SOLO con un objeto JSON con exactamente esas claves.`;
-    const res = await sample.json(prompt, { cache: false });
+    const res = await sample.json(prompt, imagen ? { cache: false, images: imagen } : { cache: false });
     if (!res || typeof res !== 'object' || Array.isArray(res)) throw { code: 'invalid_json' };
     const out = {};
     for (const [k, , type, extra] of campos) {
@@ -785,7 +896,7 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
   function openEditor(col, id, opts = {}) {
     const c = COLS[col];
     const orig = id ? byId(col, id) : null;
-    const draft = opts.draft || (orig ? JSON.parse(JSON.stringify(orig)) : { orden: lib[col].length });
+    const draft = opts.draft || (orig ? JSON.parse(JSON.stringify(orig)) : { orden: lib[col].length, ...(col === 'estructuras' ? { tipo: sel.tipo } : {}) });
     delete draft.id;
     const rootEl = document.getElementById('editor-root');
     let confirmDel = false, pensando = false;
@@ -795,7 +906,7 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
 
     const uploader = (k, accept, onDone) => h('input', { type: 'file', id: `ed-${col}-${k}`, accept, onchange: async (e) => {
       const f = e.target.files?.[0]; if (!f) return;
-      try { const r = await assets.upload(f); onDone(r); toast('Archivo subido'); }
+      try { const r = await assets.upload(f); onDone(r, f); toast('Archivo subido'); }
       catch (err) { toast(err?.code === 'too_large' ? 'El archivo pesa más de 20 MB.' : err?.code === 'unsupported_type' ? 'Formato no admitido.' : 'No se pudo subir el archivo.'); }
     } });
 
@@ -805,7 +916,7 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
       if (type === 'text') input = h('input', { type: 'text', id: fid, value: draft[k] || '', oninput: (e) => (draft[k] = e.target.value) });
       else if (type === 'textarea') input = h('textarea', { id: fid, oninput: (e) => (draft[k] = e.target.value) }, draft[k] || '');
       else if (type === 'list') input = h('textarea', { id: fid, oninput: (e) => (draft[k] = e.target.value.split('\n').map((s) => s.trim()).filter(Boolean)) }, (draft[k] || []).join('\n'));
-      else if (type === 'select') input = h('select', { id: fid, onchange: (e) => (draft[k] = e.target.value) }, h('option', { value: '' }, '—'), extra.map((o) => h('option', { value: o, selected: draft[k] === o }, o)));
+      else if (type === 'select') input = h('select', { id: fid, onchange: (e) => { draft[k] = e.target.value; if (k === 'tipo' && col === 'estructuras') openEditor(col, id, { ...opts, draft }); } }, h('option', { value: '' }, '—'), extra.map((o) => h('option', { value: o, selected: draft[k] === o }, o)));
       else if (type === 'ref') input = h('select', { id: fid, onchange: (e) => (draft[k] = e.target.value) }, h('option', { value: '' }, '—'), lib[extra].map((o) => h('option', { value: o.id, selected: draft[k] === o.id }, o.nombre)));
       else if (type === 'refs') {
         const box = h('div', { class: 'chips', id: fid });
@@ -818,7 +929,7 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
         const paint = () => box.replaceChildren(
           draft[k] ? mediaEl(draft[k], draft[k + '_tipo']) : h('div', { class: 'ph' }),
           assets ? h('div', { class: 'upl' },
-            uploader(k, type === 'media' ? 'image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm' : 'image/jpeg,image/png,image/webp', (r) => { draft[k] = r.id; if (type === 'media') draft[k + '_tipo'] = r.contentType; paint(); }),
+            uploader(k, type === 'media' ? 'image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm' : 'image/jpeg,image/png,image/webp', (r, f) => { draft[k] = r.id; if (type === 'media') draft[k + '_tipo'] = r.contentType; if (k === 'referencia') opts.refBlob = f; paint(); }),
             draft[k] ? h('button', { class: 'add', onclick: () => { draft[k] = ''; delete draft[k + '_tipo']; paint(); } }, 'Quitar') : null)
             : h('span', { class: 'muted' }, 'Solo los editores pueden subir archivos.'));
         paint(); input = box;
@@ -842,18 +953,35 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
 
     // Caja de Claude: una idea en una frase → completa los campos vacíos (o todos).
     const puedeIA = !!sample && c.fields.some((f) => f[4]);
+    const esTemplate = col === 'estructuras' && draft.tipo === 'imagen';
+    const benchBox = esTemplate ? h('div', { class: 'bench' },
+      draft.referencia ? h('img', { src: imgSrc(draft.referencia), alt: 'Referencia' }) : null,
+      h('div', {}, h('div', { class: 'muted', style: 'font-size:13px' }, draft.referencia ? 'Claude va a mirar esta referencia para armar el template.' : 'Opcional: suba el anuncio de otra marca que le gusta y Claude extrae su estructura.'),
+        assets ? h('input', { type: 'file', id: `ed-${col}-bench`, accept: 'image/jpeg,image/png,image/webp', onchange: async (e) => {
+          const f = e.target.files?.[0]; if (!f) return;
+          try { const r = await assets.upload(f); draft.referencia = r.id; opts.refBlob = f; openEditor(col, id, { ...opts, draft }); toast('Referencia subida'); }
+          catch (err) { toast(err?.code === 'too_large' ? 'La imagen pesa más de 20 MB.' : 'No se pudo subir la imagen.'); }
+        } }) : h('div', { class: 'muted', style: 'font-size:13px' }, 'Solo los editores pueden subir imágenes.'))) : null;
+    const refImagen = async () => {
+      if (!esTemplate || !draft.referencia) return null;
+      const caps = await sample.limits().catch(() => null);
+      if (!caps?.images) { toast('Esta vista no puede enviar imágenes a Claude: completo con la descripción.'); return null; }
+      if (opts.refBlob) return opts.refBlob;
+      try { const r = await fetch(imgSrc(draft.referencia)); return r.ok ? await r.blob() : null; } catch { return null; }
+    };
     const ideaId = `ed-${col}-idea`;
     const aiBox = puedeIA ? h('div', { class: 'ai' },
-      h('label', { for: ideaId }, 'Completar con Claude'),
-      h('textarea', { id: ideaId, placeholder: col === 'personas' ? 'Ej.: dueño de tienda de 30 años que quiere digitalizar el negocio' : col === 'angulos' ? 'Ej.: el dueño que no puede tomarse vacaciones porque todo está en su cabeza' : col === 'avatares' ? 'Ej.: mujer argentina de 40 años, simpática, de Mendoza' : `Describa ${c.one === 'avatar' ? 'el personaje' : 'la idea'} en una frase`, oninput: (e) => (draft.__idea = e.target.value) }, draft.__idea || ''),
+      h('label', { for: ideaId }, esTemplate ? 'Crear template con Claude' : 'Completar con Claude'),
+      benchBox,
+      h('textarea', { id: ideaId, placeholder: col === 'personas' ? 'Ej.: dueño de tienda de 30 años que quiere digitalizar el negocio' : col === 'angulos' ? 'Ej.: el dueño que no puede tomarse vacaciones porque todo está en su cabeza' : col === 'avatares' ? 'Ej.: mujer argentina de 40 años, simpática, de Mendoza' : esTemplate ? 'Ej.: captura de una reseña de Google con 5 estrellas (o déjelo vacío si subió una referencia)' : `Describa ${c.one === 'avatar' ? 'el personaje' : 'la idea'} en una frase`, oninput: (e) => (draft.__idea = e.target.value) }, draft.__idea || ''),
       h('div', { class: 'ai-row' },
         h('label', { class: 'check' }, h('input', { type: 'checkbox', id: `ed-${col}-reescribir`, checked: !!draft.__reescribir, onchange: (e) => (draft.__reescribir = e.target.checked) }), 'Reescribir también lo que ya está lleno'),
         h('button', { class: 'btn lime small', id: `ed-${col}-ia`, onclick: async (e) => {
           const idea = (draft.__idea || '').trim();
-          if (!idea && !hasVal(draft.nombre)) { toast('Escriba la idea o al menos el nombre'); return; }
+          if (!idea && !hasVal(draft.nombre) && !(esTemplate && draft.referencia)) { toast('Escriba la idea o al menos el nombre'); return; }
           pensando = true; e.target.disabled = true; e.target.textContent = 'Pensando… (20–40 s)';
           try {
-            const patch = await completarConClaude(col, draft, idea, !!draft.__reescribir);
+            const patch = await completarConClaude(col, draft, idea, !!draft.__reescribir, await refImagen());
             Object.assign(draft, patch);
             toast(Object.keys(patch).length ? `Claude completó ${Object.keys(patch).length} campos. Revíselos antes de guardar.` : 'No había campos vacíos para completar.');
             pensando = false; openEditor(col, id, { ...opts, draft });
@@ -866,7 +994,7 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
       h('div', { class: 'panel', role: 'dialog', 'aria-modal': 'true', 'aria-label': orig ? orig.nombre : `Nuevo ${c.one}` },
         h('div', { class: 'panel-head' }, h('h3', {}, orig ? orig.nombre : `Nuevo ${c.one}`), h('button', { class: 'btn ghost small', onclick: close }, 'Cerrar')),
         aiBox,
-        c.fields.map(fieldEl),
+        camposVisibles(col, draft).map(fieldEl),
         h('div', { class: 'panel-foot' }, saveBtn, orig ? delBtn : null))));
     if (!opts.draft) rootEl.querySelector(puedeIA && !orig ? `#${ideaId}` : 'input, textarea, select')?.focus();
   }
@@ -942,15 +1070,15 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
       const g = p.guion || {};
       list.append(h('details', { class: 'order' },
         h('summary', {},
-          h('div', {}, h('strong', {}, p.titulo || 'Anuncio'), h('div', { class: 'meta' }, [fecha, p.persona?.nombre, p.rubro?.nombre, p.angulo?.nombre, p.estructura?.nombre, p.estilo?.nombre].filter(Boolean).join(' · '))),
+          h('div', {}, h('strong', {}, p.titulo || 'Anuncio'), h('div', { class: 'meta' }, [fecha, p.tipo === 'imagen' ? `Imagen ${(p.formatos || []).join(' · ')}` : 'Video', p.persona?.nombre, p.rubro?.nombre, p.angulo?.nombre, p.estructura?.nombre, p.estilo?.nombre].filter(Boolean).join(' · '))),
           estadoSel),
         h('div', { class: 'body' },
           h('div', { class: 'cmd' }, h('code', {}, cmd), h('button', { class: 'btn small', onclick: () => copy(cmd) }, 'Copiar comando')),
           p.avatar ? h('div', { class: 'muted' }, 'Avatar: ', h('b', {}, p.avatar.nombre), p.avatar.look ? ` · ${[p.avatar.look.vestuario, p.avatar.look.escenario].filter(Boolean).join(' · ')}` : '') : null,
           p.nota ? h('div', { class: 'muted' }, 'Nota: ', p.nota) : null,
           h('div', { class: 'board-wrap' }, h('table', { class: 'board' },
-            h('thead', {}, h('tr', {}, ['Paso', 'Voz', 'Pantalla', 'Toma'].map((x) => h('th', {}, x)))),
-            h('tbody', {}, (g.bloques || []).map((b) => h('tr', {}, h('td', { class: 'paso' }, b.paso), h('td', { class: 'voz' }, b.voz), h('td', { class: 'pant' }, (b.pantalla || []).join(' / ')), h('td', {}, b.toma))),
+            h('thead', {}, h('tr', {}, (p.tipo === 'imagen' ? ['Zona', 'Copy'] : ['Paso', 'Voz', 'Pantalla', 'Toma']).map((x, j) => h('th', j === 1 && p.tipo === 'imagen' ? { colspan: '3' } : {}, x)))),
+            p.tipo === 'imagen' ? h('tbody', {}, Object.entries(g.copy || {}).map(([z, v]) => h('tr', {}, h('td', { class: 'paso' }, z), h('td', { class: 'pant', colspan: '3' }, Array.isArray(v) ? v.join(' / ') : v))), h('tr', {}, h('td', { class: 'paso' }, 'Visual'), h('td', { colspan: '3' }, g.visual || '—'))) : h('tbody', {}, (g.bloques || []).map((b) => h('tr', {}, h('td', { class: 'paso' }, b.paso), h('td', { class: 'voz' }, b.voz), h('td', { class: 'pant' }, (b.pantalla || []).join(' / ')), h('td', {}, b.toma))),
               g.cta ? h('tr', {}, h('td', { class: 'paso' }, 'CTA'), h('td', { class: 'voz' }, g.cta.voz), h('td', { class: 'pant' }, g.cta.pantalla), h('td', {}, 'Cierre de marca')) : null))),
           h('div', {}, del))));
     }

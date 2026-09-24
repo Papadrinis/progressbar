@@ -58,6 +58,26 @@ Cuando llegue `/sparkpy pedido <id>`:
    Si el avatar se castea nuevo y se aprueba, guarda el job en `avatares/<id>.casting_job`, sube el
    retrato como `imagen`, pasa su estado a «aprobado» y añade el anuncio a `usado_en`.
 
+### Pedidos de imagen estática (`pedido.tipo == "imagen"`)
+
+El pedido trae `formatos` (1:1, 4:5, 9:16, 1.91:1), el **template** (`estructura`: `zonas`, `layout`,
+`produccion` y, si existe, `referencia`, un asset del benchmark en `/_blob/<id>`) y el **copy** ya aprobado
+en `guion.copy` (una entrada por zona; las listas vienen como arrays), más `guion.visual`,
+`guion.interfaz`, `guion.features` y `avatar.look`. No hay voz ni Seedance. Regla central: **la IA hace la
+imagen y el código pone el texto**, para que el precio, las tildes y «PlanPy» salgan exactos.
+
+- `produccion: "código (UI nativa)"` (chat de WhatsApp, número grande, comparativa, lista): se compone
+  todo en código, sin créditos. Sin logos de Meta ni WhatsApp; contactos genéricos; «Datos de ejemplo».
+- `produccion: "foto IA + texto"` o `"foto IA + UI en código"`: una foto por formato con `gpt_image_2_5`
+  (high, 2k, el `aspect_ratio` de cada formato), avatar como `image_references` si tiene `casting_job`,
+  prompt = `guion.visual` + `avatar.look`, **sin texto y sin pantallas legibles**, dejando aire donde el
+  `layout` pone el copy. Después se compone el copy y la interfaz encima.
+- Mientras no exista la composición de estáticos en código (`SPARKPY-ESTATICO`, pendiente), la salida
+  aceptable es el estilo «Foto con texto integrado»: `gpt_image_2_5` con el copy exacto entre comillas y
+  la `referencia` del template como `image_references`, revisando letra por letra (precio, tildes,
+  «PlanPy»). Si una pieza falla, se regenera; nunca se entrega con un error de texto.
+- Muestra las piezas al usuario por formato antes de darlas por listas. Entrega en `out/estaticos/<id>/`.
+
 ```
 0 BRIEF → 1 GUIONES ⏸ → 2 VOZ → 3 CASTING ⏸ → 4 FOTOGRAMAS ⏸ → 5 TOMAS → 6 MONTAJE → 7 REVISIÓN ⏸ → 8 RENDER
 ```
