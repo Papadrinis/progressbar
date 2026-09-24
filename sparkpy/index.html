@@ -260,6 +260,11 @@ pre.raw { white-space: pre-wrap; font-family: var(--mono); font-size: 12px; back
 .dd-avs { display: flex; gap: 10px; flex-wrap: wrap; }
 .dd-avs div { display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; width: 84px; }
 .dd-avs img, .dd-avs .ph { width: 84px; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 8px; background: var(--surface-2); }
+.opt-meta { display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; margin: 6px 0 4px; }
+.opt-meta > div { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.k2 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-right: 4px; }
+.chip.mini { padding: 2px 9px; font-size: 12.5px; cursor: default; }
+.av .sub { font-size: 12px; color: var(--muted); }
 </style>
 
 <header class="top">
@@ -331,12 +336,17 @@ pre.raw { white-space: pre-wrap; font-family: var(--mono); font-size: 12px; back
       ['plan', 'Plan mínimo', 'text', null, 'Emprendedor, PYME o Pro, o «sin confirmar»'],
       ['estado', 'Estado', 'text', null, '«confirmado» solo si está en los datos confirmados; si no, «sin confirmar»'],
       ['pantalla', 'Pantalla sugerida (Remotion)', 'textarea', null, 'Qué tarjeta de interfaz se superpone: título, filas de ejemplo, dispositivo']] },
-    avatares: { label: 'Avatares', one: 'avatar', sub: ['usado_en'], pill: 'estado', text: 'descripcion', img: 'imagen', que: 'un avatar: el personaje concreto, con nombre propio, que actúa en el anuncio y encarna a un buyer persona', fields: [
-      ['imagen', 'Foto de referencia', 'image', null, null],
-      ['nombre', 'Nombre del personaje', 'text', null, 'Nombre propio creíble para el mercado, p. ej. «Don Hernán», «Rocío»'],
-      ['persona', 'Buyer persona', 'ref', 'personas', 'El buyer persona que encarna'],
-      ['rubro', 'Rubro', 'ref', 'rubros', 'Su negocio'],
-      ['descripcion', 'Descripción para el casting', 'textarea', null, 'Prompt de casting documental: edad, rasgos, ropa de trabajo, local humilde pero cuidado, ciudad. Sin texto ni pantallas'],
+    avatares: { label: 'Avatares', one: 'avatar', sub: ['edad', 'mercado', 'ciudad'], pill: 'estado', text: 'rasgos', img: 'imagen',
+      que: 'un avatar: una persona concreta con nombre propio (un actor recurrente) que puede aparecer en anuncios de distintos rubros; su cara y rasgos son fijos y el vestuario y el escenario cambian en cada anuncio', fields: [
+      ['imagen', 'Foto de referencia (cara)', 'image', null, null],
+      ['nombre', 'Nombre', 'text', null, 'Nombre propio creíble para el mercado, p. ej. «Andrés», «Carolina», «Don Hernán»'],
+      ['edad', 'Edad', 'text', null, 'Edad aparente en años, un número, p. ej. «34»'],
+      ['genero', 'Género', 'select', ['mujer', 'hombre'], 'Cómo se presenta'],
+      ['mercado', 'Mercado', 'select', ['CO', 'AR', 'ambos'], 'Dónde es creíble por acento y rasgos'],
+      ['ciudad', 'Ciudad', 'text', null, 'Ciudad de referencia, p. ej. «Medellín»'],
+      ['rasgos', 'Rasgos fijos (identidad)', 'textarea', null, 'Solo lo que no cambia entre anuncios: edad, rasgos, pelo, contextura, piel. Nada de ropa de oficio ni negocio'],
+      ['estilo', 'Actitud en cámara', 'textarea', null, 'Cómo se mueve y se expresa: p. ej. «tranquilo, de pocas palabras»'],
+      ['personas', 'Buyer personas que puede encarnar', 'refs', 'personas', 'Los buyer personas cuya edad y perfil le quedan creíbles'],
       ['casting_job', 'Job de casting (Higgsfield)', 'text', null, null],
       ['estado', 'Estado', 'select', ['aprobado', 'propuesto'], null],
       ['usado_en', 'Usado en', 'text', null, null]] },
@@ -430,12 +440,29 @@ pre.raw { white-space: pre-wrap; font-family: var(--mono); font-size: 12px; back
     const a = byId('angulos', sel.angulo);
     if (a && /aparcado/i.test(a.estado)) out.push(`«${a.nombre}» está aparcado.`);
     if (a && /sin confirmar/i.test(a.estado)) out.push(`«${a.nombre}» depende de una función sin confirmar.`);
-    for (const f of sel.features.map((id) => byId('features', id)).filter(Boolean)) if (/sin confirmar/i.test(f.estado)) out.push(`${f.nombre}: ${f.estado.split('·').slice(1).join('·').trim() || 'sin confirmar'}.`);
+    for (const f of (guion?.features || []).map((id) => byId('features', id)).filter(Boolean)) if (/sin confirmar/i.test(f.estado)) out.push(`${f.nombre}: ${f.estado.split('·').slice(1).join('·').trim() || 'sin confirmar'}.`);
     const p = byId('personas', sel.persona);
     if (p && p.mercado && p.mercado !== 'ambos' && p.mercado !== sel.mercado) out.push(`${p.nombre} vive en ${p.mercado === 'AR' ? 'Argentina' : 'Colombia'}.`);
     return out;
   };
   const ready = () => sel.rubro && sel.persona && sel.angulo && sel.estructura;
+
+  // Avatar propuesto: el actor que mejor encaja con el buyer persona (edad, mercado) y ya tiene cara aprobada.
+  const rango = (txt) => { const n = String(txt || '').match(/\d+/g); return n ? [+n[0], +(n[1] || n[0])] : null; };
+  const avatarScore = (a) => {
+    const p = byId('personas', sel.persona);
+    let sc = 0;
+    if (p && (a.personas || []).includes(p.id)) sc += 3;
+    const r = rango(p?.edad), e = parseInt(a.edad, 10);
+    if (r && e) sc += e >= r[0] - 3 && e <= r[1] + 3 ? 2 : Math.abs(e - (r[0] + r[1]) / 2) > 12 ? -3 : 0;
+    if (!a.mercado || a.mercado === 'ambos' || a.mercado === sel.mercado) sc += 1; else sc -= 2;
+    if (a.estado === 'aprobado') sc += 1;
+    if (a.imagen) sc += 0.5;
+    return sc;
+  };
+  const propuestos = () => [...lib.avatares].sort((a, b) => avatarScore(b) - avatarScore(a) || (a.orden ?? 999) - (b.orden ?? 999));
+  const avatarActual = () => (sel.avatarManual && byId('avatares', sel.avatar) ? sel.avatar : sel.persona ? propuestos()[0]?.id || null : null);
+  let verTodosAv = false;
 
   const chip = (label, pressed, onclick, extra = {}) => h('button', { class: 'chip' + (extra.sug ? ' sug' : '') + (extra.dim ? ' dim' : ''), 'aria-pressed': String(!!pressed), onclick, title: extra.title }, label, extra.tag ? h('span', { class: 'tag' }, extra.tag) : null);
   const pick = (key, id) => { sel[key] = sel[key] === id ? null : id; save(); render(); };
@@ -447,13 +474,20 @@ pre.raw { white-space: pre-wrap; font-family: var(--mono); font-size: 12px; back
     const root = document.getElementById('view-crear');
     root.replaceChildren();
     const persona = byId('personas', sel.persona), rubro = byId('rubros', sel.rubro), est = byId('estructuras', sel.estructura);
-    const sugAng = new Set(persona?.angulos || []), sugFeat = new Set(rubro?.features || []);
+    const sugAng = new Set(persona?.angulos || []);
 
     // paso 1
     const byOrden = (c) => [...lib[c]].sort((a, b) => (a.orden ?? 999) - (b.orden ?? 999));
     const personaSel = persona;
     const personas = byOrden('personas').sort((a, b) => (b.rubro === sel.rubro) - (a.rubro === sel.rubro));
-    const avs = byOrden('avatares').sort((a, b) => ((b.persona === sel.persona) * 2 + (b.rubro === sel.rubro)) - ((a.persona === sel.persona) * 2 + (a.rubro === sel.rubro)));
+    const avId = avatarActual();
+    const avList = sel.persona ? propuestos() : byOrden('avatares');
+    const avs = verTodosAv ? avList : avList.slice(0, 4);
+    const avCard = (a, k) => h('button', { class: 'av', 'aria-pressed': String(avId === a.id), onclick: () => { sel.avatar = a.id; sel.avatarManual = true; save(); render(); } },
+      a.imagen ? h('img', { src: imgSrc(a.imagen), alt: a.nombre, loading: 'lazy' }) : h('div', { class: 'ph' }, (a.nombre || '?').slice(0, 1)),
+      h('div', { class: 't' }, h('strong', {}, a.nombre), h('span', { class: 'sub mono' }, [a.edad && `${a.edad} años`, a.mercado].filter(Boolean).join(' · ')),
+        k === 0 && sel.persona && !sel.avatarManual ? h('span', { class: 'pill ok' }, 'propuesto') : h('span', { class: pillClass(a.estado) }, a.estado)));
+    const avSel = byId('avatares', avId);
     const angSel = byId('angulos', sel.angulo);
 
     const s1 = h('div', { class: 'step' },
@@ -469,18 +503,16 @@ pre.raw { white-space: pre-wrap; font-family: var(--mono); font-size: 12px; back
       h('div', { class: 'field' }, lblNew('Ángulo', 'angulos', (id) => (sel.angulo = id)), h('div', {},
         h('div', { class: 'chips' }, byOrden('angulos').map((a) => chip(a.nombre, sel.angulo === a.id, () => pick('angulo', a.id), { sug: sugAng.has(a.id), dim: /aparcado/i.test(a.estado), title: a.pregunta }))),
         angSel ? h('div', { class: 'hint' }, h('b', {}, angSel.pregunta || angSel.nombre), ' · ', angSel.sobre || angSel.mejor_para, ' ', h('button', { class: 'add', onclick: () => openFicha('angulos', angSel.id) }, 'Ver one-pager')) : null)),
-      h('div', { class: 'field' }, lblNew('Features', 'features', (id) => { if (sel.features.length < 3) sel.features = [...sel.features, id]; }), h('div', {},
-        h('div', { class: 'chips' }, byOrden('features').map((f) => chip(f.nombre, sel.features.includes(f.id), () => {
-          if (sel.features.includes(f.id)) sel.features = sel.features.filter((x) => x !== f.id);
-          else if (sel.features.length >= 3) { toast('Máximo 3 features por anuncio'); return; }
-          else sel.features = [...sel.features, f.id];
-          save(); render();
-        }, { sug: sugFeat.has(f.id), title: f.claim }))),
-        h('div', { class: 'hint' }, 'Hasta 3. Un anuncio que muestra todo no muestra nada.'))),
-      h('div', { class: 'field' }, lblNew('Avatar', 'avatares', (id) => (sel.avatar = id)), h('div', { class: 'avatars' },
-        avs.map((a) => h('button', { class: 'av', 'aria-pressed': String(sel.avatar === a.id), onclick: () => pick('avatar', a.id) },
-          a.imagen ? h('img', { src: imgSrc(a.imagen), alt: a.nombre, loading: 'lazy' }) : h('div', { class: 'ph' }, (a.nombre || '?').slice(0, 1)),
-          h('div', { class: 't' }, h('strong', {}, a.nombre), h('span', { class: pillClass(a.estado) }, a.estado)))))),
+      h('div', { class: 'field' }, lblNew('Avatar', 'avatares', (id) => { sel.avatar = id; sel.avatarManual = true; }), h('div', {},
+        h('div', { class: 'hint', style: 'margin:0 0 10px' }, avSel
+          ? [h('b', {}, avSel.nombre), sel.avatarManual ? ' · elegido por usted. ' : ` · propuesto para «${persona?.nombre || ''}». `,
+             rubro ? `Aparece con el look de ${rubro.nombre.toLowerCase()}: el guion define vestuario y escenario. ` : 'El look (vestuario y escenario) sale del rubro. ',
+             sel.avatarManual ? h('button', { class: 'add', onclick: () => { sel.avatarManual = false; save(); render(); } }, 'Volver al propuesto') : null]
+          : 'Elija un buyer persona y le propongo el avatar que mejor encaja.'),
+        h('div', { class: 'avatars' }, avs.map(avCard)),
+        avList.length > 4 ? h('button', { class: 'add', style: 'margin-top:8px', onclick: () => { verTodosAv = !verTodosAv; render(); } }, verTodosAv ? 'Ver menos' : `Ver los ${avList.length} avatares`) : null)),
+      h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Features'), h('div', { class: 'hint', style: 'margin:0;padding-top:6px' },
+        guion?.features?.length ? ['El guion elegido muestra: ', h('b', {}, guion.features.map((f) => name('features', f) || f).join(', ')), '.'] : 'No hace falta elegirlas: Claude escoge 1 o 2 según el rubro, el buyer persona y el ángulo, y las verá en cada guion.')),
       h('div', { class: 'field' }, lblNew('Estructura', 'estructuras', (id) => (sel.estructura = id)), h('div', {},
         h('div', { class: 'chips' }, byOrden('estructuras').map((e) => chip(e.nombre, sel.estructura === e.id, () => pick('estructura', e.id), { title: (e.pasos || []).join(' → ') }))),
         est ? h('div', { class: 'hint' }, h('b', {}, (est.pasos || []).join(' → ')), ' · ', est.mejor_para, est.duracion ? ` · ${est.duracion}` : '', est.nota ? h('div', {}, est.nota) : null) : null)),
@@ -528,11 +560,11 @@ pre.raw { white-space: pre-wrap; font-family: var(--mono); font-size: 12px; back
     const aside = h('aside', { class: 'aside' },
       h('div', { class: 'recipe' }, h('h3', {}, 'Receta del anuncio'),
         h('dl', {}, row('Mercado', sel.mercado === 'AR' ? 'Argentina' : 'Colombia'), row('Eje', eje), row('Rubro', name('rubros', sel.rubro)), row('Persona', name('personas', sel.persona)),
-          row('Ángulo', name('angulos', sel.angulo)), row('Features', sel.features.map((f) => name('features', f)).join(', ')), row('Avatar', name('avatares', sel.avatar)),
+          row('Ángulo', name('angulos', sel.angulo)), row('Features', guion?.features?.length ? guion.features.map((f) => name('features', f) || f).join(', ') : (opciones.length ? 'según el guion' : 'las elige Claude')), row('Avatar', name('avatares', avatarActual())),
           row('Estructura', name('estructuras', sel.estructura)), row('Duración', sel.duracion + ' s'), row('Estilo', est2?.nombre)),
         fl.length ? h('div', { class: 'flags' }, fl.map((f) => h('div', {}, f))) : null,
         h('button', { class: 'btn block lime', disabled: !ready() || !sample || !!generando, onclick: generar }, opciones.length ? 'Generar otras 3' : 'Generar 3 guiones'),
-        h('button', { class: 'btn block ghost small', onclick: () => { Object.assign(sel, { rubro: null, persona: null, angulo: null, features: [], avatar: null, estructura: null }); opciones = []; elegido = null; guion = null; errorGen = null; save(); render(); } }, 'Limpiar selección')));
+        h('button', { class: 'btn block ghost small', onclick: () => { Object.assign(sel, { rubro: null, persona: null, angulo: null, avatar: null, avatarManual: false, estructura: null }); opciones = []; elegido = null; guion = null; errorGen = null; save(); render(); } }, 'Limpiar selección')));
 
     root.append(h('div', { class: 'create' }, h('div', {}, s1, s2, s3, s4), aside));
   }
@@ -567,6 +599,9 @@ pre.raw { white-space: pre-wrap; font-family: var(--mono); font-size: 12px; back
         isSel ? h('span', { class: 'pill ok' }, 'Elegido · editable') : h('button', { class: 'btn small', onclick: () => { elegido = i; guion = JSON.parse(JSON.stringify(o)); render(); } }, 'Elegir este guion')),
       h('div', { class: 'tl', 'aria-hidden': 'true' }, bloques.map((b) => h('div', { style: `flex:${Math.max(+b.seg || 1, 1)}` }, b.paso)), h('div', { class: 'cta', style: `flex:${+g.cta?.seg || 4}` }, 'CTA')),
       h('div', { class: 'tc mono muted' }, `≈ ${Math.round(total)} s · gancho forma ${o.gancho_forma || '—'}`),
+      h('div', { class: 'opt-meta' },
+        (g.features || []).length ? h('div', {}, h('span', { class: 'k2' }, 'Features'), (g.features || []).map((f) => h('span', { class: 'chip mini' }, name('features', f) || f))) : null,
+        g.look ? h('div', {}, h('span', { class: 'k2' }, `Look de ${name('avatares', avatarActual()) || 'el avatar'}`), [g.look.vestuario, g.look.escenario].filter(Boolean).join(' · ')) : null),
       h('div', { class: 'board-wrap' }, h('table', { class: 'board' },
         h('thead', {}, h('tr', {}, ['Paso', 'Voz (locución)', 'Pantalla', 'Toma', 'Interfaz'].map((x) => h('th', {}, x)))), h('tbody', {}, rows))),
       (o.claims_a_confirmar || []).length ? h('div', { class: 'claims' }, h('b', {}, 'Confirmar antes de pautar: '), o.claims_a_confirmar.join(' · ')) : null);
@@ -598,8 +633,8 @@ pre.raw { white-space: pre-wrap; font-family: var(--mono); font-size: 12px; back
       rubro: pickFields(byId('rubros', sel.rubro), ['nombre', 'tipo', 'escenario', 'dolor']),
       buyer_persona: pickFields(byId('personas', sel.persona), ['nombre', 'resumen', 'eje', 'edad', 'negocio', 'intencion', 'identidad', 'tension', 'deseo', 'disparador', 'cita', 'no_decir']),
       angulo: pickFields(byId('angulos', sel.angulo), ['nombre', 'sobre', 'por_que', 'pregunta', sel.mercado === 'AR' ? 'gancho_ar' : 'gancho_co', 'visual', 'estado']),
-      features: sel.features.map((id) => pickFields(byId('features', id), ['nombre', 'dispositivo', 'claim', 'estado', 'pantalla'])),
-      avatar_personaje: pickFields(byId('avatares', sel.avatar), ['nombre', 'descripcion']),
+      features_disponibles: [...lib.features].sort((a, b) => (a.orden ?? 999) - (b.orden ?? 999)).map((f) => ({ id: f.id, ...pickFields(f, ['nombre', 'dispositivo', 'claim', 'estado']), sugerida_para_el_rubro: (byId('rubros', sel.rubro)?.features || []).includes(f.id) || undefined })),
+      avatar: pickFields(byId('avatares', avatarActual()), ['nombre', 'edad', 'genero', 'ciudad', 'rasgos', 'estilo']),
       estructura: pickFields(est, ['nombre', 'pasos', 'nota']),
     };
     return `Eres el guionista de anuncios en video de PlanPy (vertical 9:16, Meta/TikTok). Escribe 3 guiones distintos (storyboards) para este brief. Cada uno con un gancho diferente.
@@ -608,13 +643,15 @@ ${REGLAS}
 
 Mercado y oferta: ${OFERTA[sel.mercado]}
 
-Brief (datos de la librería). El buyer persona es el tipo de cliente; el avatar es el personaje concreto que actúa en el video (usa su nombre si el guion lo nombra):
+Brief (datos de la librería). El buyer persona es el tipo de cliente. El avatar es el actor recurrente que lo interpreta: su cara y rasgos son fijos, y tú defines su look para este anuncio (vestuario y escenario del rubro). Usa su nombre si el guion lo nombra.
 ${JSON.stringify(data, null, 1)}
+
+Elige tú las features: 1 o 2 de features_disponibles (por id) que resuelvan el dolor del ángulo para este rubro. Prefiere las sugeridas para el rubro y evita las que están «sin confirmar»; si una es imprescindible, anótala en claims_a_confirmar. Cada guion puede elegir distinto.
 
 Usa los pasos de la estructura "${est?.nombre}" en orden (${(est?.pasos || []).join(' → ')}); puedes repartir un paso en dos bloques o juntar dos pasos cortos si la duración lo pide. El CTA va aparte, al final. La suma de "seg" de los bloques más el CTA debe acercarse a ${sel.duracion} s.
 
 Responde SOLO con JSON con esta forma:
-{"opciones":[{"titulo":"nombre corto","idea":"una frase","gancho_forma":"A|B|C|D","bloques":[{"paso":"nombre del paso","voz":"locución con Planpi","pantalla":["línea 1","línea 2"],"claves":["palabra"],"toma":"qué se ve (persona, acción, encuadre; sin pantallas legibles)","interfaz":"tarjeta o sticker que pone Remotion, o vacío","seg":4}],"cta":{"voz":"...","pantalla":"...","seg":4},"claims_a_confirmar":["..."]}]}`;
+{"opciones":[{"titulo":"nombre corto","idea":"una frase","gancho_forma":"A|B|C|D","bloques":[{"paso":"nombre del paso","voz":"locución con Planpi","pantalla":["línea 1","línea 2"],"claves":["palabra"],"toma":"qué se ve (persona, acción, encuadre; sin pantallas legibles)","interfaz":"tarjeta o sticker que pone Remotion, o vacío","seg":4}],"cta":{"voz":"...","pantalla":"...","seg":4},"features":["id"],"look":{"vestuario":"ropa del avatar en este anuncio","escenario":"el local y la luz"},"claims_a_confirmar":["..."]}]}`;
   }
 
   async function generar() {
@@ -630,7 +667,7 @@ Responde SOLO con JSON con esta forma:
       const m = {
         cancelled: null, not_granted: 'Esta página no tiene permiso para usar Claude. Recárguela y permítalo.', sampling_disabled: 'Claude no está disponible en esta cuenta.',
         rate_limited: 'Demasiadas solicitudes seguidas. Espere un momento y vuelva a intentarlo.', invalid_json: 'La respuesta no vino en el formato esperado. Pulse «Generar» de nuevo.',
-        refused: 'Claude no quiso escribir con este brief. Cambie el ángulo o la persona.', prompt_too_large: 'El brief es demasiado largo. Quite features o acorte textos de la librería.',
+        refused: 'Claude no quiso escribir con este brief. Cambie el ángulo o la persona.', prompt_too_large: 'El brief es demasiado largo. Acorte textos de la librería.',
       };
       errorGen = e?.code in m ? m[e.code] : 'Algo falló al generar. Vuelva a intentarlo.';
       rawGen = e?.code === 'invalid_json' ? e.text || '' : '';
@@ -647,7 +684,8 @@ Responde SOLO con JSON con esta forma:
     const doc = {
       creado: new Date().toISOString(), estado: 'en cola', mercado: sel.mercado, eje: derivedEje().eje, duracion: sel.duracion,
       rubro: snap('rubros', sel.rubro), persona: snap('personas', sel.persona), angulo: snap('angulos', sel.angulo),
-      features: sel.features.map((f) => snap('features', f)).filter(Boolean), avatar: byId('avatares', sel.avatar) ? { id: sel.avatar, nombre: name('avatares', sel.avatar), casting_job: byId('avatares', sel.avatar).casting_job || '' } : null,
+      features: (guion.features || []).map((f) => snap('features', f)).filter(Boolean),
+      avatar: (() => { const a = byId('avatares', avatarActual()); return a ? { id: a.id, nombre: a.nombre, casting_job: a.casting_job || '', rasgos: a.rasgos || '', imagen: a.imagen || '', look: guion.look || null } : null; })(),
       estructura: snap('estructuras', sel.estructura), estilo: est ? { id: est.id, nombre: est.nombre, pipeline: est.pipeline } : null,
       guion, nota, titulo: guion.titulo || 'Anuncio',
     };
@@ -809,7 +847,7 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
     const ideaId = `ed-${col}-idea`;
     const aiBox = puedeIA ? h('div', { class: 'ai' },
       h('label', { for: ideaId }, 'Completar con Claude'),
-      h('textarea', { id: ideaId, placeholder: col === 'personas' ? 'Ej.: dueño de tienda de 30 años que quiere digitalizar el negocio' : col === 'angulos' ? 'Ej.: el dueño que no puede tomarse vacaciones porque todo está en su cabeza' : `Describa ${c.one === 'avatar' ? 'el personaje' : 'la idea'} en una frase`, oninput: (e) => (draft.__idea = e.target.value) }, draft.__idea || ''),
+      h('textarea', { id: ideaId, placeholder: col === 'personas' ? 'Ej.: dueño de tienda de 30 años que quiere digitalizar el negocio' : col === 'angulos' ? 'Ej.: el dueño que no puede tomarse vacaciones porque todo está en su cabeza' : col === 'avatares' ? 'Ej.: mujer argentina de 40 años, simpática, de Mendoza' : `Describa ${c.one === 'avatar' ? 'el personaje' : 'la idea'} en una frase`, oninput: (e) => (draft.__idea = e.target.value) }, draft.__idea || ''),
       h('div', { class: 'ai-row' },
         h('label', { class: 'check' }, h('input', { type: 'checkbox', id: `ed-${col}-reescribir`, checked: !!draft.__reescribir, onchange: (e) => (draft.__reescribir = e.target.checked) }), 'Reescribir también lo que ya está lleno'),
         h('button', { class: 'btn lime small', id: `ed-${col}-ia`, onclick: async (e) => {
@@ -865,7 +903,7 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
             h('dl', { class: 'op-meta' }, [['Eje', d.eje], ['Pregunta', d.pregunta], ['Mejor para', d.mejor_para], ['Estado', d.estado]].filter(([, v]) => v).flatMap(([k, v]) => [h('dt', {}, k), h('dd', {}, v)])))));
     } else {
       const n = [...lib.personas].sort((a, b) => (a.orden ?? 999) - (b.orden ?? 999)).findIndex((x) => x.id === id) + 1;
-      const avs = lib.avatares.filter((a) => a.persona === id);
+      const avs = lib.avatares.filter((a) => (a.personas || []).includes(id));
       const row = (k, v) => (v ? h('p', {}, h('b', {}, k + ': '), v) : null);
       body = h('div', { class: 'deepdive' },
         h('div', { class: 'dd-tag' }, 'Persona Deep Dive'),
@@ -910,6 +948,7 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
           estadoSel),
         h('div', { class: 'body' },
           h('div', { class: 'cmd' }, h('code', {}, cmd), h('button', { class: 'btn small', onclick: () => copy(cmd) }, 'Copiar comando')),
+          p.avatar ? h('div', { class: 'muted' }, 'Avatar: ', h('b', {}, p.avatar.nombre), p.avatar.look ? ` · ${[p.avatar.look.vestuario, p.avatar.look.escenario].filter(Boolean).join(' · ')}` : '') : null,
           p.nota ? h('div', { class: 'muted' }, 'Nota: ', p.nota) : null,
           h('div', { class: 'board-wrap' }, h('table', { class: 'board' },
             h('thead', {}, h('tr', {}, ['Paso', 'Voz', 'Pantalla', 'Toma'].map((x) => h('th', {}, x)))),
