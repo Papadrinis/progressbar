@@ -10,7 +10,7 @@ import {CierreDesde} from '../v6/screens';
 export const FPS_V9 = 30;
 const RATE = 1.08;
 
-type Version = 'C' | 'A';
+type Version = 'C' | 'A' | 'RA' | 'RE';
 type Beat = {clip: string; d: number; shot: number | null; lines: string[]; keys: string[]; tail?: number; overlay?: string; still?: boolean};
 
 const BEATS: Record<Version, Beat[]> = {
@@ -30,6 +30,23 @@ const BEATS: Record<Version, Beat[]> = {
     {clip: 'a-a2', d: 1.489, shot: 3, lines: ['Otra cena', 'que se enfría.'], keys: ['enfría'], overlay: 'empty', tail: 14},
     {clip: 'a-s1', d: 4.833, shot: 4, lines: ['Con PlanPy, de día registra', 'su mercancía, sus proveedores', 'y sus pedidos.'], keys: ['mercancía', 'proveedores', 'pedidos'], overlay: 'desktop'},
     {clip: 'a-s2', d: 3.474, shot: 5, lines: ['Y en la noche, lo mira', 'en el celular y contesta', 'en segundos.'], keys: ['segundos'], overlay: 'consulta', tail: 16},
+    {clip: 'cta', d: 3.474, shot: null, lines: [], keys: [], tail: 50},
+  ],
+  // V10 — tienda de ropa, ángulo «bad solution» (cuaderno). Tomas en public/v10/.
+  RA: [
+    {clip: 'v10/a-h', d: 5.878, shot: 1, lines: ['Una clienta pregunta si le', 'queda la blusa en talla M…', 'y usted va a buscar', 'en el cuaderno.'], keys: ['talla', 'cuaderno'], overlay: 'talla', tail: 8},
+    {clip: 'v10/a-p', d: 3.709, shot: 2, lines: ['El cuaderno lo guarda todo.', 'Pero no le contesta nada.'], keys: ['todo', 'nada'], overlay: 'nocontesta', tail: 8},
+    {clip: 'v10/a-a', d: 2.351, shot: 3, lines: ['Y mientras busca,', 'la clienta se va.'], keys: ['va'], overlay: 'sefue', tail: 12},
+    {clip: 'v10/a-s1', d: 5.564, shot: 4, lines: ['Con PlanPy, su mercancía', 'queda en el computador.', 'La busca y sabe qué tiene.'], keys: ['mercancía', 'sabe'], overlay: 'ropa-desktop'},
+    {clip: 'v10/a-s2', d: 3.161, shot: 5, lines: ['Y desde el celular la consulta', 'cuando quiera,', 'a cualquier hora.'], keys: ['celular', 'cualquier'], overlay: 'ropa-consulta', tail: 16},
+    {clip: 'cta', d: 3.474, shot: null, lines: [], keys: [], tail: 50},
+  ],
+  RE: [
+    {clip: 'v10/e-h', d: 5.721, shot: 6, lines: ['Sábado, 8 de la noche.', 'Cerró la tienda…', 'y ahora le toca', 'sumar el cuaderno.'], keys: ['sábado', 'sumar'], overlay: 'sabado', tail: 8},
+    {clip: 'v10/e-p', d: 4.284, shot: 7, lines: ['Efectivo, transferencias,', 'lo que fió…', 'y la cuenta no le da.'], keys: ['cuenta'], overlay: 'nocuadra', tail: 8},
+    {clip: 'v10/e-a', d: 3.004, shot: 8, lines: ['Mientras sus amigas ya salieron,', 'usted sigue sumando.'], keys: ['amigas', 'sumando'], overlay: 'amigas', tail: 10},
+    {clip: 'v10/e-s1', d: 3.239, shot: 4, lines: ['Con PlanPy, cada venta', 'queda registrada', 'en el momento.'], keys: ['venta', 'momento'], overlay: 'ropa-ventas'},
+    {clip: 'v10/e-s2', d: 3.161, shot: 9, lines: ['Y el cierre lo ve en el celular,', 'en unos 10 minutos.'], keys: ['10'], overlay: 'ropa-cierre', tail: 16},
     {clip: 'cta', d: 3.474, shot: null, lines: [], keys: [], tail: 50},
   ],
 };
@@ -54,14 +71,14 @@ const Sfx: React.FC<{at: number; name: string; volume?: number}> = ({at, name, v
 );
 
 const STILLS: number[] = [];
-const Shot: React.FC<{n: number}> = ({n}) => {
+const Shot: React.FC<{n: number; dir: string}> = ({n, dir}) => {
   const frame = useCurrentFrame();
   return (
     <AbsoluteFill>
       {STILLS.includes(n) ? (
-        <Img src={staticFile(`v9/shot${n}.png`)} style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${interpolate(frame, [0, 150], [1.02, 1.1])})`}} />
+        <Img src={staticFile(`${dir}/shot${n}.png`)} style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${interpolate(frame, [0, 150], [1.02, 1.1])})`}} />
       ) : (
-        <OffthreadVideo src={staticFile(`v9/shot${n}.mp4`)} muted style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+        <OffthreadVideo src={staticFile(`${dir}/shot${n}.mp4`)} muted style={{width: '100%', height: '100%', objectFit: 'cover'}} />
       )}
       <AbsoluteFill style={{background: 'linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0) 40%)'}} />
     </AbsoluteFill>
@@ -162,6 +179,61 @@ const CardConsulta: React.FC<{at: number}> = ({at}) => {
   );
 };
 
+
+// Tarjetas genéricas para ropa (interfaz nuestra, datos de ejemplo, COP).
+const DataCard: React.FC<{at: number; title: string; active: string; rows: [string, string][]; hi?: number; phone?: boolean; done?: string}> = ({at, title, active, rows, hi, phone, done}) => {
+  const frame = useCurrentFrame();
+  const s = usePop(at, 13);
+  if (frame < at) return null;
+  const rowEls = rows.map(([a, b], i) => {
+    const rs = interpolate(frame, [at + 10 + i * 6, at + 18 + i * 6], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+    const strong = i === hi;
+    return (
+      <div key={a} style={{display: 'flex', justifyContent: 'space-between', padding: phone ? '14px 16px' : '12px 18px', margin: phone ? '0 0 10px' : 0, borderBottom: phone ? 'none' : '2px solid #eeeae3', borderRadius: phone ? 18 : strong ? 10 : 0, fontSize: phone ? 26 : 22, opacity: rs, background: strong ? (phone ? '#171a14' : 'rgba(159,232,112,0.35)') : phone ? '#fff' : 'transparent', color: strong && phone ? '#fff' : '#141414', border: phone && !strong ? '2px solid #eeeae3' : undefined}}>
+        <span style={{fontWeight: 600}}>{a}</span>
+        <span style={{fontWeight: 800, color: strong && phone ? UI_LIME : undefined}}>{b}</span>
+      </div>
+    );
+  });
+  if (phone) {
+    return (
+      <div style={{position: 'absolute', left: 250, top: 1000, width: 580, height: 780, borderRadius: 60, background: '#111', padding: 12, transform: `translateY(${(1 - s) * 500}px) rotate(${-4 + (1 - s) * 8}deg)`, boxShadow: '0 30px 70px rgba(0,0,0,0.6)'}}>
+        <div style={{width: '100%', height: '100%', borderRadius: 50, background: '#faf8f4', fontFamily: `${SANS}, ${EMOJI}`, padding: '60px 24px', boxSizing: 'border-box', color: '#141414'}}>
+          <div style={{fontSize: 22, color: '#8a857c', fontWeight: 600}}>{active}</div>
+          <div style={{fontSize: 36, fontWeight: 800, marginBottom: 18}}>{title}</div>
+          {rowEls}
+          {done ? <div style={{marginTop: 8, borderRadius: 18, padding: '14px 16px', background: '#171a14', color: UI_LIME, fontSize: 26, fontWeight: 800, textAlign: 'center'}}>{done}</div> : null}
+          <div style={{fontSize: 16, color: '#8a857c', textAlign: 'center', marginTop: 8}}>Datos de ejemplo</div>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div style={{position: 'absolute', left: 60, top: 1080, width: 960, transform: `scale(${0.96 * s}) rotate(${(1 - s) * -5}deg)`, borderRadius: 22, overflow: 'hidden', boxShadow: '0 40px 80px rgba(0,0,0,0.55)', border: '10px solid #1d1f22', background: '#faf8f4', fontFamily: SANS, color: '#141414'}}>
+      <div style={{height: 34, background: '#e8e3da', display: 'flex', alignItems: 'center', gap: 8, padding: '0 14px'}}>
+        {['#e06c5a', '#e5b54a', '#68b36b'].map((c) => (
+          <div key={c} style={{width: 11, height: 11, borderRadius: 6, background: c}} />
+        ))}
+        <div style={{marginLeft: 14, flex: 1, height: 22, borderRadius: 11, background: '#fff', fontSize: 14, color: '#6b665e', display: 'flex', alignItems: 'center', paddingLeft: 12}}>planpy.io</div>
+      </div>
+      <div style={{display: 'flex'}}>
+        <div style={{width: 170, background: '#171a14', padding: '18px 12px', display: 'flex', flexDirection: 'column', gap: 6}}>
+          {['Ventas', 'Inventario', 'Clientes', 'Caja', 'Reportes'].map((m) => (
+            <div key={m} style={{fontSize: 17, fontWeight: 600, padding: '8px 12px', borderRadius: 10, color: m === active ? '#10240f' : '#c9c6bf', background: m === active ? UI_LIME : 'transparent'}}>{m}</div>
+          ))}
+        </div>
+        <div style={{flex: 1, padding: '16px 20px'}}>
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8}}>
+            <div style={{fontSize: 28, fontWeight: 800}}>{title}</div>
+            <div style={{fontSize: 13, fontWeight: 600, color: '#6b665e', border: '2px dashed #c9c2b6', borderRadius: 999, padding: '4px 10px'}}>Datos de ejemplo</div>
+          </div>
+          {rowEls}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Overlay: React.FC<{kind?: string; lead: number; vf: number}> = ({kind, lead, vf}) => {
   const w = (f: number) => Math.round(lead + vf * f);
   switch (kind) {
@@ -237,6 +309,108 @@ const Overlay: React.FC<{kind?: string; lead: number; vf: number}> = ({kind, lea
           </Sticker>
         </>
       );
+    case 'talla':
+      return (
+        <>
+          <Sticker at={w(0.35)} x={760} y={1500} rot={6} size={66} bg="#ffd400">
+            ¿Talla M? 🤔
+          </Sticker>
+          <Sfx at={w(0.35)} name="boing" volume={0.4} />
+          <Sfx at={4} name="scribble" volume={0.35} />
+        </>
+      );
+    case 'nocontesta':
+      return (
+        <>
+          <Sticker at={w(0.6)} x={540} y={1560} rot={-4} size={62} bg="#ff4d4d" color="#fff">
+            📒 … 🤷‍♀️
+          </Sticker>
+          <Sfx at={w(0.6)} name="boing" volume={0.35} />
+        </>
+      );
+    case 'sefue':
+      return (
+        <>
+          <Sticker at={w(0.55)} x={760} y={1300} rot={6} size={66} bg="#ffffff">
+            👋 Se fue
+          </Sticker>
+          <Sfx at={w(0.5)} name="ding" volume={0.3} />
+        </>
+      );
+    case 'ropa-desktop':
+      return (
+        <>
+          <DataCard at={22} title="Blusa verde de lino" active="Inventario" rows={[['Talla S', '2 unid.'], ['Talla M', '3 unid.'], ['Talla L', '0 unid.'], ['Precio', '$89.900']]} hi={1} />
+          <Sfx at={22} name="whoosh" volume={0.35} />
+          {[0, 1, 2, 3].map((k) => (
+            <Sfx key={k} at={32 + k * 6} name="pop" volume={0.35} />
+          ))}
+          <Sfx at={60} name="ding" volume={0.4} />
+        </>
+      );
+    case 'ropa-consulta':
+      return (
+        <>
+          <DataCard at={8} phone title="Blusa verde de lino" active="Inventario" rows={[['Talla M', '3 unid.'], ['Talla L', '0 unid.'], ['Vendidas hoy', '4']]} hi={0} />
+          <Sfx at={8} name="whoosh" volume={0.35} />
+          <Sfx at={22} name="ping" volume={0.45} />
+        </>
+      );
+    case 'sabado':
+      return (
+        <>
+          <Sticker at={w(0.25)} x={780} y={1500} rot={6} size={66} bg="#ff4d4d" color="#fff">
+            🕗 Sábado 8 p. m.
+          </Sticker>
+          <Sfx at={2} name="tick" volume={0.45} />
+        </>
+      );
+    case 'nocuadra':
+      return (
+        <>
+          <Sticker at={w(0.3)} x={300} y={1400} rot={-6} size={54} bg="#ffffff">
+            💵 Efectivo
+          </Sticker>
+          <Sticker at={w(0.45)} x={760} y={1500} rot={5} size={54} bg="#ffffff">
+            📲 Transferencias
+          </Sticker>
+          <Sticker at={w(0.85)} x={540} y={1650} rot={-3} size={70} bg="#ff4d4d" color="#fff">
+            ≠ No cuadra
+          </Sticker>
+          <Sfx at={w(0.3)} name="pop" volume={0.35} />
+          <Sfx at={w(0.45)} name="pop" volume={0.35} />
+          <Sfx at={w(0.85)} name="boing" volume={0.45} />
+        </>
+      );
+    case 'amigas':
+      return (
+        <>
+          <div style={{position: 'absolute', left: 60, right: 60, top: 1180}}>
+            <Sticker at={4} x={480} y={0} rot={-2} size={50} bg="#ffffff">
+              💬 Las amigas: ¿Vienes? 🎉
+            </Sticker>
+          </div>
+          <Sfx at={4} name="ping" volume={0.45} />
+        </>
+      );
+    case 'ropa-ventas':
+      return (
+        <>
+          <DataCard at={18} title="Ventas de hoy" active="Ventas" rows={[['10:42 a. m. · Blusa verde M', '$89.900'], ['12:15 p. m. · Jean azul 30', '$119.900'], ['3:08 p. m. · Vestido flores S', '$134.500'], ['Total', '$344.300']]} hi={3} />
+          <Sfx at={18} name="whoosh" volume={0.35} />
+          {[0, 1, 2, 3].map((k) => (
+            <Sfx key={k} at={28 + k * 6} name="pop" volume={0.35} />
+          ))}
+        </>
+      );
+    case 'ropa-cierre':
+      return (
+        <>
+          <DataCard at={8} phone title="Cierre del sábado" active="Caja" rows={[['Efectivo', '$212.400'], ['Transferencias', '$131.900'], ['Total del día', '$344.300']]} hi={2} done="Caja cerrada ✓" />
+          <Sfx at={8} name="whoosh" volume={0.35} />
+          <Sfx at={30} name="ding" volume={0.45} />
+        </>
+      );
     default:
       return null;
   }
@@ -259,7 +433,7 @@ export const PlanpyAdV9: React.FC<{version: Version}> = ({version}) => {
           ) : (
             <>
               <Whip dir={b.i % 2 ? -1 : 1} flash={b.i === 0}>
-                <Shot n={b.shot} />
+                <Shot n={b.shot} dir={version === 'RA' || version === 'RE' ? 'v10' : 'v9'} />
                 <Texture strength={0.25} />
               </Whip>
               <Overlay kind={b.overlay} lead={b.lead} vf={b.vf} />
@@ -268,7 +442,7 @@ export const PlanpyAdV9: React.FC<{version: Version}> = ({version}) => {
           )}
           <Sfx at={0} name={b.i === 0 ? 'impact' : 'whoosh'} volume={b.i === 0 ? 0.6 : 0.35} />
           <Sequence from={b.lead} layout="none">
-            <Audio src={staticFile(b.clip === 'cta' ? 'voz/cta.mp3' : `voz/v9/${b.clip}.mp3`)} playbackRate={RATE} volume={b.clip === 'a-prov' ? 0.85 : 1} />
+            <Audio src={staticFile(b.clip === 'cta' ? 'voz/cta.mp3' : (b.clip.startsWith('v10/') ? `voz/${b.clip}.mp3` : `voz/v9/${b.clip}.mp3`))} playbackRate={RATE} volume={b.clip === 'a-prov' ? 0.85 : 1} />
           </Sequence>
         </Sequence>
       ))}

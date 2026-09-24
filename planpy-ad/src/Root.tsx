@@ -83,6 +83,9 @@ export const RemotionRoot: React.FC = () => {
       {/* V9 — proveedores que llaman en la noche (VIDA), versiones C y A. */}
       <Composition id="PLANPY-CO-VIDA-PROVEEDORES-V9-C" component={PlanpyAdV9} durationInFrames={durationV9('C')} fps={FPS_V9} width={1080} height={1920} defaultProps={{version: 'C' as const}} />
       <Composition id="PLANPY-CO-VIDA-PROVEEDORES-V9-A" component={PlanpyAdV9} durationInFrames={durationV9('A')} fps={FPS_V9} width={1080} height={1920} defaultProps={{version: 'A' as const}} />
+      {/* V10 — tienda de ropa, bad solution (cuaderno), versiones A y E. */}
+      <Composition id="PLANPY-CO-VIDA-ROPA-V10-A" component={PlanpyAdV9} durationInFrames={durationV9('RA')} fps={FPS_V9} width={1080} height={1920} defaultProps={{version: 'RA' as const}} />
+      <Composition id="PLANPY-CO-VIDA-ROPA-V10-E" component={PlanpyAdV9} durationInFrames={durationV9('RE')} fps={FPS_V9} width={1080} height={1920} defaultProps={{version: 'RE' as const}} />
     </>
   );
 };

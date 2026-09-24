@@ -15,7 +15,8 @@
     "render:v6": "remotion render src/index.ts PLANPY-CO-VIDA-AGENDA-BARBERIA-V6-H1 out/PLANPY_CO_VIDA_AGENDA_BARBERIA_V6_H1.mp4 && remotion render src/index.ts PLANPY-CO-VIDA-AGENDA-SALON-V6-H1 out/PLANPY_CO_VIDA_AGENDA_SALON_V6_H1.mp4 && remotion render src/index.ts PLANPY-CO-VIDA-AGENDA-MASCOTAS-V6-H1 out/PLANPY_CO_VIDA_AGENDA_MASCOTAS_V6_H1.mp4",
     "render:v7": "remotion render src/index.ts PLANPY-CO-VIDA-AGENDA-BARBERIA-V7-H1 out/PLANPY_CO_VIDA_AGENDA_BARBERIA_V7_H1.mp4",
     "render:v8": "remotion render src/index.ts PLANPY-CO-VIDA-AGENDA-MASCOTAS-V8-H1 out/PLANPY_CO_VIDA_AGENDA_MASCOTAS_V8_H1.mp4",
-    "render:v9": "remotion render src/index.ts PLANPY-CO-VIDA-PROVEEDORES-V9-C out/PLANPY_CO_VIDA_PROVEEDORES_V9_C.mp4 --crf=23 && remotion render src/index.ts PLANPY-CO-VIDA-PROVEEDORES-V9-A out/PLANPY_CO_VIDA_PROVEEDORES_V9_A.mp4 --crf=23"
+    "render:v9": "remotion render src/index.ts PLANPY-CO-VIDA-PROVEEDORES-V9-C out/PLANPY_CO_VIDA_PROVEEDORES_V9_C.mp4 --crf=23 && remotion render src/index.ts PLANPY-CO-VIDA-PROVEEDORES-V9-A out/PLANPY_CO_VIDA_PROVEEDORES_V9_A.mp4 --crf=23",
+    "render:v10": "remotion render src/index.ts PLANPY-CO-VIDA-ROPA-V10-A out/PLANPY_CO_VIDA_ROPA_V10_A.mp4 --crf=23 && remotion render src/index.ts PLANPY-CO-VIDA-ROPA-V10-E out/PLANPY_CO_VIDA_ROPA_V10_E.mp4 --crf=23"
   },
   "dependencies": {
     "@remotion/cli": "^4.0.527",
