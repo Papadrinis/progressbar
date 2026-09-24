@@ -1,4 +1,4 @@
-import {AbsoluteFill, Audio, interpolate, OffthreadVideo, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Audio, Img, interpolate, OffthreadVideo, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {SANS} from '../brand';
 import {Texture} from '../components/Texture';
 import {EMOJI, FlyAway, Sticker, Whip, WordPop} from '../v6/kit';
@@ -53,9 +53,22 @@ const Sfx: React.FC<{at: number; name: string; volume?: number}> = ({at, name, v
   </Sequence>
 );
 
+// Tomas donde el video derivó la identidad del personaje: se usa el fotograma aprobado con un push-in lento.
+const STILLS: Record<string, number[]> = {v8: [4]};
+
+const StillPush: React.FC<{src: string}> = ({src}) => {
+  const frame = useCurrentFrame();
+  const z = interpolate(frame, [0, 150], [1.02, 1.1]);
+  return <Img src={src} style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${z})`}} />;
+};
+
 const Shot: React.FC<{n: number; dir: string; blur?: number}> = ({n, dir, blur = 0}) => (
   <AbsoluteFill style={{filter: blur ? `blur(${blur}px)` : undefined, transform: blur ? 'scale(1.06)' : undefined}}>
-    <OffthreadVideo src={staticFile(`${dir}/shot${n}.mp4`)} muted style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+    {STILLS[dir]?.includes(n) ? (
+      <StillPush src={staticFile(`${dir}/shot${n}.png`)} />
+    ) : (
+      <OffthreadVideo src={staticFile(`${dir}/shot${n}.mp4`)} muted style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+    )}
     {/* sombra superior para que el subtítulo siempre se lea sobre el video */}
     <AbsoluteFill style={{background: 'linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0) 38%)'}} />
   </AbsoluteFill>

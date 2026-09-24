@@ -160,3 +160,15 @@ Misma estructura y edición que la H1 de barbería V6, sobre 6 tomas realistas (
   Jobs: 60ae0f86 · 2f968201 · a3c0819a · 1afde158 · 6dc14b21 · 2a718421.
 - La interfaz (agenda, recordatorio, burbujas) no es generada por el modelo: se superpone en Remotion.
 - Coste aprox.: 17 créditos imágenes + 360 créditos video.
+
+---
+
+# V8 — Mascotas H1 con personas realistas (Higgsfield)
+
+`PLANPY_CO_VIDA_AGENDA_MASCOTAS_V8_H1` · `npm run render:v8` · mismo montaje que V7 (`src/v7/AdV7.tsx`, `rubro: 'mascotas'`).
+
+- **Dirección de arte:** negocio humilde pero cuidado (paredes pintadas, limpio, ordenado): ni lujoso ni viejo/sucio.
+  Esta es la regla de escenario para todos los rubros a partir de ahora.
+- Groomer de referencia: job `315180e5-7ca1-4c3b-bbfc-e9e4f3ec165e`. Tomas en `public/v8/`.
+- Toma 4: Seedance cambió la cara dos veces (jobs 1d007bb8, 18b60bd0); se usa el fotograma aprobado
+  (`shot4.png`) con push-in lento. Si una toma deriva de identidad, esa es la salida más barata.
