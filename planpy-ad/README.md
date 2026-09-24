@@ -192,3 +192,11 @@ npm run sparkpy -- render v10-a       # out/PLANPY_CO_VIDA_ROPA_V10_A.mp4 (crf 2
 
 `v10-a.json` y `v10-e.json` son V10-A y V10-E portados: misma duración (797 y 758 frames) y los mismos
 fotogramas que las composiciones hechas a mano.
+
+## SparkPy Estudio (interfaz)
+
+https://claude.ai/artifact/Bot8PM4juLtWfBGN5jpLha · fuente: `sparkpy/index.html`.
+
+Librería editable (rubros, personas, ángulos, features, avatares, estructuras de anuncio y estilos),
+generador de 3 guiones con Claude a partir de la selección, elección de estilo y cola de pedidos.
+Cada pedido se produce en Claude Code con `/sparkpy pedido <id>`.

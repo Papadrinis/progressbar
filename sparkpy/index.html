@@ -1,0 +1,752 @@
+<title>SparkPy Estudio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root {
+  --bg: #f3f4ee;
+  --surface: #ffffff;
+  --surface-2: #eaece3;
+  --ink: #171a14;
+  --muted: #62675b;
+  --line: #dcdfd3;
+  --brand: #3db55c;
+  --brand-ink: #0d7c39;
+  --lime: #9fe870;
+  --on-lime: #10240f;
+  --sel-bg: #e6f6dc;
+  --warn: #b86a12;
+  --warn-bg: #fbeedb;
+  --bad: #c23b3b;
+  --shadow: 0 1px 2px rgba(23,26,20,.06), 0 6px 20px rgba(23,26,20,.06);
+  --display: "Bricolage Grotesque", "Instrument Sans", system-ui, sans-serif;
+  --body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #11130f; --surface: #1a1d17; --surface-2: #232720; --ink: #eef0e8; --muted: #9ba192;
+    --line: #2e3329; --brand: #4cc36a; --brand-ink: #7fdc97; --lime: #9fe870; --on-lime: #10240f;
+    --sel-bg: #22331b; --warn: #e8a24f; --warn-bg: #33270f; --bad: #ef7070;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #11130f; --surface: #1a1d17; --surface-2: #232720; --ink: #eef0e8; --muted: #9ba192;
+  --line: #2e3329; --brand: #4cc36a; --brand-ink: #7fdc97; --lime: #9fe870; --on-lime: #10240f;
+  --sel-bg: #22331b; --warn: #e8a24f; --warn-bg: #33270f; --bad: #ef7070;
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+}
+* { box-sizing: border-box; }
+html, body { background: var(--bg); color: var(--ink); }
+body { font-family: var(--body); font-size: 15px; line-height: 1.5; padding-inline: 16px; padding-block: 0 64px; }
+.wrap { max-width: 1240px; margin: 0 auto; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.muted { color: var(--muted); }
+.mono { font-family: var(--mono); font-size: 12.5px; }
+
+/* barra superior */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--bg); border-bottom: 1px solid var(--line); margin-inline: -16px; padding: 12px 16px; }
+.top .wrap { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.brand { display: flex; align-items: baseline; gap: 10px; }
+.brand h1 { font-size: 24px; font-weight: 800; letter-spacing: -.02em; }
+.brand h1 span { color: var(--brand); }
+.brand small { color: var(--muted); font-size: 13px; }
+.tabs { display: flex; gap: 4px; margin-left: auto; background: var(--surface-2); padding: 4px; border-radius: 999px; }
+.tabs button { border: 0; background: transparent; padding: 7px 16px; border-radius: 999px; cursor: pointer; font-weight: 600; color: var(--muted); display: flex; gap: 6px; align-items: center; }
+.tabs button[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+.count { font-family: var(--mono); font-size: 11px; background: var(--line); color: var(--ink); border-radius: 999px; padding: 1px 7px; }
+
+.banner { margin: 16px 0 0; padding: 12px 16px; border-radius: 12px; background: var(--warn-bg); color: var(--ink); border: 1px solid var(--warn); }
+
+/* crear */
+.create { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 28px; margin-top: 24px; align-items: start; }
+@media (max-width: 960px) { .create { grid-template-columns: 1fr; } .aside { position: static !important; } }
+.step { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 22px; margin-bottom: 20px; }
+.step-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+.step-head .n { font-family: var(--mono); font-size: 12px; color: var(--brand-ink); font-weight: 600; letter-spacing: .06em; }
+.step-head h2 { font-size: 22px; font-weight: 700; letter-spacing: -.01em; }
+.step-head p { margin: 0; color: var(--muted); font-size: 14px; flex-basis: 100%; }
+.field { padding: 14px 0; border-top: 1px solid var(--line); display: grid; grid-template-columns: 130px minmax(0,1fr); gap: 14px; }
+.field:first-of-type { border-top: 0; padding-top: 0; }
+@media (max-width: 640px) { .field { grid-template-columns: 1fr; gap: 8px; } }
+.field > label, .field > .lbl { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); padding-top: 8px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 13px; cursor: pointer; font-size: 14px; display: inline-flex; gap: 6px; align-items: center; transition: border-color .12s, background .12s; }
+.chip:hover { border-color: var(--brand); }
+.chip[aria-pressed="true"] { background: var(--lime); border-color: var(--lime); color: var(--on-lime); font-weight: 600; }
+.chip .tag { font-size: 11px; color: var(--muted); }
+.chip[aria-pressed="true"] .tag { color: var(--on-lime); opacity: .7; }
+.chip.sug::after { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--brand); }
+.chip[aria-pressed="true"].sug::after { background: var(--on-lime); }
+.chip.dim { opacity: .55; }
+.hint { font-size: 13px; color: var(--muted); margin-top: 8px; }
+.hint b { color: var(--ink); font-weight: 600; }
+.seg { display: inline-flex; background: var(--surface-2); border-radius: 10px; padding: 3px; gap: 2px; }
+.seg button { border: 0; background: transparent; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-weight: 600; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+.pcard { text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 14px; padding: 12px 14px; cursor: pointer; display: flex; flex-direction: column; gap: 4px; }
+.pcard:hover { border-color: var(--brand); }
+.pcard[aria-pressed="true"] { border-color: var(--brand); background: var(--sel-bg); box-shadow: inset 0 0 0 1px var(--brand); }
+.pcard strong { font-size: 15px; }
+.pcard .sub { font-size: 13px; color: var(--muted); }
+.pill { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; background: var(--surface-2); color: var(--muted); width: fit-content; }
+.pill.vida { background: #e0f3e6; color: #0d7c39; }
+.pill.escala { background: #e3ebfb; color: #2a4f9e; }
+.pill.ok { background: #e0f3e6; color: #0d7c39; }
+.pill.warn { background: var(--warn-bg); color: var(--warn); }
+.pill.off { background: var(--surface-2); color: var(--muted); }
+:root[data-theme="dark"] .pill.vida, :root[data-theme="dark"] .pill.ok { background: #1f3a26; color: #8fe0a6; }
+:root[data-theme="dark"] .pill.escala { background: #1e2a44; color: #9dbbf5; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .pill.vida, :root:not([data-theme="light"]) .pill.ok { background: #1f3a26; color: #8fe0a6; }
+  :root:not([data-theme="light"]) .pill.escala { background: #1e2a44; color: #9dbbf5; }
+}
+
+.avatars { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+.av { border: 1px solid var(--line); background: var(--surface); border-radius: 14px; padding: 0; overflow: hidden; cursor: pointer; text-align: left; display: flex; flex-direction: column; }
+.av:hover { border-color: var(--brand); }
+.av[aria-pressed="true"] { border-color: var(--brand); box-shadow: 0 0 0 2px var(--brand); }
+.av .ph { aspect-ratio: 3 / 4; max-width: 100%; background: var(--surface-2); display: grid; place-items: center; color: var(--muted); font-family: var(--display); font-size: 30px; font-weight: 800; }
+.av img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; display: block; }
+.av div.t { padding: 8px 10px 10px; display: flex; flex-direction: column; gap: 3px; }
+.av strong { font-size: 13.5px; line-height: 1.25; }
+
+.aside { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 84px); display: flex; flex-direction: column; gap: 14px; }
+.recipe { background: var(--ink); color: var(--bg); border-radius: 18px; padding: 20px; }
+.recipe h3 { font-size: 18px; margin-bottom: 12px; }
+.recipe dl { margin: 0; display: grid; grid-template-columns: 90px 1fr; gap: 6px 10px; font-size: 13.5px; }
+.recipe dt { color: color-mix(in srgb, var(--bg) 60%, transparent); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; padding-top: 1px; }
+.recipe dd { margin: 0; font-weight: 600; }
+.recipe dd.none { font-weight: 400; color: color-mix(in srgb, var(--bg) 45%, transparent); }
+.flags { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+.flags div { padding: 7px 10px; border-radius: 8px; background: color-mix(in srgb, var(--warn) 25%, transparent); }
+.btn { border: 0; border-radius: 12px; padding: 12px 18px; font-weight: 700; cursor: pointer; background: var(--brand); color: #fff; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.btn:hover { filter: brightness(1.05); }
+.btn:disabled { opacity: .45; cursor: not-allowed; filter: none; }
+.btn.block { width: 100%; margin-top: 16px; }
+.btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.btn.lime { background: var(--lime); color: var(--on-lime); }
+.btn.small { padding: 7px 12px; font-size: 13px; border-radius: 9px; }
+.btn.danger { background: transparent; color: var(--bad); border: 1px solid var(--bad); }
+.recipe .btn.ghost { color: var(--bg); border-color: color-mix(in srgb, var(--bg) 30%, transparent); }
+
+/* guiones */
+.options { display: grid; gap: 16px; }
+.opt { border: 1px solid var(--line); border-radius: 16px; padding: 18px; background: var(--surface); }
+.opt[aria-current="true"] { border-color: var(--brand); box-shadow: inset 0 0 0 1px var(--brand); }
+.opt-head { display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; }
+.opt h3 { font-size: 19px; }
+.opt .idea { color: var(--muted); margin: 4px 0 0; font-size: 14px; }
+.tl { display: flex; height: 26px; border-radius: 8px; overflow: hidden; margin: 14px 0 6px; gap: 2px; }
+.tl div { background: var(--surface-2); font-size: 11px; font-weight: 700; display: flex; align-items: center; padding: 0 6px; white-space: nowrap; overflow: hidden; min-width: 0; color: var(--muted); }
+.tl div:nth-child(1) { background: var(--lime); color: var(--on-lime); }
+.tl div.cta { background: var(--brand); color: #fff; }
+.board-wrap { overflow-x: auto; }
+table.board { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 640px; }
+.board th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 700; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+.board td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.board tr:last-child td { border-bottom: 0; }
+.board .tc { font-family: var(--mono); font-size: 11.5px; color: var(--muted); white-space: nowrap; }
+.board .paso { font-weight: 700; font-size: 12.5px; }
+.board .voz { font-style: italic; }
+.board .pant { font-weight: 600; }
+.board .pant .k { background: var(--brand); color: #fff; border-radius: 4px; padding: 0 4px; }
+.board textarea { width: 100%; min-height: 58px; border: 1px solid var(--line); background: var(--bg); border-radius: 8px; padding: 6px 8px; font-size: 13.5px; resize: vertical; }
+.claims { margin-top: 12px; font-size: 13px; padding: 10px 12px; border-radius: 10px; background: var(--warn-bg); color: var(--ink); }
+.thinking { display: flex; align-items: center; gap: 12px; padding: 18px; border: 1px dashed var(--line); border-radius: 14px; color: var(--muted); }
+.dot { width: 10px; height: 10px; border-radius: 50%; background: var(--brand); animation: pulse 1s ease-in-out infinite; }
+@keyframes pulse { 50% { transform: scale(.5); opacity: .4; } }
+@media (prefers-reduced-motion: reduce) { .dot { animation: none; } }
+pre.raw { white-space: pre-wrap; font-family: var(--mono); font-size: 12px; background: var(--surface-2); padding: 12px; border-radius: 10px; max-height: 240px; overflow: auto; }
+
+.styles { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+.style { text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 14px; padding: 14px; cursor: pointer; display: flex; flex-direction: column; gap: 6px; }
+.style:hover { border-color: var(--brand); }
+.style[aria-pressed="true"] { border-color: var(--brand); background: var(--sel-bg); box-shadow: inset 0 0 0 1px var(--brand); }
+.style strong { font-size: 15px; }
+.style p { margin: 0; font-size: 13px; color: var(--muted); }
+.style .meta { display: flex; gap: 8px; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 6px; }
+.style .cost { font-family: var(--mono); font-size: 12px; }
+
+.done { border: 1px solid var(--brand); background: var(--sel-bg); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.cmd { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.cmd code { font-family: var(--mono); background: var(--surface); border: 1px solid var(--line); padding: 8px 12px; border-radius: 8px; user-select: all; }
+
+/* librería */
+.lib { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 24px; margin-top: 24px; align-items: start; }
+@media (max-width: 800px) { .lib { grid-template-columns: 1fr; } }
+.libnav { display: flex; flex-direction: column; gap: 2px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 84px); }
+@media (max-width: 800px) { .libnav { position: static; flex-direction: row; flex-wrap: wrap; gap: 6px; } }
+.libnav button { border: 0; background: transparent; text-align: left; padding: 9px 12px; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; gap: 10px; font-weight: 600; color: var(--muted); }
+.libnav button[aria-current="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+.libtools { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
+.libtools h2 { font-size: 26px; font-weight: 800; letter-spacing: -.02em; margin-right: auto; }
+.search { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 8px 12px; min-width: 0; width: 220px; max-width: 100%; }
+.items { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.item { border: 1px solid var(--line); background: var(--surface); border-radius: 14px; padding: 14px 16px; cursor: pointer; text-align: left; display: flex; flex-direction: column; gap: 6px; }
+.item:hover { border-color: var(--brand); }
+.item .row { display: flex; gap: 10px; align-items: center; justify-content: space-between; }
+.item strong { font-size: 15.5px; }
+.item p { margin: 0; font-size: 13px; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.item img { width: 56px; height: 72px; object-fit: cover; border-radius: 8px; flex: none; }
+.item .with-img { display: flex; gap: 12px; }
+.steps-inline { display: flex; flex-wrap: wrap; gap: 4px; }
+.steps-inline span { font-size: 11.5px; background: var(--surface-2); border-radius: 6px; padding: 1px 6px; }
+
+/* editor */
+.editor { position: fixed; inset: 0; z-index: 50; display: flex; justify-content: flex-end; background: rgba(10, 12, 8, .35); }
+.panel { width: min(560px, 100%); height: 100%; background: var(--surface); padding: 22px 22px calc(22px + env(safe-area-inset-bottom, 0px)); overflow-y: auto; display: flex; flex-direction: column; gap: 14px; box-shadow: -10px 0 40px rgba(0,0,0,.2); }
+.panel-head { display: flex; justify-content: space-between; gap: 10px; align-items: center; }
+.panel-head h3 { font-size: 22px; }
+.fgroup { display: flex; flex-direction: column; gap: 6px; }
+.fgroup > label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
+.fgroup input[type=text], .fgroup select, .fgroup textarea { border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 9px 11px; width: 100%; }
+.fgroup textarea { min-height: 76px; resize: vertical; }
+.panel-foot { display: flex; gap: 10px; margin-top: auto; padding-top: 14px; border-top: 1px solid var(--line); flex-wrap: wrap; }
+.imgbox { display: flex; gap: 12px; align-items: center; }
+.imgbox img, .imgbox .ph { width: 90px; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 10px; background: var(--surface-2); }
+
+/* pedidos */
+.orders { margin-top: 24px; display: flex; flex-direction: column; gap: 12px; }
+.order { border: 1px solid var(--line); background: var(--surface); border-radius: 14px; }
+.order summary { list-style: none; cursor: pointer; padding: 14px 16px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 16px; align-items: center; }
+.order summary::-webkit-details-marker { display: none; }
+.order summary strong { font-size: 16px; }
+.order .meta { font-size: 13px; color: var(--muted); }
+.order .body { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 12px; }
+.order select { border: 1px solid var(--line); background: var(--bg); border-radius: 8px; padding: 5px 8px; }
+.empty { padding: 40px 20px; text-align: center; color: var(--muted); border: 1px dashed var(--line); border-radius: 16px; }
+
+.toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-weight: 600; z-index: 80; box-shadow: var(--shadow); max-width: calc(100% - 32px); }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><h1>Spark<span>Py</span></h1><small>Estudio de anuncios de PlanPy</small></div>
+    <nav class="tabs" role="tablist">
+      <button role="tab" id="tab-crear" data-view="crear" aria-selected="true">Crear</button>
+      <button role="tab" id="tab-lib" data-view="lib" aria-selected="false">Librería</button>
+      <button role="tab" id="tab-ped" data-view="ped" aria-selected="false">Pedidos <span class="count" id="ped-count">0</span></button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="banner" class="banner" hidden></div>
+  <section id="view-crear"></section>
+  <section id="view-lib" hidden></section>
+  <section id="view-ped" hidden></section>
+</main>
+<div id="editor-root"></div>
+<div id="toast" class="toast" hidden></div>
+
+<script>
+(() => {
+  // ---------- modelo ----------
+  const COLS = {
+    rubros: { label: 'Rubros', one: 'rubro', sub: ['tipo', 'mercado'], text: 'dolor', fields: [
+      ['nombre', 'Nombre', 'text'], ['tipo', 'Tipo', 'select', ['stock', 'agenda', 'mixto']], ['mercado', 'Mercado', 'select', ['CO', 'AR', 'ambos']],
+      ['escenario', 'Escenario (lo que se ve)', 'textarea'], ['dolor', 'Dolor principal', 'textarea'], ['features', 'Features que le sirven', 'refs', 'features']] },
+    personas: { label: 'Personas', one: 'persona', sub: ['arquetipo'], pill: 'eje', text: 'dolor', fields: [
+      ['nombre', 'Nombre', 'text'], ['arquetipo', 'Arquetipo', 'text'], ['eje', 'Eje', 'select', ['VIDA', 'ESCALA']], ['edad', 'Edad', 'text'], ['escala', 'Escala del negocio', 'text'],
+      ['rubro', 'Rubro', 'ref', 'rubros'], ['mercado', 'Mercado', 'select', ['CO', 'AR', 'ambos']], ['dolor', 'Dolor / tensión', 'textarea'], ['deseo', 'Resultado soñado', 'textarea'],
+      ['frase', 'Frase en su voz', 'textarea'], ['disparador', 'Disparador de compra', 'textarea'], ['no_decir', 'Lo que no se le dice', 'textarea'], ['plan', 'Plan de aterrizaje', 'text'],
+      ['angulos', 'Ángulos recomendados', 'refs', 'angulos']] },
+    angulos: { label: 'Ángulos', one: 'ángulo', sub: ['eje'], pill: 'estado', text: 'pregunta', fields: [
+      ['nombre', 'Nombre', 'text'], ['eje', 'Eje', 'text'], ['pregunta', 'Pregunta central', 'text'], ['mejor_para', 'Mejor para', 'text'],
+      ['gancho_co', 'Gancho Colombia (usted)', 'textarea'], ['gancho_ar', 'Gancho Argentina (vos)', 'textarea'], ['estado', 'Estado', 'text']] },
+    features: { label: 'Features', one: 'feature', sub: ['plan'], pill: 'estado', text: 'claim', fields: [
+      ['nombre', 'Nombre', 'text'], ['dispositivo', 'Dónde se muestra', 'text'], ['claim', 'Claim aprobado', 'textarea'], ['plan', 'Plan mínimo', 'text'],
+      ['estado', 'Estado', 'text'], ['pantalla', 'Pantalla sugerida (Remotion)', 'textarea']] },
+    avatares: { label: 'Avatares', one: 'avatar', sub: ['usado_en'], pill: 'estado', text: 'descripcion', img: 'imagen', fields: [
+      ['imagen', 'Foto de referencia', 'image'], ['nombre', 'Nombre', 'text'], ['persona', 'Persona', 'ref', 'personas'], ['rubro', 'Rubro', 'ref', 'rubros'],
+      ['descripcion', 'Descripción para el casting', 'textarea'], ['casting_job', 'Job de casting (Higgsfield)', 'text'], ['estado', 'Estado', 'select', ['aprobado', 'propuesto']], ['usado_en', 'Usado en', 'text']] },
+    estructuras: { label: 'Estructuras', one: 'estructura', sub: ['duracion'], text: 'mejor_para', steps: 'pasos', fields: [
+      ['nombre', 'Nombre', 'text'], ['pasos', 'Pasos (uno por línea)', 'list'], ['mejor_para', 'Mejor para', 'text'], ['duracion', 'Duración sugerida', 'text'], ['nota', 'Nota para PlanPy', 'textarea']] },
+    estilos: { label: 'Estilos de ad', one: 'estilo', sub: ['costo'], pill: 'estado', text: 'descripcion', fields: [
+      ['nombre', 'Nombre', 'text'], ['descripcion', 'Descripción', 'textarea'], ['pipeline', 'Pipeline', 'textarea'], ['costo', 'Costo aproximado', 'text'],
+      ['estado', 'Estado', 'select', ['probado', 'parcial', 'por probar']], ['usado_en', 'Usado en', 'text'], ['riesgos', 'Riesgos y reglas', 'textarea']] },
+  };
+  const ORDER = Object.keys(COLS);
+  const lib = Object.fromEntries(ORDER.map((k) => [k, []]));
+  let pedidos = [];
+  let db = null, sample = null, assets = null;
+  let loaded = false;
+
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem('sparkpy:' + k); return v ? JSON.parse(v) : d; } catch { return d; } },
+    set(k, v) { try { localStorage.setItem('sparkpy:' + k, JSON.stringify(v)); } catch {} },
+  };
+
+  const sel = Object.assign({ mercado: 'CO', rubro: null, persona: null, angulo: null, features: [], avatar: null, estructura: null, duracion: 25 }, store.get('sel', {}));
+  let opciones = [], elegido = null, guion = null, estilo = store.get('estilo', null), pedidoCreado = null, generando = null, errorGen = null, rawGen = '';
+  let view = store.get('view', 'crear'), libCol = store.get('libCol', 'rubros'), libQ = '';
+
+  // ---------- utilidades ----------
+  const h = (tag, attrs = {}, ...kids) => {
+    const el = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs || {})) {
+      if (v == null || v === false) continue;
+      if (k === 'class') el.className = v;
+      else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+      else if (k === 'html') el.innerHTML = v;
+      else el.setAttribute(k, v === true ? '' : v);
+    }
+    for (const kid of kids.flat(Infinity)) if (kid != null && kid !== false) el.append(kid.nodeType ? kid : String(kid));
+    return el;
+  };
+  const byId = (col, id) => lib[col].find((d) => d.id === id) || null;
+  const name = (col, id) => byId(col, id)?.nombre || '';
+  const imgSrc = (id) => (id ? '/_blob/' + id : null);
+  const slug = (s) => (s || 'item').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'item';
+  const toast = (msg) => { const t = document.getElementById('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => (t.hidden = true), 2600); };
+  const pillClass = (v) => {
+    const s = String(v || '').toLowerCase();
+    if (s === 'vida') return 'pill vida';
+    if (s === 'escala') return 'pill escala';
+    if (/sin confirmar|por probar|aparcado|propuesto|parcial/.test(s)) return /aparcado/.test(s) ? 'pill off' : 'pill warn';
+    if (/confirmado|probado|aprobado|activo/.test(s)) return 'pill ok';
+    return 'pill';
+  };
+  const shortPill = (v) => String(v || '').split('·')[0].trim();
+  const copy = async (text) => {
+    try { await navigator.clipboard.writeText(text); toast('Copiado'); }
+    catch { toast('Seleccione el texto y cópielo'); }
+  };
+  const save = () => { store.set('sel', sel); store.set('estilo', estilo); };
+  const dbErr = (e) => {
+    if (e?.code === 'quota_exceeded') return 'La base está llena: borre elementos que no use.';
+    if (e?.code === 'invalid_argument') return 'No tiene permiso para editar esta librería.';
+    return 'No se pudo guardar. Inténtelo de nuevo.';
+  };
+
+  // ---------- pestañas ----------
+  const setView = (v) => {
+    view = v; store.set('view', v);
+    document.querySelectorAll('.tabs button').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.view === v)));
+    for (const k of ['crear', 'lib', 'ped']) document.getElementById('view-' + k).hidden = k !== v;
+    render();
+  };
+  document.querySelectorAll('.tabs button').forEach((b) => b.addEventListener('click', () => setView(b.dataset.view)));
+
+  // ---------- CREAR ----------
+  const derivedEje = () => {
+    const p = byId('personas', sel.persona), a = byId('angulos', sel.angulo);
+    const pe = p?.eje, ae = a?.eje || '';
+    return { eje: pe || (/^VIDA$|^ESCALA$/.test(ae) ? ae : ''), choque: pe && ae && /^(VIDA|ESCALA)$/.test(ae) && pe !== ae };
+  };
+  const flags = () => {
+    const out = [];
+    const { choque } = derivedEje();
+    if (choque) out.push('La persona y el ángulo son de ejes distintos. Una pieza, un eje.');
+    const a = byId('angulos', sel.angulo);
+    if (a && /aparcado/i.test(a.estado)) out.push(`«${a.nombre}» está aparcado.`);
+    if (a && /sin confirmar/i.test(a.estado)) out.push(`«${a.nombre}» depende de una función sin confirmar.`);
+    for (const f of sel.features.map((id) => byId('features', id)).filter(Boolean)) if (/sin confirmar/i.test(f.estado)) out.push(`${f.nombre}: ${f.estado.split('·').slice(1).join('·').trim() || 'sin confirmar'}.`);
+    const p = byId('personas', sel.persona);
+    if (p && p.mercado && p.mercado !== 'ambos' && p.mercado !== sel.mercado) out.push(`${p.nombre} vive en ${p.mercado === 'AR' ? 'Argentina' : 'Colombia'}.`);
+    return out;
+  };
+  const ready = () => sel.rubro && sel.persona && sel.angulo && sel.estructura;
+
+  const chip = (label, pressed, onclick, extra = {}) => h('button', { class: 'chip' + (extra.sug ? ' sug' : '') + (extra.dim ? ' dim' : ''), 'aria-pressed': String(!!pressed), onclick, title: extra.title }, label, extra.tag ? h('span', { class: 'tag' }, extra.tag) : null);
+  const pick = (key, id) => { sel[key] = sel[key] === id ? null : id; save(); render(); };
+
+  function renderCrear() {
+    const root = document.getElementById('view-crear');
+    root.replaceChildren();
+    const persona = byId('personas', sel.persona), rubro = byId('rubros', sel.rubro), est = byId('estructuras', sel.estructura);
+    const sugAng = new Set(persona?.angulos || []), sugFeat = new Set(rubro?.features || []);
+
+    // paso 1
+    const byOrden = (c) => [...lib[c]].sort((a, b) => (a.orden ?? 999) - (b.orden ?? 999));
+    const personas = byOrden('personas').sort((a, b) => (b.rubro === sel.rubro) - (a.rubro === sel.rubro));
+    const avs = byOrden('avatares').sort((a, b) => ((b.persona === sel.persona) * 2 + (b.rubro === sel.rubro)) - ((a.persona === sel.persona) * 2 + (a.rubro === sel.rubro)));
+    const angSel = byId('angulos', sel.angulo);
+
+    const s1 = h('div', { class: 'step' },
+      h('div', { class: 'step-head' }, h('span', { class: 'n' }, 'PASO 1'), h('h2', {}, 'Brief'), h('p', {}, 'Elija de la librería. El punto verde marca lo que recomienda la persona o el rubro elegido.')),
+      h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Mercado'), h('div', {},
+        h('div', { class: 'seg' }, ...[['CO', 'Colombia · usted'], ['AR', 'Argentina · vos']].map(([k, l]) => h('button', { 'aria-pressed': String(sel.mercado === k), onclick: () => { sel.mercado = k; save(); render(); } }, l))))),
+      h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Rubro'), h('div', { class: 'chips' },
+        byOrden('rubros').map((r) => chip(r.nombre, sel.rubro === r.id, () => pick('rubro', r.id), { tag: r.tipo, dim: r.mercado && r.mercado !== 'ambos' && r.mercado !== sel.mercado })))),
+      h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Persona'), h('div', { class: 'cards' },
+        personas.map((p) => h('button', { class: 'pcard', 'aria-pressed': String(sel.persona === p.id), onclick: () => pick('persona', p.id) },
+          h('span', { class: pillClass(p.eje) }, p.eje), h('strong', {}, p.nombre), h('span', { class: 'sub' }, p.arquetipo), h('span', { class: 'sub' }, [name('rubros', p.rubro), p.mercado].filter(Boolean).join(' · ')))))),
+      h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Ángulo'), h('div', {},
+        h('div', { class: 'chips' }, byOrden('angulos').map((a) => chip(a.nombre, sel.angulo === a.id, () => pick('angulo', a.id), { sug: sugAng.has(a.id), dim: /aparcado/i.test(a.estado), title: a.pregunta }))),
+        angSel ? h('div', { class: 'hint' }, h('b', {}, angSel.pregunta), ' · ', (sel.mercado === 'AR' ? angSel.gancho_ar : angSel.gancho_co) || angSel.mejor_para) : null)),
+      h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Features'), h('div', {},
+        h('div', { class: 'chips' }, byOrden('features').map((f) => chip(f.nombre, sel.features.includes(f.id), () => {
+          if (sel.features.includes(f.id)) sel.features = sel.features.filter((x) => x !== f.id);
+          else if (sel.features.length >= 3) { toast('Máximo 3 features por anuncio'); return; }
+          else sel.features = [...sel.features, f.id];
+          save(); render();
+        }, { sug: sugFeat.has(f.id), title: f.claim }))),
+        h('div', { class: 'hint' }, 'Hasta 3. Un anuncio que muestra todo no muestra nada.'))),
+      h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Avatar'), h('div', { class: 'avatars' },
+        avs.map((a) => h('button', { class: 'av', 'aria-pressed': String(sel.avatar === a.id), onclick: () => pick('avatar', a.id) },
+          a.imagen ? h('img', { src: imgSrc(a.imagen), alt: a.nombre, loading: 'lazy' }) : h('div', { class: 'ph' }, (a.nombre || '?').slice(0, 1)),
+          h('div', { class: 't' }, h('strong', {}, a.nombre), h('span', { class: pillClass(a.estado) }, a.estado)))))),
+      h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Estructura'), h('div', {},
+        h('div', { class: 'chips' }, byOrden('estructuras').map((e) => chip(e.nombre, sel.estructura === e.id, () => pick('estructura', e.id), { title: (e.pasos || []).join(' → ') }))),
+        est ? h('div', { class: 'hint' }, h('b', {}, (est.pasos || []).join(' → ')), ' · ', est.mejor_para, est.duracion ? ` · ${est.duracion}` : '', est.nota ? h('div', {}, est.nota) : null) : null)),
+      h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Duración'), h('div', {},
+        h('div', { class: 'seg' }, ...[15, 20, 25, 30, 45, 60].map((s) => h('button', { 'aria-pressed': String(sel.duracion === s), onclick: () => { sel.duracion = s; save(); render(); } }, s + ' s'))))),
+    );
+
+    // paso 2
+    const s2 = h('div', { class: 'step' },
+      h('div', { class: 'step-head' }, h('span', { class: 'n' }, 'PASO 2'), h('h2', {}, 'Guiones'), h('p', {}, 'Tres opciones de storyboard con la estructura elegida. Elija una y edítela.')));
+    if (!sample) s2.append(h('div', { class: 'empty' }, 'Generar guiones necesita abrir esta página en claude.ai y permitir que use Claude.'));
+    else if (generando) s2.append(h('div', { class: 'thinking' }, h('span', { class: 'dot' }), h('span', {}, rawGen ? `Escribiendo… ${rawGen.length} caracteres` : 'Pensando los guiones… tarda entre 20 y 60 segundos.'), h('button', { class: 'btn ghost small', onclick: () => generando?.abort() }, 'Detener')));
+    else if (errorGen) s2.append(h('div', { class: 'claims' }, errorGen), rawGen ? h('pre', { class: 'raw' }, rawGen) : null);
+    if (!generando && !opciones.length && sample && !errorGen) s2.append(h('div', { class: 'empty' }, ready() ? 'Todo listo: pulse «Generar 3 guiones».' : 'Complete rubro, persona, ángulo y estructura.'));
+    if (opciones.length) s2.append(h('div', { class: 'options' }, opciones.map((o, i) => renderOption(o, i))));
+
+    // paso 3
+    const s3 = h('div', { class: 'step' },
+      h('div', { class: 'step-head' }, h('span', { class: 'n' }, 'PASO 3'), h('h2', {}, 'Estilo de ad'), h('p', {}, 'Cómo se va a producir. El costo es en créditos de Higgsfield.')),
+      h('div', { class: 'styles' }, byOrden('estilos').map((s) => h('button', { class: 'style', 'aria-pressed': String(estilo === s.id), onclick: () => { estilo = estilo === s.id ? null : s.id; save(); render(); } },
+        h('strong', {}, s.nombre), h('p', {}, s.descripcion),
+        h('div', { class: 'meta' }, h('span', { class: pillClass(s.estado) }, s.estado), h('span', { class: 'cost' }, s.costo))))));
+
+    // paso 4
+    const est2 = byId('estilos', estilo);
+    const s4 = h('div', { class: 'step' },
+      h('div', { class: 'step-head' }, h('span', { class: 'n' }, 'PASO 4'), h('h2', {}, 'Enviar a producción'), h('p', {}, 'El pedido queda en la cola. En Claude Code, /sparkpy lo toma y produce el video con aprobaciones en cada etapa.')));
+    if (pedidoCreado) {
+      const cmd = `/sparkpy pedido ${pedidoCreado}`;
+      s4.append(h('div', { class: 'done' }, h('strong', {}, 'Pedido en cola'),
+        h('div', { class: 'cmd' }, h('code', {}, cmd), h('button', { class: 'btn small', onclick: () => copy(cmd) }, 'Copiar')),
+        h('div', { class: 'muted' }, 'Péguelo en Claude Code dentro del repositorio del proyecto.'),
+        h('div', {}, h('button', { class: 'btn ghost small', onclick: () => { pedidoCreado = null; opciones = []; elegido = null; guion = null; render(); } }, 'Empezar otro anuncio'))));
+    } else {
+      const falta = [!guion && 'un guion', !est2 && 'un estilo'].filter(Boolean);
+      s4.append(
+        h('div', { class: 'fgroup' }, h('label', { for: 'nota-pedido' }, 'Nota para producción (opcional)'), h('textarea', { id: 'nota-pedido', placeholder: 'Ej.: reutilizar la toma del computador de V10; versión corta para retargeting.' })),
+        h('button', { class: 'btn block', disabled: !!falta.length || !db, onclick: crearPedido }, falta.length ? `Falta elegir ${falta.join(' y ')}` : 'Enviar a producción'));
+    }
+
+    // receta lateral
+    const { eje } = derivedEje();
+    const row = (k, v) => [h('dt', {}, k), h('dd', { class: v ? '' : 'none' }, v || '—')];
+    const fl = flags();
+    const aside = h('aside', { class: 'aside' },
+      h('div', { class: 'recipe' }, h('h3', {}, 'Receta del anuncio'),
+        h('dl', {}, row('Mercado', sel.mercado === 'AR' ? 'Argentina' : 'Colombia'), row('Eje', eje), row('Rubro', name('rubros', sel.rubro)), row('Persona', name('personas', sel.persona)),
+          row('Ángulo', name('angulos', sel.angulo)), row('Features', sel.features.map((f) => name('features', f)).join(', ')), row('Avatar', name('avatares', sel.avatar)),
+          row('Estructura', name('estructuras', sel.estructura)), row('Duración', sel.duracion + ' s'), row('Estilo', est2?.nombre)),
+        fl.length ? h('div', { class: 'flags' }, fl.map((f) => h('div', {}, f))) : null,
+        h('button', { class: 'btn block lime', disabled: !ready() || !sample || !!generando, onclick: generar }, opciones.length ? 'Generar otras 3' : 'Generar 3 guiones'),
+        h('button', { class: 'btn block ghost small', onclick: () => { Object.assign(sel, { rubro: null, persona: null, angulo: null, features: [], avatar: null, estructura: null }); opciones = []; elegido = null; guion = null; errorGen = null; save(); render(); } }, 'Limpiar selección')));
+
+    root.append(h('div', { class: 'create' }, h('div', {}, s1, s2, s3, s4), aside));
+  }
+
+  function renderOption(o, i) {
+    const isSel = elegido === i;
+    const g = isSel ? guion : o;
+    const bloques = g.bloques || [];
+    const total = bloques.reduce((a, b) => a + (+b.seg || 0), 0) + (+g.cta?.seg || 4);
+    let t = 0;
+    const tc = (s) => { const a = t; t += +s || 0; const f = (x) => `0:${String(Math.round(x)).padStart(2, '0')}`; return `${f(a)}–${f(t)}`; };
+    const keyed = (line, keys) => {
+      const span = h('span', {});
+      line.split(' ').forEach((w, j) => {
+        const k = (keys || []).some((kk) => kk && w.toLowerCase().replace(/[¿?¡!,.:…]/g, '').includes(String(kk).toLowerCase()));
+        if (j) span.append(' ');
+        span.append(k ? h('span', { class: 'k' }, w) : w);
+      });
+      return span;
+    };
+    const edit = (b, field, val, isList) => h('textarea', { 'aria-label': field, oninput: (e) => { b[field] = isList ? e.target.value.split('\n').filter((x) => x.trim()) : e.target.value; } }, isList ? (val || []).join('\n') : val || '');
+    const rows = bloques.map((b) => h('tr', {},
+      h('td', {}, h('div', { class: 'paso' }, b.paso), h('div', { class: 'tc' }, tc(b.seg))),
+      h('td', { class: 'voz' }, isSel ? edit(b, 'voz', b.voz) : `“${b.voz || ''}”`),
+      h('td', { class: 'pant' }, isSel ? edit(b, 'pantalla', b.pantalla, true) : (b.pantalla || []).map((l) => h('div', {}, keyed(l, b.claves)))),
+      h('td', {}, isSel ? edit(b, 'toma', b.toma) : b.toma),
+      h('td', { class: 'muted' }, isSel ? edit(b, 'interfaz', b.interfaz) : b.interfaz || '—')));
+    if (g.cta) rows.push(h('tr', {}, h('td', {}, h('div', { class: 'paso' }, 'CTA'), h('div', { class: 'tc' }, tc(g.cta.seg || 4))), h('td', { class: 'voz' }, `“${g.cta.voz || ''}”`), h('td', { class: 'pant' }, g.cta.pantalla || ''), h('td', {}, 'Cierre de marca (logo, oferta, precio)'), h('td', { class: 'muted' }, 'CierreDesde')));
+    return h('article', { class: 'opt', 'aria-current': String(isSel) },
+      h('div', { class: 'opt-head' },
+        h('div', {}, h('h3', {}, `${String.fromCharCode(65 + i)} · ${o.titulo || 'Opción'}`), h('p', { class: 'idea' }, o.idea || '')),
+        isSel ? h('span', { class: 'pill ok' }, 'Elegido · editable') : h('button', { class: 'btn small', onclick: () => { elegido = i; guion = JSON.parse(JSON.stringify(o)); render(); } }, 'Elegir este guion')),
+      h('div', { class: 'tl', 'aria-hidden': 'true' }, bloques.map((b) => h('div', { style: `flex:${Math.max(+b.seg || 1, 1)}` }, b.paso)), h('div', { class: 'cta', style: `flex:${+g.cta?.seg || 4}` }, 'CTA')),
+      h('div', { class: 'tc mono muted' }, `≈ ${Math.round(total)} s · gancho forma ${o.gancho_forma || '—'}`),
+      h('div', { class: 'board-wrap' }, h('table', { class: 'board' },
+        h('thead', {}, h('tr', {}, ['Paso', 'Voz (locución)', 'Pantalla', 'Toma', 'Interfaz'].map((x) => h('th', {}, x)))), h('tbody', {}, rows))),
+      (o.claims_a_confirmar || []).length ? h('div', { class: 'claims' }, h('b', {}, 'Confirmar antes de pautar: '), o.claims_a_confirmar.join(' · ')) : null);
+  }
+
+  // ---------- generación con Claude ----------
+  const REGLAS = `Reglas de marca de PlanPy (no negociables):
+- PlanPy es el sistema de operación diaria para el dueño de un negocio pequeño (1 a 5 locales). Gran idea: "Compite en las grandes ligas. Sin volverte una gran empresa." Se le habla al dueño.
+- Computador = gestión (registrar ventas, inventario, proveedores, cierre). Celular = consulta (ver cómo le fue, desde la casa, a cualquier hora). Funciona en el navegador, "sin instalar nada".
+- El cuaderno se respeta siempre: guarda todo pero no contesta nada. Nunca insinuar que el dueño es desordenado; le fallaron las herramientas. Nunca nombrar competidores.
+- Una pieza, un eje (VIDA: se lleva el tiempo fuera del negocio · ESCALA: lo reinvierte dentro).
+- Gancho en los primeros 3 segundos, forma A (escena concreta: hora, acción, pregunta), B (pregunta directa), C (acuerdo incómodo) o D (número que no tiene). Nunca abrir con el nombre del producto ni con un beneficio.
+- Claims permitidos: "Cierra la caja en unos 10 minutos"; "Listo en menos de 5 minutos"; "Más de 1.000 comercios"; "8 de cada 10 siguen después de la prueba"; "15 días gratis". Ninguna otra cifra de resultado. Si el guion necesita algo sin confirmar, ponlo en claims_a_confirmar.
+- En la locución la marca se escribe "Planpi" (así se pronuncia) y la web "planpi punto io"; en pantalla se escribe "PlanPy" y "planpy.io". Números de la locución en palabras.
+- Escenarios humildes pero cuidados, realistas. El modelo de video nunca genera pantallas legibles: el monitor de espaldas o el celular sin leerse; la interfaz la superpone Remotion ("interfaz").
+- La voz manda el ritmo: cada bloque dura lo que su frase (máx. ~6 s de voz por bloque; las tomas son de 5 s). Pantalla: máx. 4 líneas cortas (≤ 34 caracteres), 1–3 palabras clave.`;
+  const OFERTA = {
+    CO: 'Colombia, trato de usted, montos en pesos con punto de miles. CTA (siempre el precio más barato, nunca nombrar PYME/Pro): "15 días gratis · Desde $46.500 al mes con el plan anual · Plan mensual: desde $62.000". Voz del CTA: "Pruébelo quince días gratis, en planpi punto io."',
+    AR: 'Argentina, voseo, precio en dólares y nunca otra moneda. CTA: "15 días gratis · USD $15 al mes con el plan anual (USD $180 al año) · gestionás y pagás en tu moneda". Voz del CTA: "Probalo quince días gratis, en planpi punto io."',
+  };
+  const pickFields = (d, keys) => d ? Object.fromEntries(keys.filter((k) => d[k]).map((k) => [k, d[k]])) : null;
+
+  function buildPrompt() {
+    const est = byId('estructuras', sel.estructura);
+    const data = {
+      mercado: sel.mercado,
+      duracion_objetivo_seg: sel.duracion,
+      eje: derivedEje().eje,
+      rubro: pickFields(byId('rubros', sel.rubro), ['nombre', 'tipo', 'escenario', 'dolor']),
+      persona: pickFields(byId('personas', sel.persona), ['nombre', 'arquetipo', 'eje', 'edad', 'escala', 'dolor', 'deseo', 'frase', 'disparador', 'no_decir']),
+      angulo: pickFields(byId('angulos', sel.angulo), ['nombre', 'pregunta', 'gancho_co', 'gancho_ar', 'estado']),
+      features: sel.features.map((id) => pickFields(byId('features', id), ['nombre', 'dispositivo', 'claim', 'estado', 'pantalla'])),
+      avatar: pickFields(byId('avatares', sel.avatar), ['nombre', 'descripcion']),
+      estructura: pickFields(est, ['nombre', 'pasos', 'nota']),
+    };
+    return `Eres el guionista de anuncios en video de PlanPy (vertical 9:16, Meta/TikTok). Escribe 3 guiones distintos (storyboards) para este brief. Cada uno con un gancho diferente.
+
+${REGLAS}
+
+Mercado y oferta: ${OFERTA[sel.mercado]}
+
+Brief (datos de la librería):
+${JSON.stringify(data, null, 1)}
+
+Usa los pasos de la estructura "${est?.nombre}" en orden (${(est?.pasos || []).join(' → ')}); puedes repartir un paso en dos bloques o juntar dos pasos cortos si la duración lo pide. El CTA va aparte, al final. La suma de "seg" de los bloques más el CTA debe acercarse a ${sel.duracion} s.
+
+Responde SOLO con JSON con esta forma:
+{"opciones":[{"titulo":"nombre corto","idea":"una frase","gancho_forma":"A|B|C|D","bloques":[{"paso":"nombre del paso","voz":"locución con Planpi","pantalla":["línea 1","línea 2"],"claves":["palabra"],"toma":"qué se ve (persona, acción, encuadre; sin pantallas legibles)","interfaz":"tarjeta o sticker que pone Remotion, o vacío","seg":4}],"cta":{"voz":"...","pantalla":"...","seg":4},"claims_a_confirmar":["..."]}]}`;
+  }
+
+  async function generar() {
+    if (!sample || !ready()) return;
+    const ctl = new AbortController();
+    generando = ctl; errorGen = null; rawGen = ''; render();
+    try {
+      const res = await sample.json(buildPrompt(), { signal: ctl.signal, cache: false, onText: ({ text }) => { rawGen = text; const el = document.querySelector('.thinking span:nth-child(2)'); if (el) el.textContent = `Escribiendo… ${text.length} caracteres`; } });
+      const ops = Array.isArray(res?.opciones) ? res.opciones.filter((o) => Array.isArray(o?.bloques)) : [];
+      if (!ops.length) throw { code: 'invalid_json', text: JSON.stringify(res) };
+      opciones = ops; elegido = null; guion = null; rawGen = '';
+    } catch (e) {
+      const m = {
+        cancelled: null, not_granted: 'Esta página no tiene permiso para usar Claude. Recárguela y permítalo.', sampling_disabled: 'Claude no está disponible en esta cuenta.',
+        rate_limited: 'Demasiadas solicitudes seguidas. Espere un momento y vuelva a intentarlo.', invalid_json: 'La respuesta no vino en el formato esperado. Pulse «Generar» de nuevo.',
+        refused: 'Claude no quiso escribir con este brief. Cambie el ángulo o la persona.', prompt_too_large: 'El brief es demasiado largo. Quite features o acorte textos de la librería.',
+      };
+      errorGen = e?.code in m ? m[e.code] : 'Algo falló al generar. Vuelva a intentarlo.';
+      rawGen = e?.code === 'invalid_json' ? e.text || '' : '';
+    } finally {
+      generando = null; render();
+    }
+  }
+
+  async function crearPedido() {
+    if (!db || !guion) return;
+    const est = byId('estilos', estilo);
+    const snap = (col, id) => { const d = byId(col, id); return d ? { id, nombre: d.nombre } : null; };
+    const nota = document.getElementById('nota-pedido')?.value || '';
+    const doc = {
+      creado: new Date().toISOString(), estado: 'en cola', mercado: sel.mercado, eje: derivedEje().eje, duracion: sel.duracion,
+      rubro: snap('rubros', sel.rubro), persona: snap('personas', sel.persona), angulo: snap('angulos', sel.angulo),
+      features: sel.features.map((f) => snap('features', f)).filter(Boolean), avatar: byId('avatares', sel.avatar) ? { id: sel.avatar, nombre: name('avatares', sel.avatar), casting_job: byId('avatares', sel.avatar).casting_job || '' } : null,
+      estructura: snap('estructuras', sel.estructura), estilo: est ? { id: est.id, nombre: est.nombre, pipeline: est.pipeline } : null,
+      guion, nota, titulo: guion.titulo || 'Anuncio',
+    };
+    try {
+      const ref = await db.collection('pedidos').add(doc);
+      pedidoCreado = ref.id; toast('Pedido enviado a producción'); render();
+    } catch (e) { toast(dbErr(e)); }
+  }
+
+  // ---------- LIBRERÍA ----------
+  function renderLib() {
+    const root = document.getElementById('view-lib');
+    root.replaceChildren();
+    const c = COLS[libCol];
+    const q = libQ.trim().toLowerCase();
+    const items = [...lib[libCol]].sort((a, b) => (a.orden ?? 999) - (b.orden ?? 999)).filter((d) => !q || JSON.stringify(d).toLowerCase().includes(q));
+    const nav = h('nav', { class: 'libnav' }, ORDER.map((k) => h('button', { 'aria-current': String(k === libCol), onclick: () => { libCol = k; store.set('libCol', k); render(); } }, COLS[k].label, h('span', { class: 'count' }, lib[k].length))));
+    const search = h('input', { class: 'search', type: 'search', id: 'lib-search', placeholder: `Buscar en ${c.label.toLowerCase()}`, value: libQ, oninput: (e) => { libQ = e.target.value; renderLibItems(); } });
+    const grid = h('div', { class: 'items', id: 'lib-items' });
+    const main = h('div', {},
+      h('div', { class: 'libtools' }, h('h2', {}, c.label), search, h('button', { class: 'btn', disabled: !db, onclick: () => openEditor(libCol, null) }, `Añadir ${c.one}`)),
+      grid);
+    root.append(h('div', { class: 'lib' }, nav, main));
+    renderLibItems();
+  }
+  function renderLibItems() {
+    const grid = document.getElementById('lib-items');
+    if (!grid) return;
+    const c = COLS[libCol];
+    const q = libQ.trim().toLowerCase();
+    const items = [...lib[libCol]].sort((a, b) => (a.orden ?? 999) - (b.orden ?? 999)).filter((d) => !q || JSON.stringify(d).toLowerCase().includes(q));
+    grid.replaceChildren(...items.map((d) => {
+      const sub = c.sub.map((k) => d[k]).filter(Boolean).join(' · ');
+      const body = h('div', {}, h('div', { class: 'row' }, h('strong', {}, d.nombre), c.pill && d[c.pill] ? h('span', { class: pillClass(d[c.pill]) }, shortPill(d[c.pill])) : null),
+        sub ? h('div', { class: 'mono muted' }, sub) : null,
+        c.steps ? h('div', { class: 'steps-inline' }, (d[c.steps] || []).map((s) => h('span', {}, s))) : null,
+        d[c.text] ? h('p', {}, d[c.text]) : null);
+      return h('button', { class: 'item', onclick: () => openEditor(libCol, d.id) },
+        c.img ? h('div', { class: 'with-img' }, d[c.img] ? h('img', { src: imgSrc(d[c.img]), alt: '' }) : null, body) : body);
+    }));
+    if (!items.length) grid.append(h('div', { class: 'empty' }, loaded ? (q ? 'Nada coincide con la búsqueda.' : 'Todavía no hay elementos.') : 'Cargando la librería…'));
+  }
+
+  function openEditor(col, id) {
+    const c = COLS[col];
+    const orig = id ? byId(col, id) : null;
+    const draft = orig ? JSON.parse(JSON.stringify(orig)) : { orden: lib[col].length };
+    delete draft.id;
+    const rootEl = document.getElementById('editor-root');
+    let confirmDel = false;
+    const close = () => { rootEl.replaceChildren(); document.removeEventListener('keydown', onKey); };
+    const onKey = (e) => { if (e.key === 'Escape') close(); };
+    document.addEventListener('keydown', onKey);
+
+    const fieldEl = ([k, label, type, extra]) => {
+      const fid = `ed-${col}-${k}`;
+      let input;
+      if (type === 'text') input = h('input', { type: 'text', id: fid, value: draft[k] || '', oninput: (e) => (draft[k] = e.target.value) });
+      else if (type === 'textarea') input = h('textarea', { id: fid, oninput: (e) => (draft[k] = e.target.value) }, draft[k] || '');
+      else if (type === 'list') input = h('textarea', { id: fid, oninput: (e) => (draft[k] = e.target.value.split('\n').map((s) => s.trim()).filter(Boolean)) }, (draft[k] || []).join('\n'));
+      else if (type === 'select') input = h('select', { id: fid, onchange: (e) => (draft[k] = e.target.value) }, h('option', { value: '' }, '—'), extra.map((o) => h('option', { value: o, selected: draft[k] === o }, o)));
+      else if (type === 'ref') input = h('select', { id: fid, onchange: (e) => (draft[k] = e.target.value) }, h('option', { value: '' }, '—'), lib[extra].map((o) => h('option', { value: o.id, selected: draft[k] === o.id }, o.nombre)));
+      else if (type === 'refs') {
+        const box = h('div', { class: 'chips', id: fid });
+        const paint = () => box.replaceChildren(...[...lib[extra]].sort((a, b) => (a.orden ?? 999) - (b.orden ?? 999)).map((o) => chip(o.nombre, (draft[k] || []).includes(o.id), () => {
+          draft[k] = (draft[k] || []).includes(o.id) ? draft[k].filter((x) => x !== o.id) : [...(draft[k] || []), o.id]; paint();
+        })));
+        paint(); input = box;
+      } else if (type === 'image') {
+        const box = h('div', { class: 'imgbox' });
+        const paint = () => {
+          const file = h('input', { type: 'file', id: fid, accept: 'image/jpeg,image/png,image/webp', onchange: async (e) => {
+            const f = e.target.files?.[0]; if (!f) return;
+            try { const r = await assets.upload(f); draft[k] = r.id; paint(); toast('Foto subida'); }
+            catch (err) { toast(err?.code === 'too_large' ? 'La foto pesa más de 20 MB.' : err?.code === 'unsupported_type' ? 'Use JPG, PNG o WebP.' : 'No se pudo subir la foto.'); }
+          } });
+          box.replaceChildren(draft[k] ? h('img', { src: imgSrc(draft[k]), alt: '' }) : h('div', { class: 'ph' }),
+            assets ? h('div', {}, file) : h('span', { class: 'muted' }, 'Solo los editores pueden subir fotos.'));
+        };
+        paint(); input = box;
+      }
+      return h('div', { class: 'fgroup' }, h('label', { for: fid }, label), input);
+    };
+
+    const onSave = async () => {
+      if (!(draft.nombre || '').trim()) { toast('Ponga un nombre'); return; }
+      const docId = id || `${slug(draft.nombre)}-${Math.random().toString(36).slice(2, 6)}`;
+      try { await db.doc(`${col}/${docId}`).set(draft); toast(id ? 'Guardado' : `${c.one[0].toUpperCase() + c.one.slice(1)} añadido`); close(); }
+      catch (e) { toast(dbErr(e)); }
+    };
+    const delBtn = h('button', { class: 'btn danger', onclick: async () => {
+      if (!confirmDel) { confirmDel = true; delBtn.textContent = '¿Eliminar de verdad? Pulse otra vez'; return; }
+      try { await db.doc(`${col}/${id}`).delete(); toast('Eliminado'); close(); } catch (e) { toast(dbErr(e)); }
+    } }, 'Eliminar');
+
+    rootEl.replaceChildren(h('div', { class: 'editor', onclick: (e) => { if (e.target.classList.contains('editor')) close(); } },
+      h('div', { class: 'panel', role: 'dialog', 'aria-modal': 'true', 'aria-label': orig ? orig.nombre : `Nuevo ${c.one}` },
+        h('div', { class: 'panel-head' }, h('h3', {}, orig ? orig.nombre : `Nuevo ${c.one}`), h('button', { class: 'btn ghost small', onclick: close }, 'Cerrar')),
+        c.fields.map(fieldEl),
+        h('div', { class: 'panel-foot' }, h('button', { class: 'btn', disabled: !db, onclick: onSave }, 'Guardar'), orig ? delBtn : null))));
+    rootEl.querySelector('input, textarea, select')?.focus();
+  }
+
+  // ---------- PEDIDOS ----------
+  const ESTADOS = ['en cola', 'en producción', 'listo', 'descartado'];
+  function renderPed() {
+    const root = document.getElementById('view-ped');
+    root.replaceChildren();
+    const list = h('div', { class: 'orders' });
+    if (!pedidos.length) list.append(h('div', { class: 'empty' }, loaded ? 'Todavía no hay pedidos. Créelos desde «Crear».' : 'Cargando pedidos…'));
+    for (const p of pedidos) {
+      const cmd = `/sparkpy pedido ${p.id}`;
+      const fecha = p.creado ? new Date(p.creado).toLocaleString('es-CO', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+      let confirm = false;
+      const del = h('button', { class: 'btn danger small', onclick: async (e) => {
+        e.preventDefault();
+        if (!confirm) { confirm = true; del.textContent = '¿Borrar? Pulse otra vez'; return; }
+        try { await db.doc('pedidos/' + p.id).delete(); toast('Pedido borrado'); } catch (err) { toast(dbErr(err)); }
+      } }, 'Borrar');
+      const estadoSel = h('select', { 'aria-label': 'Estado', onclick: (e) => e.stopPropagation(), onchange: async (e) => {
+        try { await db.doc('pedidos/' + p.id).update({ estado: e.target.value }); toast('Estado actualizado'); } catch (err) { toast(dbErr(err)); }
+      } }, ESTADOS.map((s) => h('option', { value: s, selected: p.estado === s }, s)));
+      const g = p.guion || {};
+      list.append(h('details', { class: 'order' },
+        h('summary', {},
+          h('div', {}, h('strong', {}, p.titulo || 'Anuncio'), h('div', { class: 'meta' }, [fecha, p.persona?.nombre, p.rubro?.nombre, p.angulo?.nombre, p.estructura?.nombre, p.estilo?.nombre].filter(Boolean).join(' · '))),
+          estadoSel),
+        h('div', { class: 'body' },
+          h('div', { class: 'cmd' }, h('code', {}, cmd), h('button', { class: 'btn small', onclick: () => copy(cmd) }, 'Copiar comando')),
+          p.nota ? h('div', { class: 'muted' }, 'Nota: ', p.nota) : null,
+          h('div', { class: 'board-wrap' }, h('table', { class: 'board' },
+            h('thead', {}, h('tr', {}, ['Paso', 'Voz', 'Pantalla', 'Toma'].map((x) => h('th', {}, x)))),
+            h('tbody', {}, (g.bloques || []).map((b) => h('tr', {}, h('td', { class: 'paso' }, b.paso), h('td', { class: 'voz' }, b.voz), h('td', { class: 'pant' }, (b.pantalla || []).join(' / ')), h('td', {}, b.toma))),
+              g.cta ? h('tr', {}, h('td', { class: 'paso' }, 'CTA'), h('td', { class: 'voz' }, g.cta.voz), h('td', { class: 'pant' }, g.cta.pantalla), h('td', {}, 'Cierre de marca')) : null))),
+          h('div', {}, del))));
+    }
+    root.append(list);
+  }
+
+  function render() {
+    document.getElementById('ped-count').textContent = pedidos.filter((p) => p.estado === 'en cola').length;
+    if (view === 'crear') renderCrear();
+    else if (view === 'lib') renderLib();
+    else renderPed();
+  }
+
+  // ---------- arranque ----------
+  setView(view);
+  (async () => {
+    const [d, s, a] = await Promise.all([claude.use('db'), claude.use('sample'), claude.use('assets')].map((p) => p.catch(() => null)));
+    db = d; sample = s; assets = a;
+    if (!db) {
+      const b = document.getElementById('banner');
+      b.textContent = 'La librería vive en claude.ai: abra esta página allí para ver y editar rubros, personas, ángulos y pedidos.';
+      b.hidden = false; loaded = true; render(); return;
+    }
+    let pending = ORDER.length + 1;
+    const doneOne = () => { if (--pending === 0) loaded = true; };
+    const onErr = (e) => { if (e?.code !== 'revoked') toast('Se perdió la conexión con la librería. Recargue la página.'); };
+    let timer = null;
+    const soon = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        const a = document.activeElement;
+        // No repintar mientras alguien escribe o edita: se reintenta en un momento.
+        if (document.querySelector('.editor') || (a && /^(TEXTAREA|INPUT|SELECT)$/.test(a.tagName))) { soon(); return; }
+        render();
+      }, 400);
+    };
+    for (const col of ORDER) {
+      let first = true;
+      db.collection(col).onSnapshot((snap) => {
+        lib[col] = snap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        if (first) { first = false; doneOne(); }
+        if (view === 'lib' && col === libCol && document.activeElement?.id === 'lib-search') renderLibItems(); else soon();
+      }, onErr);
+    }
+    let firstP = true;
+    db.collection('pedidos').orderBy('creado', 'desc').limit(200).onSnapshot((snap) => {
+      pedidos = snap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      if (firstP) { firstP = false; doneOne(); }
+      if (view === 'ped' && document.activeElement?.tagName === 'SELECT') { document.getElementById('ped-count').textContent = pedidos.filter((p) => p.estado === 'en cola').length; return; }
+      soon();
+    }, onErr);
+    render();
+  })();
+})();
+</script>
