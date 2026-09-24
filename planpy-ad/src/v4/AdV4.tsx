@@ -32,6 +32,7 @@ const len = (b: readonly [number, number]) => b[1] - b[0];
 
 export const adV4Schema = z.object({
   angle: z.enum(['cierre', 'caja', 'inventario']),
+  voz: z.boolean(), // locución por bloque desde public/voz (scripts/descargar-voz.sh)
   voiceover: z.string().nullable(),
   music: z.string().nullable(),
 });
@@ -67,6 +68,13 @@ const COPY: Record<Angle, {p: string[]; a1: string[]; a2: string[]; s1: string[]
     s1: ['Con *PlanPy*, lo busca', 'y sabe cuánto le queda.'],
     s2: ['Y desde el celular,', 'consulta lo que tiene.'],
   },
+};
+
+// Un clip de locución por bloque, para que cada frase caiga sobre su texto.
+const vozClip = (angle: Angle, beat: 'p' | 'a1' | 'a2' | 's1' | 's2' | 'cta') => {
+  if (beat === 'cta') return 'cta';
+  if (beat === 's2' && angle !== 'inventario') return 'casa-s2';
+  return `${angle}-${beat}`;
 };
 
 const Scene: React.FC<{children?: React.ReactNode; day?: boolean; shelves?: boolean}> = ({children, day, shelves}) => {
@@ -145,7 +153,7 @@ const Visual: React.FC<{angle: Angle; beat: 'p' | 'a1' | 'a2' | 's1' | 's2'}> = 
   );
 };
 
-export const PlanpyAdV4: React.FC<z.infer<typeof adV4Schema>> = ({angle, voiceover, music}) => {
+export const PlanpyAdV4: React.FC<z.infer<typeof adV4Schema>> = ({angle, voz, voiceover, music}) => {
   const c = COPY[angle];
   const beats = ['p', 'a1', 'a2', 's1', 's2'] as const;
   return (
@@ -161,10 +169,20 @@ export const PlanpyAdV4: React.FC<z.infer<typeof adV4Schema>> = ({angle, voiceov
             top={beat === 'p' ? 300 : 200}
             pop={beat === 'p'}
           />
+          {voz ? (
+            <Sequence from={6} layout="none">
+              <Audio src={staticFile(`voz/${vozClip(angle, beat)}.mp3`)} />
+            </Sequence>
+          ) : null}
         </Sequence>
       ))}
       <Sequence from={B.cta[0]} durationInFrames={len(B.cta)}>
         <Cierre devices="En computador y celular, sin instalar nada." />
+        {voz ? (
+          <Sequence from={20} layout="none">
+            <Audio src={staticFile(`voz/${vozClip(angle, 'cta')}.mp3`)} />
+          </Sequence>
+        ) : null}
       </Sequence>
       {voiceover ? <Audio src={staticFile(voiceover)} /> : null}
       {music ? <Audio src={staticFile(music)} volume={0.18} /> : null}

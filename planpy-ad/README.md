@@ -88,3 +88,27 @@ importa del monitor; temblor de cámara a la mitad.
 - *CIERRE:* ¿Cuánto ganó hoy? No lo que hay en la caja: lo que le quedó. El cuaderno no le responde eso. Y otra noche, llega tarde a comer. Con PlanPy, maneja la tienda desde el computador y cierra la caja en unos diez minutos. Y desde la casa, mira cómo le fue en el celular. Pruébelo quince días gratis en planpy.io.
 - *CAJA:* La caja no cuadró. Otra vez. ¿Un cambio mal dado? ¿Un gasto que no anotó? Sin registro, no hay cómo saberlo. Con PlanPy, cada venta y cada gasto quedan registrados en el computador. Y desde la casa, mira cómo le fue en el celular. Pruébelo quince días gratis en planpy.io.
 - *INVENTARIO:* —¿Tiene aceite? —Déjeme mirar atrás. Si para saber qué le queda tiene que ir a mirar, ese es su inventario. Y se entera cuando ya se acabó. Con PlanPy, lo busca en el computador y sabe cuánto le queda. Y desde el celular, lo consulta donde esté. Pruébelo quince días gratis en planpy.io.
+
+### Locución V4 (voz Xavier)
+
+Generada en Higgsfield (ElevenLabs, voz preset "Xavier"), un clip por bloque PAS para que cada frase
+caiga sobre su texto. `npm run voz` descarga los 15 clips a `public/voz/` y `npm run render:v4:voz`
+exporta las tres versiones con voz (`*_V4_VOZ.mp4`).
+
+| Clip | Texto |
+|---|---|
+| cierre-p | ¿Cuánto ganó hoy? De verdad, ¿cuánto le quedó? |
+| cierre-a1 | El cuaderno no le responde eso. |
+| cierre-a2 | Y otra noche, llega tarde a comer. |
+| cierre-s1 | Con PlanPy, cierra la caja en unos diez minutos. |
+| casa-s2 | Y desde la casa, mira cómo le fue. |
+| caja-p | La caja no cuadró. Otra vez. |
+| caja-a1 | ¿Un cambio mal dado? ¿Un gasto sin anotar? |
+| caja-a2 | Y usted, recontando a las once. |
+| caja-s1 | Con PlanPy, cada venta y cada gasto quedan registrados. |
+| inventario-p | ¿Tiene aceite? Déjeme mirar atrás... |
+| inventario-a1 | Ir a mirar: ese es su inventario. |
+| inventario-a2 | Y se entera cuando ya se acabó. |
+| inventario-s1 | Con PlanPy, lo busca y sabe cuánto le queda. |
+| inventario-s2 | Y desde el celular, consulta lo que tiene. |
+| cta | Pruébelo quince días gratis, en PlanPy punto io. |

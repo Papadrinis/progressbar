@@ -42,7 +42,7 @@ export const RemotionRoot: React.FC = () => {
           width={1080}
           height={1920}
           schema={adV4Schema}
-          defaultProps={{angle, voiceover: null, music: null}}
+          defaultProps={{angle, voz: false, voiceover: null, music: null}}
         />
       ))}
     </>
