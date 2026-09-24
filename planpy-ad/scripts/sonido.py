@@ -176,8 +176,138 @@ def music():
     return lp(mix, 12000) * fade
 
 
+# --- efectos V6 (servicios): más juguetones ----------------------------------------
+def tick():
+    out = np.zeros(int(SR * 1.2))
+    for i in range(4):
+        c = hp(rng.standard_normal(int(SR * 0.03)), 3000) * env(int(SR * 0.03), 0.0005, 0.005)
+        s = int(SR * i * 0.3)
+        out[s : s + len(c)] += c * (1 if i % 2 == 0 else 0.6)
+    return out
+
+
+def vibrate():
+    tt = t(0.7)
+    buzz = np.sign(np.sin(2 * np.pi * 150 * tt)) * 0.5 + np.sin(2 * np.pi * 300 * tt) * 0.3
+    gate = ((tt % 0.35) < 0.22).astype(float)
+    return lp(buzz, 900) * gate
+
+
+def dryer():
+    tt = t(1.6)
+    return lp(hp(rng.standard_normal(len(tt)), 300), 4000) * (0.8 + 0.2 * np.sin(2 * np.pi * 6 * tt)) + 0.2 * np.sin(2 * np.pi * 180 * tt)
+
+
+def scratch():
+    tt = t(0.45)
+    f = 900 + 700 * np.sin(2 * np.pi * 5 * tt)
+    return bp(rng.standard_normal(len(tt)), 600, 5000) * np.abs(np.sin(2 * np.pi * np.cumsum(f) / SR / 40)) * env(len(tt), 0.003, 0.25)
+
+
+def bark():
+    out = np.zeros(int(SR * 0.6))
+    for at in (0.0, 0.25):
+        tt = t(0.16)
+        f = 480 * np.exp(-tt * 6) + 260
+        v = np.sin(2 * np.pi * np.cumsum(f) / SR)
+        v = np.tanh(3 * (v + 0.5 * np.sin(2 * np.pi * np.cumsum(f * 2) / SR)))
+        v = bp(v + 0.3 * rng.standard_normal(len(tt)), 250, 3500) * env(len(tt), 0.004, 0.06)
+        s = int(SR * at)
+        out[s : s + len(v)] += v
+    return out
+
+
+def splash():
+    tt = t(0.8)
+    return (bp(rng.standard_normal(len(tt)), 800, 9000) * env(len(tt), 0.01, 0.2)) + 0.4 * lp(rng.standard_normal(len(tt)), 300) * env(len(tt), 0.005, 0.1)
+
+
+def shake():
+    tt = t(0.9)
+    am = np.abs(np.sin(2 * np.pi * 11 * tt))
+    return bp(rng.standard_normal(len(tt)), 1200, 8000) * am * np.sin(np.pi * tt / 0.9)
+
+
+def boing():
+    tt = t(0.5)
+    f = 220 + 120 * np.sin(2 * np.pi * 9 * tt) * np.exp(-tt * 5)
+    return np.sin(2 * np.pi * np.cumsum(f) / SR) * env(len(tt), 0.002, 0.2)
+
+
+def ping():
+    tt = t(0.3)
+    return (np.sin(2 * np.pi * 1568 * tt) + 0.4 * np.sin(2 * np.pi * 2349 * tt)) * env(len(tt), 0.001, 0.08)
+
+
+def cash():
+    out = np.zeros(int(SR * 1.0))
+    c = hp(rng.standard_normal(int(SR * 0.06)), 2500) * env(int(SR * 0.06), 0.001, 0.01)
+    out[: len(c)] += c
+    out[int(SR * 0.08) : int(SR * 0.08) + len(c)] += c
+    b = ding()[: int(SR * 0.85)]
+    out[int(SR * 0.14) : int(SR * 0.14) + len(b)] += 0.8 * b
+    return out
+
+
+SFX.update(tick=tick, vibrate=vibrate, dryer=dryer, scratch=scratch, bark=bark, splash=splash, shake=shake, boing=boing, ping=ping, cash=cash)
+
+
+# --- música V6: bouncy/alegre a 124 BPM, F–C–Dm–Bb con motivo de marimba -------------
+def music_fun():
+    bpm = 124
+    beat = 60 / bpm
+    bars = 16
+    n = int(SR * (bars * 4 * beat + 1.5))
+    mix = np.zeros(n)
+
+    def add(x, at, g=1.0):
+        s = int(SR * at)
+        e = min(n, s + len(x))
+        if e > s:
+            mix[s:e] += g * x[: e - s]
+
+    kt = t(0.3)
+    kick = np.sin(2 * np.pi * np.cumsum(140 * np.exp(-kt * 30) + 50) / SR) * env(len(kt), 0.001, 0.1)
+    ct = t(0.2)
+    clap = sum(bp(rng.standard_normal(len(ct)), 1000, 6000) * env(len(ct), 0.001, 0.05) * np.roll(np.ones(len(ct)), k) for k in (0,))
+    sh = t(0.05)
+    shaker = hp(rng.standard_normal(len(sh)), 6000) * env(len(sh), 0.004, 0.02)
+
+    def marimba(m, d=0.35):
+        tt = t(d)
+        f = note(m)
+        return (np.sin(2 * np.pi * f * tt) + 0.35 * np.sin(2 * np.pi * 4 * f * tt) * np.exp(-tt * 30)) * env(len(tt), 0.001, 0.12)
+
+    roots = [41, 36, 38, 34]  # F C Dm Bb
+    chords = [[65, 69, 72], [60, 64, 67], [62, 65, 69], [58, 62, 65]]
+    motif = [0, 2, 1, 2, 0, 2, 1, 3]  # índices del acorde, en corcheas
+    for bar in range(bars):
+        b0 = bar * 4 * beat
+        ch = chords[bar % 4]
+        for q in range(4):
+            at = b0 + q * beat
+            add(kick, at, 0.85)
+            if q in (1, 3):
+                add(clap, at, 0.4)
+            for s16 in range(4):
+                add(shaker, at + s16 * beat / 4, 0.12 if s16 % 2 else 0.07)
+        # bajo saltarín: raíz, silencio, octava, raíz sincopada
+        for pos, oc in ((0, 0), (0.75, 12), (1.5, 0), (2, 0), (2.75, 12), (3.5, 7)):
+            bt = t(beat * 0.35)
+            f = note(roots[bar % 4] + oc)
+            add((np.sin(2 * np.pi * f * bt) + 0.25 * np.sin(4 * np.pi * f * bt)) * env(len(bt), 0.003, 0.09), b0 + pos * beat, 0.55)
+        if bar >= 2:  # la marimba entra después de la intro
+            for i, idx in enumerate(motif):
+                m = ch[idx % 3] + (12 if idx == 3 else 0)
+                add(marimba(m + 12), b0 + i * beat / 2, 0.18)
+    fade = np.ones(n)
+    fade[-int(SR * 1.5):] = np.linspace(1, 0, int(SR * 1.5))
+    return lp(mix, 12000) * fade
+
+
 if __name__ == '__main__':
     for name, fn in SFX.items():
         save(ROOT / 'sfx' / f'{name}.wav', fn())
     save(ROOT / 'music' / 'cama-112bpm.wav', music(), peak=0.8)
+    save(ROOT / 'music' / 'alegre-124bpm.wav', music_fun(), peak=0.8)
     print('ok')

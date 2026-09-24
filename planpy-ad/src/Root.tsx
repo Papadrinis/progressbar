@@ -3,6 +3,7 @@ import {PlanpyAd, planpyAdSchema, AD_DURATION, FPS} from './PlanpyAd';
 import {PlanpyAdV2, adV2Schema, DURATION_V2, FPS_V2} from './v2/AdV2';
 import {PlanpyAdV4, adV4Schema, DURATION_V4, FPS_V4} from './v4/AdV4';
 import {PlanpyAdV5, adV5Schema, durationV5, FPS_V5} from './v5/AdV5';
+import {PlanpyAdV6, adV6Schema, durationV6, FPS_V6} from './v6/AdV6';
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -58,6 +59,20 @@ export const RemotionRoot: React.FC = () => {
           height={1920}
           schema={adV5Schema}
           defaultProps={{angle}}
+        />
+      ))}
+      {/* V6 — servicios (agenda + WhatsApp), H1 de cada rubro. */}
+      {(['barberia', 'salon', 'mascotas'] as const).map((rubro) => (
+        <Composition
+          key={`v6-${rubro}`}
+          id={`PLANPY-CO-VIDA-AGENDA-${rubro.toUpperCase()}-V6-H1`}
+          component={PlanpyAdV6}
+          durationInFrames={durationV6(rubro)}
+          fps={FPS_V6}
+          width={1080}
+          height={1920}
+          schema={adV6Schema}
+          defaultProps={{rubro}}
         />
       ))}
     </>

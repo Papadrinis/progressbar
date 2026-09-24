@@ -133,3 +133,16 @@ exporta las tres versiones con voz (`*_V4_VOZ.mp4`).
 Efectos y música son síntesis propia (`npm run sonido` → `scripts/sonido.py`), sin licencias de terceros.
 Para pauta, se puede reemplazar `public/music/cama-112bpm.wav` por una pista de la Sound Collection de Meta
 (gratis para anuncios de Facebook e Instagram) con el mismo nombre.
+
+---
+
+# V6 — Servicios (agenda + WhatsApp), H1 de cada rubro
+
+`PLANPY_CO_VIDA_AGENDA_{BARBERIA|SALON|MASCOTAS}_V6_H1` · ~26 s · `npm run render:v6`
+Guiones completos (con H2/H3): `guiones/servicios-v6.md`. Voces: `npm run` → `scripts/descargar-voz-v6.sh`.
+
+Edición más juguetona que V5: subtítulo que aparece palabra por palabra con palabras clave en píldora
+verde, stickers y emojis que rebotan, transiciones de barrido, escenas ilustradas (barbería con poste
+giratorio, salón con secador, perro enjabonado), efectos (reloj, vibración, secador, rayón de disco,
+ladridos, agua, sacudida, boing, caja registradora) y música alegre a 124 BPM con ducking.
+CTA con el plan PYME nombrado (agenda + WhatsApp no están en Emprendedor).

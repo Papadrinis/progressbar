@@ -14,7 +14,7 @@ const LINES = [
   {t: 'Caja ............... 316.450 ?'},
 ];
 
-export type CuadernoLine = {t: string; bold?: boolean};
+export type CuadernoLine = {t: string; bold?: boolean; strikeAt?: number};
 
 // circleAt: frame en que se dibuja, a mano, un círculo sobre la última línea.
 export const Cuaderno: React.FC<{writeStart?: number; lines?: CuadernoLine[]; circleAt?: number}> = ({
@@ -45,12 +45,26 @@ export const Cuaderno: React.FC<{writeStart?: number; lines?: CuadernoLine[]; ci
         color: INK,
       }}
     >
-      {lines.map((l, i) => {
+      {(lines as CuadernoLine[]).map((l, i) => {
         const start = writeStart + i * 12;
         const chars = Math.floor(interpolate(frame, [start, start + 14], [0, l.t.length], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'}));
         return (
-          <div key={i} style={{fontWeight: l.bold ? 700 : 500, whiteSpace: 'pre', height: 73}}>
+          <div key={i} style={{fontWeight: l.bold ? 700 : 500, whiteSpace: 'pre', height: 73, position: 'relative'}}>
             {l.t.slice(0, chars)}
+            {l.strikeAt !== undefined ? (
+              <div
+                style={{
+                  position: 'absolute',
+                  left: -10,
+                  top: 36,
+                  height: 7,
+                  borderRadius: 4,
+                  background: '#c0392b',
+                  width: interpolate(frame, [l.strikeAt, l.strikeAt + 8], [0, 560], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'}),
+                  transform: 'rotate(-2deg)',
+                }}
+              />
+            ) : null}
           </div>
         );
       })}
