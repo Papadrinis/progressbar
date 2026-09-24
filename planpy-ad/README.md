@@ -146,3 +146,17 @@ verde, stickers y emojis que rebotan, transiciones de barrido, escenas ilustrada
 giratorio, salón con secador, perro enjabonado), efectos (reloj, vibración, secador, rayón de disco,
 ladridos, agua, sacudida, boing, caja registradora) y música alegre a 124 BPM con ducking.
 CTA con el precio más barato ("desde $46.500 al mes con el plan anual"): regla fija del dueño de marca.
+
+---
+
+# V7 — Barbería H1 con personas realistas (Higgsfield)
+
+`PLANPY_CO_VIDA_AGENDA_BARBERIA_V7_H1` · 25,7 s · `npm run render:v7`
+
+Misma estructura y edición que la H1 de barbería V6, sobre 6 tomas realistas (`public/v7/shot1..6.mp4`).
+
+- Casting y fotogramas: GPT Image 2.5 (high, 2k, 9:16), barbero de referencia job `760e6f4c-05b4-4fa1-965b-1979bc0b0d16`.
+- Animación: Seedance 2.5, `omni_reference`, `start_image` = fotograma, 5 s, 1080p, sin audio.
+  Jobs: 60ae0f86 · 2f968201 · a3c0819a · 1afde158 · 6dc14b21 · 2a718421.
+- La interfaz (agenda, recordatorio, burbujas) no es generada por el modelo: se superpone en Remotion.
+- Coste aprox.: 17 créditos imágenes + 360 créditos video.

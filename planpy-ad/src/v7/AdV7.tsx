@@ -82,7 +82,7 @@ const AgendaCard: React.FC<{at: number}> = ({at}) => {
   ];
   if (frame < at) return null;
   return (
-    <div style={{position: 'absolute', left: 40, top: 640, width: 940, height: 600, transform: `scale(${1.06 * s}) rotate(${(1 - s) * -6}deg)`, transformOrigin: '50% 50%', borderRadius: 22, overflow: 'hidden', boxShadow: '0 40px 80px rgba(0,0,0,0.55)', border: '10px solid #1d1f22'}}>
+    <div style={{position: 'absolute', left: 60, top: 1060, width: 940, height: 600, transform: `scale(${0.96 * s}) rotate(${(1 - s) * -6}deg)`, transformOrigin: '50% 50%', borderRadius: 22, overflow: 'hidden', boxShadow: '0 40px 80px rgba(0,0,0,0.55)', border: '10px solid #1d1f22'}}>
       <div style={{height: 34, background: '#e8e3da', display: 'flex', alignItems: 'center', gap: 8, padding: '0 14px'}}>
         {['#e06c5a', '#e5b54a', '#68b36b'].map((c) => (
           <div key={c} style={{width: 11, height: 11, borderRadius: 6, background: c}} />
@@ -161,7 +161,7 @@ const Overlay: React.FC<{i: number; lead: number; vf: number}> = ({i, lead, vf})
           ))}
           <Sfx at={30} name="whoosh" volume={0.35} />
           <Sfx at={88} name="ding" volume={0.4} />
-          <Sticker at={w(0.8)} x={880} y={1400} rot={8} size={70} bg="#3DB55C" color="#fff">
+          <Sticker at={w(0.8)} x={900} y={1010} rot={8} size={70} bg="#3DB55C" color="#fff">
             24/7
           </Sticker>
         </>

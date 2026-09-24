@@ -12,7 +12,8 @@
     "render:v4:voz": "remotion render src/index.ts PLANPY-CO-VIDA-PAS-CIERRE-V4 out/PLANPY_CO_VIDA_PAS_CIERRE_V4_VOZ.mp4 --props='{\"angle\":\"cierre\",\"voz\":true,\"voiceover\":null,\"music\":null}' && remotion render src/index.ts PLANPY-CO-VIDA-PAS-CAJA-V4 out/PLANPY_CO_VIDA_PAS_CAJA_V4_VOZ.mp4 --props='{\"angle\":\"caja\",\"voz\":true,\"voiceover\":null,\"music\":null}' && remotion render src/index.ts PLANPY-CO-VIDA-PAS-INVENTARIO-V4 out/PLANPY_CO_VIDA_PAS_INVENTARIO_V4_VOZ.mp4 --props='{\"angle\":\"inventario\",\"voz\":true,\"voiceover\":null,\"music\":null}'",
     "sonido": "python3 scripts/sonido.py",
     "render:v5": "remotion render src/index.ts PLANPY-CO-VIDA-PAS-CIERRE-V5 out/PLANPY_CO_VIDA_PAS_CIERRE_V5.mp4 && remotion render src/index.ts PLANPY-CO-VIDA-PAS-CAJA-V5 out/PLANPY_CO_VIDA_PAS_CAJA_V5.mp4 && remotion render src/index.ts PLANPY-CO-VIDA-PAS-INVENTARIO-V5 out/PLANPY_CO_VIDA_PAS_INVENTARIO_V5.mp4",
-    "render:v6": "remotion render src/index.ts PLANPY-CO-VIDA-AGENDA-BARBERIA-V6-H1 out/PLANPY_CO_VIDA_AGENDA_BARBERIA_V6_H1.mp4 && remotion render src/index.ts PLANPY-CO-VIDA-AGENDA-SALON-V6-H1 out/PLANPY_CO_VIDA_AGENDA_SALON_V6_H1.mp4 && remotion render src/index.ts PLANPY-CO-VIDA-AGENDA-MASCOTAS-V6-H1 out/PLANPY_CO_VIDA_AGENDA_MASCOTAS_V6_H1.mp4"
+    "render:v6": "remotion render src/index.ts PLANPY-CO-VIDA-AGENDA-BARBERIA-V6-H1 out/PLANPY_CO_VIDA_AGENDA_BARBERIA_V6_H1.mp4 && remotion render src/index.ts PLANPY-CO-VIDA-AGENDA-SALON-V6-H1 out/PLANPY_CO_VIDA_AGENDA_SALON_V6_H1.mp4 && remotion render src/index.ts PLANPY-CO-VIDA-AGENDA-MASCOTAS-V6-H1 out/PLANPY_CO_VIDA_AGENDA_MASCOTAS_V6_H1.mp4",
+    "render:v7": "remotion render src/index.ts PLANPY-CO-VIDA-AGENDA-BARBERIA-V7-H1 out/PLANPY_CO_VIDA_AGENDA_BARBERIA_V7_H1.mp4"
   },
   "dependencies": {
     "@remotion/cli": "^4.0.527",
