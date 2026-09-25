@@ -14,7 +14,9 @@ Read these before anything else:
 
 | File | Use it for |
 |---|---|
-| `brand/voice.md` | Tone, wording, captions, on-screen text |
+| `brand/voice.md` | The dog's personality, the sausage metaphor, how he talks |
+| `brand/pillars.md` | Which topic the piece covers |
+| `brand/formats.md` | Format recipe and hook rules |
 | `brand/visual-style.md` | Style choice (ad-video Stage 2) and prompt DNA |
 | `brand/audience.md` | Audience field at intake |
 | `brand/claims.md` | Checking every line of copy before it ships |
@@ -27,6 +29,13 @@ If a file still says `TODO`, ask the user for that detail instead of inventing i
 
 Use the brief in `content/briefs/` the user names. If there isn't one, create it from
 `content/briefs/_template.md` with what the user said, and show it before moving on.
+
+Write the script together with the user before any generation. Check it has a hook in the
+first line, one real tip, and a sausage metaphor.
+
+**Swiping inspiration:** when the user shares a video, image or post to swipe, log it in
+`content/swipes/` from the template, keep its structure and pacing, and rewrite everything else
+in the dog's voice. The `swipe-ad` skill handles the teardown; this skill supplies the character.
 
 ## 3. Run ad-video
 

@@ -1,14 +1,19 @@
 # <Title>
 
 - **Date:**
-- **Dog(s):** (file in brand/dogs/)
-- **Platform:**
-- **Aspect / length:**
-- **Core message:** the one thing the viewer must remember
-- **Hook:** first 2 seconds
-- **CTA:**
+- **Pillar:** (brand/pillars.md)
+- **Format:** (brand/formats.md)
+- **Swiped from:** (content/swipes/..., if any)
+- **Platform:** TikTok / Reels
+- **Length:**
+- **Hook:** the first 1-2 seconds, spoken and on screen
+- **Tip:** the one real piece of advice
+- **Sausage metaphor:**
+- **Punchline / CTA:**
 
-## Notes
+## Script
+
+## Storyboard
 
 ## Generation IDs
 

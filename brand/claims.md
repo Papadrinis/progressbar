@@ -1,6 +1,6 @@
 # Claims and content rules
 
-A character account mostly sells personality, so the rules here are about what the dog is
+The channel sells personality and advice, so the rules here are about what the dog is
 shown doing and saying.
 
 ## Dog welfare (default, change if you disagree)
@@ -17,3 +17,8 @@ own the breed notice this.
 ## Other rules
 
 TODO: health or breed facts to avoid stating, topics that are off limits.
+
+## Advice
+
+- The dog gives general marketing advice, not financial or legal advice. No income promises
+  ("make 10k a month"), even as a joke, unless the irony is unmistakable.

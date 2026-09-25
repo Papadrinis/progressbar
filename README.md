@@ -7,8 +7,8 @@ and Higgsfield.
 
 | Path | What lives there |
 |---|---|
-| `brand/` | The knowledge base. Voice, visual style, audience, claims, platforms, and one file per recurring dog. Every piece of content reads from here. |
-| `content/` | The work itself: `ideas.md` backlog, one brief per piece in `briefs/`, and the `published.md` log. |
+| `brand/` | The knowledge base. Voice, pillars, formats, visual style, audience, claims, platforms, and one file per recurring dog. Every piece of content reads from here. |
+| `content/` | The work itself: `ideas.md` backlog, inspiration in `swipes/`, one brief per piece in `briefs/`, and the `published.md` log. |
 | `assets/` | Small reference images only. Renders stay in Higgsfield and are referenced by ID. |
 | `.claude/skills/sausage-dog/` | Skill that runs the `ad-video` pipeline with the brand files loaded. |
 | `.claude/skills/ad-video/` | Generic Higgsfield ad pipeline (brand-neutral). |

@@ -1,8 +1,10 @@
 # Visual style
 
-- **Recurring setting:** TODO (the dog's home, sofa, garden, city walks...).
-- **Look and feel:** TODO (cosy and warm, bright and comedic, cinematic...).
+The dog is an avatar generated from photos of Jope's real dachshund. See `dogs/` for his
+locked IDs.
+
+- **Framing:** vertical, dog's-eye level, talking to camera by default.
+- **Vibe:** ironic "guru" set dressing (think desk, whiteboard, ring light) played for laughs.
+- **Setting:** TODO.
 - **Palette:** TODO.
-- **Framing:** low, dog's-eye-level shots by default, since the character is the hero.
-- **Wardrobe / props:** TODO (sweaters, bandanas, a favourite toy...).
-- **Real footage, AI, or mixed:** TODO.
+- **Wardrobe / props:** TODO (e.g. tiny blazer, sunglasses, a sausage as a prop).

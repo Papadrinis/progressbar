@@ -1,6 +1,7 @@
 # Audience
 
-Who follows the character. Keep it to 2-3 short personas.
+People who want marketing and business advice but are tired of serious guru content: founders,
+e-commerce sellers, marketers, and people curious about starting something. Dog lovers come for
+the character and stay for the tips.
 
-TODO: for example dachshund owners, general dog lovers, people who want a daily laugh.
-For each: what they enjoy, what makes them share, where they scroll.
+TODO: sharpen into 2-3 personas once the first posts have data.

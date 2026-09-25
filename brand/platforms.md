@@ -1,12 +1,13 @@
 # Platforms
 
-A character account lives on short vertical video first.
+Organic only, no paid ads for now.
 
-| Platform | Priority | Aspect | Length | Notes |
-|---|---|---|---|---|
-| TikTok | TODO | 9:16 | 8-30s | |
-| Instagram Reels | TODO | 9:16 | 8-30s | |
-| YouTube Shorts | TODO | 9:16 | 8-60s | |
+| Platform | Aspect | Length | Notes |
+|---|---|---|---|
+| TikTok | 9:16 vertical | 8-60s | Main channel |
+| Instagram Reels | 9:16 vertical | 8-60s | Same video, adjust caption and hashtags |
+
+Both formats are vertical 9:16 (not 16:9).
 
 - **Handle(s):** TODO.
 - **Posting rhythm:** TODO.
