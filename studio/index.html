@@ -1,0 +1,936 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nuggeting Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shrikhand&family=Schibsted+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  color-scheme:light;
+  --ground:#F6E6E2; --surface:#FFF8F6; --surface-2:#EFD6D0; --ink:#2A1115; --ink-2:#6E4A4F; --line:#E2C3BC;
+  --mustard:#E3AC12; --mustard-ink:#2A1115; --mustard-soft:#F8E3A6;
+  --good:#2F7D4F; --warn:#B86A00; --bad:#B7322C;
+  --frame-a:#3A1C20; --frame-b:#7A3B34; --dog:#C7874F;
+  --display:"Shrikhand","Cooper Black",Georgia,serif;
+  --body:"Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --ground:#1A0F11; --surface:#26171A; --surface-2:#342125; --ink:#F6E6E2; --ink-2:#C4A3A4; --line:#46292E;
+    --mustard:#F0BB2B; --mustard-soft:#4A3A12; --good:#6BC48D; --warn:#E8A33B; --bad:#EF7A6E; --frame-a:#2A1216; --frame-b:#5A2A26;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ground:#1A0F11; --surface:#26171A; --surface-2:#342125; --ink:#F6E6E2; --ink-2:#C4A3A4; --line:#46292E;
+  --mustard:#F0BB2B; --mustard-soft:#4A3A12; --good:#6BC48D; --warn:#E8A33B; --bad:#EF7A6E; --frame-a:#2A1216; --frame-b:#5A2A26;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--mustard);outline-offset:2px}
+h1,h2,h3{margin:0;text-wrap:balance}
+p{margin:0}
+.mono{font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums}
+.label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.note{font-size:13px;color:var(--ink-2)}
+
+.app{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:100vh}
+.rail{background:#2A1115;color:#F6E6E2;padding:20px 14px;display:flex;flex-direction:column;gap:18px;position:sticky;top:0;height:100vh}
+.logo{font-family:var(--display);font-size:26px;line-height:1;color:#F0BB2B;display:flex;align-items:center;gap:8px}
+.logo svg{width:40px;height:20px;flex:none;color:#F0BB2B}
+.rail small{color:#C9A9AC;font-size:12px}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav button{background:none;border:0;text-align:left;padding:9px 10px;border-radius:8px;display:flex;align-items:center;gap:10px;color:#E9D3D0;font-weight:600;font-size:14px}
+.nav button .n{font-family:var(--mono);font-size:11px;opacity:.6;width:14px}
+.nav button:hover{background:rgba(255,255,255,.07)}
+.nav button[aria-selected="true"]{background:#F0BB2B;color:#2A1115}
+.rail .foot{margin-top:auto;font-size:12px;color:#C9A9AC;display:flex;flex-direction:column;gap:8px}
+.rail .foot button{background:none;border:1px solid rgba(255,255,255,.2);color:#E9D3D0;border-radius:8px;padding:6px 8px;font-size:12px;text-align:left}
+
+main{padding-block:24px 80px;padding-inline:28px;min-width:0}
+.top{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;justify-content:space-between;margin-bottom:18px}
+.top h1{font-family:var(--display);font-weight:400;font-size:32px;line-height:1.1}
+.top p{color:var(--ink-2);max-width:64ch;margin-top:4px}
+.picker{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.picker select{max-width:320px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 14px;font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:6px;color:var(--ink)}
+.btn:hover{border-color:var(--ink-2)}
+.btn.primary{background:var(--mustard);border-color:var(--mustard);color:var(--mustard-ink)}
+.btn.small{padding:5px 10px;font-size:13px}
+.btn.ghost{background:transparent}
+.btn.danger{color:var(--bad)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0}
+.panel > .label:first-child{display:block;margin-bottom:10px}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--surface-2);color:var(--ink)}
+.chip.m{background:var(--mustard-soft)}
+.chip.good{color:var(--good)} .chip.warn{color:var(--warn)} .chip.bad{color:var(--bad)}
+input[type=text],input[type=url],input[type=date],input[type=number],textarea,select{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 10px;width:100%;min-width:0}
+textarea{resize:vertical;min-height:60px}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field .label{display:block}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.stack{display:flex;flex-direction:column;gap:12px}
+
+/* frame */
+.frame{aspect-ratio:9/16;max-width:100%;border-radius:12px;background:linear-gradient(170deg,var(--frame-b),var(--frame-a));position:relative;overflow:hidden;color:#fff}
+.frame .dog{position:absolute;left:12%;right:12%;bottom:16%;color:var(--dog)}
+.frame .dog svg{width:100%;height:auto;display:block}
+.frame .ost{position:absolute;left:8%;right:8%;top:13%;font-weight:800;font-size:13px;line-height:1.2;text-align:center}
+.frame .ost span{background:#fff;color:#111;padding:1px 4px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.frame .tc{position:absolute;left:8px;top:8px;font-family:var(--mono);font-size:10px;background:rgba(0,0,0,.45);padding:1px 5px;border-radius:4px}
+.frame .safe{position:absolute;inset:8% 14% 20% 6%;border:1px dashed rgba(255,255,255,.25);border-radius:6px}
+
+/* board */
+.kanban{display:grid;grid-template-columns:repeat(6,minmax(170px,1fr));gap:12px;overflow-x:auto;padding-bottom:6px}
+.col h3{font-size:13px;display:flex;justify-content:space-between;margin-bottom:8px}
+.col .list{display:flex;flex-direction:column;gap:8px;min-height:60px;border-radius:10px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;text-align:left;color:var(--ink);width:100%}
+.card:hover{border-color:var(--ink-2)}
+.card .t{font-weight:700;font-size:14px;line-height:1.3}
+.card .h{font-size:13px;color:var(--ink-2);font-style:italic}
+.board-bottom{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:16px;margin-top:18px}
+.ideas{list-style:none;margin:0;padding:0}
+.ideas li{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:8px 0;border-top:1px solid var(--line)}
+.ideas li span{min-width:0;overflow-wrap:anywhere}
+
+/* write */
+.write{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;align-items:start}
+.hooks{display:flex;flex-direction:column;gap:8px}
+.hook{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:6px 8px 6px 10px;background:var(--surface)}
+.hook.on{border-color:var(--mustard);box-shadow:0 0 0 2px var(--mustard) inset}
+.hook input[type=radio]{accent-color:var(--mustard)}
+.hook input[type=text]{border:0;background:transparent;padding:6px 4px;font-weight:600}
+.recipes{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.recipes button{border:1px dashed var(--line);background:transparent;border-radius:999px;font-size:12px;padding:4px 10px;color:var(--ink)}
+.beats{width:100%;border-collapse:collapse;font-size:14px}
+.beats th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);padding:0 4px 6px}
+.beats td{padding:4px;vertical-align:top;border-top:1px solid var(--line)}
+.beats td input,.beats td textarea{padding:6px 8px}
+.beats td textarea{min-height:40px}
+.beats .t{width:74px}
+.beats .b{width:128px}
+.beats .x{width:30px}
+.x-btn{border:0;background:none;color:var(--ink-2);font-size:18px;line-height:1;padding:6px}
+.tablewrap{overflow-x:auto}
+.checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.checks li{display:grid;grid-template-columns:18px minmax(0,1fr);gap:8px;font-size:14px;align-items:start}
+.checks .i{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:800;color:#fff;margin-top:2px}
+.checks .ok .i{background:var(--good)}
+.checks .warn .i{background:var(--warn)}
+.checks .bad .i{background:var(--bad)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stat{background:var(--surface-2);border-radius:10px;padding:8px 10px}
+.stat b{font-family:var(--mono);font-size:18px;display:block;font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--ink-2)}
+.voice li{margin-bottom:4px}
+.voice{padding-left:18px;margin:0;font-size:14px}
+
+/* storyboard */
+.sb{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:14px}
+.shot{display:grid;grid-template-columns:110px minmax(0,1fr);gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px}
+.shot .fields{display:flex;flex-direction:column;gap:6px;min-width:0}
+.shot .fields input,.shot .fields textarea{padding:5px 8px;font-size:13px}
+.shot .fields textarea{min-height:44px}
+.shot .frame .ost{font-size:10px}
+.shot .head{display:flex;justify-content:space-between;align-items:center}
+.shot .flag{font-size:12px;color:var(--bad);font-weight:600}
+.gate{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:14px}
+.steps{display:flex;gap:6px;flex-wrap:wrap}
+.steps span{font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:var(--surface-2)}
+.steps span.done{background:var(--good);color:var(--surface)}
+.steps span.now{background:var(--mustard);color:var(--mustard-ink)}
+
+/* ship */
+.ship{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px;align-items:start}
+pre.out{font-family:var(--mono);font-size:12px;background:var(--surface-2);border-radius:10px;padding:12px;white-space:pre-wrap;word-break:break-word;max-height:520px;overflow:auto;margin:0}
+.copyrow{display:flex;flex-direction:column;gap:10px}
+.copyitem{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.copyitem b{display:block;font-size:14px}
+.copyitem .mono{color:var(--ink-2);overflow-wrap:anywhere}
+
+/* modal-ish sheet */
+.sheet{position:fixed;inset:0;background:rgba(20,8,10,.5);display:grid;place-items:center;padding:16px;z-index:20}
+.sheet .panel{width:min(640px,100%);max-height:90vh;overflow:auto;display:flex;flex-direction:column;gap:10px}
+.sheet textarea{min-height:240px;font-family:var(--mono);font-size:12px}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#2A1115;color:#F6E6E2;padding:10px 16px;border-radius:999px;font-size:14px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.25);z-index:30;max-width:calc(100% - 32px)}
+.empty{border:2px dashed var(--line);border-radius:14px;padding:24px;text-align:center;color:var(--ink-2)}
+
+@media (max-width:1000px){
+  .write,.ship,.board-bottom{grid-template-columns:1fr}
+}
+@media (max-width:760px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .rail{min-width:0}
+  .rail{position:sticky;top:env(safe-area-inset-top,0px);height:auto;padding:10px 16px;gap:8px;z-index:5}
+  .rail small,.rail .foot{display:none}
+  .logo{font-size:20px}
+  .nav{flex-direction:row;overflow-x:auto;gap:4px}
+  .nav button{white-space:nowrap;padding:7px 10px}
+  main{padding-inline:16px}
+  .grid2,.grid3{grid-template-columns:1fr}
+  .kanban{grid-template-columns:repeat(6,190px)}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="doxie" viewBox="0 0 200 90">
+    <path d="M22 44 q-14 -10 -18 -24" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <rect x="18" y="34" width="132" height="36" rx="18" fill="currentColor"/>
+    <rect x="30" y="62" width="11" height="22" rx="5" fill="currentColor"/>
+    <rect x="48" y="62" width="11" height="22" rx="5" fill="currentColor"/>
+    <rect x="112" y="62" width="11" height="22" rx="5" fill="currentColor"/>
+    <rect x="130" y="62" width="11" height="22" rx="5" fill="currentColor"/>
+    <ellipse cx="156" cy="32" rx="22" ry="19" fill="currentColor"/>
+    <ellipse cx="184" cy="40" rx="15" ry="9" fill="currentColor"/>
+    <circle cx="197" cy="38" r="3.5" fill="#1a0a0c"/>
+    <path d="M146 20 q-12 6 -8 32 q8 4 14 -4 z" fill="#5a2f1c" opacity=".7"/>
+    <rect x="150" y="22" width="26" height="8" rx="3" fill="#111" opacity=".85"/>
+  </symbol>
+</svg>
+
+<div class="app">
+  <aside class="rail">
+    <div class="logo"><svg><use href="#doxie"/></svg>Nuggeting</div>
+    <small>Studio for Nugget's channel. Writes briefs for the <code>/sausage-dog</code> skill, which generates in Higgsfield.</small>
+    <nav class="nav" role="tablist" aria-label="Screens">
+      <button role="tab" data-go="board" aria-selected="true"><span class="n">·</span>Board</button>
+      <button role="tab" data-go="write"><span class="n">1</span>Write</button>
+      <button role="tab" data-go="swipe"><span class="n">1b</span>Swipe</button>
+      <button role="tab" data-go="story"><span class="n">2</span>Storyboard</button>
+      <button role="tab" data-go="ship"><span class="n">3</span>Ship</button>
+    </nav>
+    <div class="foot">
+      <span class="mono">9:16 · 1080×1920</span>
+      <button id="import-btn">Import a brief</button>
+      <button id="backup-btn">Copy backup of everything</button>
+      <span>Saved in this browser only. Briefs in the repo are the source of truth.</span>
+    </div>
+  </aside>
+
+  <main>
+    <!-- BOARD -->
+    <section data-screen="board">
+      <div class="top">
+        <div><h1>Nugget's sausages</h1><p>Every video is a card. Open one to write it, swipe a reference into it, storyboard it, then ship the brief to Claude.</p></div>
+        <div class="row"><button class="btn" data-new="swipe">Start from a reference</button><button class="btn primary" data-new="write">New video</button></div>
+      </div>
+      <div class="kanban" id="kanban"></div>
+      <div class="board-bottom">
+        <div class="panel">
+          <span class="label">Idea backlog</span>
+          <form class="row" id="idea-form" style="flex-wrap:nowrap"><input type="text" id="idea-input" placeholder="A hook or angle, one line" autocomplete="off"><button class="btn small primary">Add</button></form>
+          <ul class="ideas" id="ideas" style="margin-top:8px"></ul>
+          <p class="note" style="margin-top:8px">Mirrors <code>content/ideas.md</code>. Copy the list from Ship to paste it into the repo.</p>
+        </div>
+        <div class="panel">
+          <span class="label">Nugget in one breath</span>
+          <ul class="voice">
+            <li>Ironic e-com bro. Funny, not cute. Deadpan and a little smug, never mean to the viewer.</li>
+            <li>Every lesson gets a sausage metaphor: pricing a sausage, a funnel as a sausage stand.</li>
+            <li>The joke is the casing, the advice is the meat. The tip has to be real.</li>
+            <li>First line is a hook, never a greeting. He's on screen and talking in the first second.</li>
+            <li>Never jumps off furniture or climbs stairs (dachshund backs).</li>
+          </ul>
+          <p class="note" style="margin-top:8px">From <code>brand/voice.md</code>, <code>brand/formats.md</code> and <code>brand/claims.md</code>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- WRITE -->
+    <section data-screen="write" hidden>
+      <div class="top">
+        <div><h1 data-bind-title>Write</h1><p>Pick the hook first, then write the beats. The checks on the right follow Nugget's brand rules as you type.</p></div>
+        <div class="picker"><select class="piece-select" aria-label="Video"></select><button class="btn primary" data-go="story">Storyboard it</button></div>
+      </div>
+      <div class="write" data-needs-piece>
+        <div class="stack">
+          <div class="panel">
+            <span class="label">Basics</span>
+            <div class="grid3">
+              <div class="field" style="grid-column:1/-1"><label class="label" for="f-title">Title</label><input type="text" id="f-title" data-f="title"></div>
+              <div class="field"><label class="label" for="f-pillar">Pillar</label><select id="f-pillar" data-f="pillar"><option>Campaigns</option><option>Marketing psychology</option><option>Entrepreneurship</option></select></div>
+              <div class="field"><label class="label" for="f-format">Format</label><input type="text" id="f-format" data-f="format" list="formats"></div>
+              <div class="field"><label class="label" for="f-length">Target length (s)</label><input type="number" id="f-length" data-f="length" min="5" max="90" step="1"></div>
+              <div class="field"><label class="label" for="f-date">Date</label><input type="date" id="f-date" data-f="date"></div>
+              <div class="field"><label class="label" for="f-platform">Platform</label><select id="f-platform" data-f="platform"><option>TikTok + Reels</option><option>TikTok</option><option>Reels</option></select></div>
+              <div class="field"><label class="label" for="f-status">Stage</label><select id="f-status" data-f="status"></select></div>
+            </div>
+            <datalist id="formats"><option value="Talking head"><option value="Swipe"><option value="Skit"><option value="Reaction"><option value="Explainer"><option value="POV"><option value="Hot take"></datalist>
+          </div>
+
+          <div class="panel">
+            <div class="row" style="justify-content:space-between;margin-bottom:10px"><span class="label">Hook options</span><button class="btn small" id="add-hook">Add hook</button></div>
+            <div class="hooks" id="hooks"></div>
+            <div class="recipes" id="recipes" aria-label="Hook recipes"></div>
+            <p class="note" style="margin-top:6px">Recipes drop in a starter line to rewrite. Pick the winner with the dot.</p>
+          </div>
+
+          <div class="panel">
+            <span class="label">The meat</span>
+            <div class="grid2">
+              <div class="field"><label class="label" for="f-tip">Tip (the one real piece of advice)</label><textarea id="f-tip" data-f="tip" rows="2"></textarea></div>
+              <div class="field"><label class="label" for="f-metaphor">Sausage metaphor</label><textarea id="f-metaphor" data-f="metaphor" rows="2"></textarea></div>
+              <div class="field" style="grid-column:1/-1"><label class="label" for="f-cta">Punchline / CTA</label><input type="text" id="f-cta" data-f="cta"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="row" style="justify-content:space-between;margin-bottom:6px"><span class="label">Script beats</span><div class="row"><button class="btn small" id="retime">Auto-time</button><button class="btn small" id="add-beat">Add beat</button></div></div>
+            <div class="tablewrap">
+              <table class="beats"><thead><tr><th class="t">Time</th><th class="b">Beat</th><th>Nugget says</th><th>On screen</th><th class="x"></th></tr></thead><tbody id="beats"></tbody></table>
+            </div>
+          </div>
+        </div>
+
+        <div class="stack" style="position:sticky;top:16px">
+          <div class="panel">
+            <span class="label">Voice check</span>
+            <div class="stats">
+              <div class="stat"><b id="s-words">0</b><span>Words</span></div>
+              <div class="stat"><b id="s-secs">0s</b><span>Spoken, est.</span></div>
+              <div class="stat"><b id="s-hookw">0</b><span>Hook words</span></div>
+            </div>
+            <ul class="checks" id="checks"></ul>
+          </div>
+          <div class="panel">
+            <span class="label">Stuck? Ask Claude</span>
+            <p class="note">Copies a message for Claude that loads Nugget's brand files and works on this video.</p>
+            <div class="row" style="margin-top:10px">
+              <button class="btn small" data-ask="hooks">5 more hooks</button>
+              <button class="btn small" data-ask="tighten">Tighten the script</button>
+              <button class="btn small" data-ask="sarcasm">More sarcastic</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SWIPE -->
+    <section data-screen="swipe" hidden>
+      <div class="top">
+        <div><h1>Swipe it, then re-dog it</h1><p>Log a reference video or image, say why it works, and map its beats onto Nugget's version. Keep the structure, change the voice.</p></div>
+        <div class="picker"><select class="piece-select" aria-label="Video"></select></div>
+      </div>
+      <div class="write" data-needs-piece>
+        <div class="stack">
+          <div class="panel">
+            <span class="label">Reference</span>
+            <div class="stack">
+              <div class="field"><label class="label" for="w-source">Link or Higgsfield media ID</label><input type="url" id="w-source" data-f="swipe.source" placeholder="https://www.tiktok.com/@…/video/…"></div>
+              <div class="field"><label class="label" for="w-why">Why it works (hook, structure, pacing)</label><textarea id="w-why" data-f="swipe.why" rows="3"></textarea></div>
+              <div class="grid2">
+                <div class="field"><label class="label" for="w-keep">What we keep</label><textarea id="w-keep" data-f="swipe.keep" rows="3"></textarea></div>
+                <div class="field"><label class="label" for="w-change">What we change</label><textarea id="w-change" data-f="swipe.change" rows="3"></textarea></div>
+              </div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="row" style="justify-content:space-between;margin-bottom:6px"><span class="label">Their beats → Nugget's beats</span><button class="btn small" id="add-ref-beat">Add beat</button></div>
+            <div class="tablewrap">
+              <table class="beats"><thead><tr><th class="t">Time</th><th>What they do</th><th>What Nugget does</th><th class="x"></th></tr></thead><tbody id="ref-beats"></tbody></table>
+            </div>
+            <div class="row" style="margin-top:10px"><button class="btn small primary" id="ref-to-script">Use as script beats</button><span class="note">Overwrites the beats on Write.</span></div>
+          </div>
+        </div>
+        <div class="stack">
+          <div class="panel">
+            <span class="label">Get the teardown from Claude</span>
+            <p class="note">Claude can watch the reference in Higgsfield and fill this page in for you. Copy this and paste it to Claude.</p>
+            <pre class="out" id="swipe-ask" style="margin-top:10px;max-height:260px"></pre>
+            <div class="row" style="margin-top:10px"><button class="btn small primary" data-copy="swipe-ask">Copy for Claude</button></div>
+          </div>
+          <div class="panel">
+            <span class="label">Swipe file</span>
+            <p class="note">Save as <code class="mono" id="swipe-path"></code></p>
+            <pre class="out" id="swipe-md" style="margin-top:10px;max-height:260px"></pre>
+            <div class="row" style="margin-top:10px"><button class="btn small" data-copy="swipe-md">Copy swipe file</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STORYBOARD -->
+    <section data-screen="story" hidden>
+      <div class="top">
+        <div><h1 data-bind-title>Storyboard</h1><p>One 9:16 frame per beat. Say what Nugget does and how the camera sees it. Claude turns each shot into a keyframe in Higgsfield once you approve.</p></div>
+        <div class="picker"><select class="piece-select" aria-label="Video"></select><button class="btn" id="build-sb">Build from script</button><button class="btn small" id="add-shot">Add shot</button></div>
+      </div>
+      <div data-needs-piece>
+        <div class="gate">
+          <div class="steps" id="steps"></div>
+          <div class="row"><span class="note" id="gate-note"></span><button class="btn primary" id="approve-sb">Approve storyboard</button></div>
+        </div>
+        <div class="sb" id="sb"></div>
+      </div>
+    </section>
+
+    <!-- SHIP -->
+    <section data-screen="ship" hidden>
+      <div class="top">
+        <div><h1>Ship it</h1><p>Save the brief in the repo, then hand it to Claude. Claude runs <code>/sausage-dog</code>, which generates keyframes and video in Higgsfield and stops for your approval before spending credits.</p></div>
+        <div class="picker"><select class="piece-select" aria-label="Video"></select></div>
+      </div>
+      <div class="ship" data-needs-piece>
+        <div class="panel">
+          <div class="row" style="justify-content:space-between;margin-bottom:10px"><span class="label">Brief</span><span class="mono" id="brief-path"></span></div>
+          <pre class="out" id="brief-md"></pre>
+        </div>
+        <div class="stack">
+          <div class="panel">
+            <span class="label">Hand-offs</span>
+            <div class="copyrow">
+              <div class="copyitem"><div><b>1. Brief file</b><span class="mono" data-path></span></div><button class="btn small" data-copy="brief-md">Copy</button></div>
+              <div class="copyitem"><div><b>2. Generate with Claude</b><span class="note">Storyboard, keyframes, then video, with approval at each step.</span></div><button class="btn small primary" data-copy-cmd="generate">Copy</button></div>
+              <div class="copyitem"><div><b>Ideas list</b><span class="note">For <code>content/ideas.md</code></span></div><button class="btn small" data-copy-cmd="ideas">Copy</button></div>
+            </div>
+          </div>
+          <div class="panel">
+            <span class="label">After it's generated</span>
+            <div class="stack">
+              <div class="field"><label class="label" for="g-ids">Higgsfield generation IDs</label><textarea id="g-ids" data-f="genIds" rows="2" placeholder="Paste the IDs Claude reports"></textarea></div>
+              <div class="field"><label class="label" for="g-cap">Caption</label><textarea id="g-cap" data-f="caption" rows="3"></textarea></div>
+              <div class="grid2">
+                <div class="field"><label class="label" for="g-tt">TikTok link</label><input type="url" id="g-tt" data-f="links.tiktok"></div>
+                <div class="field"><label class="label" for="g-ig">Reels link</label><input type="url" id="g-ig" data-f="links.reels"></div>
+              </div>
+              <label class="row" style="font-size:14px"><input type="checkbox" id="g-ad" data-f="sponsored"> Sponsored (adds #ad and the paid-partnership reminder)</label>
+              <div class="copyitem"><div><b>Published log line</b><span class="note">For <code>content/published.md</code></span></div><button class="btn small" data-copy-cmd="published">Copy</button></div>
+              <button class="btn primary" id="mark-posted" style="align-self:flex-start">Mark as posted</button>
+            </div>
+          </div>
+          <button class="btn ghost danger small" id="delete-piece" style="align-self:flex-start">Delete this video</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="empty" id="no-piece" hidden>No video selected. <button class="btn small primary" data-new="write">New video</button></div>
+  </main>
+</div>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+    <h2 id="sheet-title" style="font-size:18px"></h2>
+    <p class="note" id="sheet-note"></p>
+    <textarea id="sheet-text" spellcheck="false"></textarea>
+    <div class="row" style="justify-content:flex-end"><button class="btn" id="sheet-cancel">Cancel</button><button class="btn primary" id="sheet-ok"></button></div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(() => {
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const KEY = 'nuggeting.studio.v1';
+const WPS = 2.6; // spoken words per second, fast TikTok delivery
+
+const STAGES = [
+  ['idea', 'Idea'], ['script', 'Scripting'], ['storyboard', 'Storyboard'],
+  ['render', 'Generating'], ['ready', 'Ready to post'], ['posted', 'Posted']
+];
+const BEATS = ['Hook', 'Setup', 'Metaphor', 'Turn', 'Lesson', 'Twist', 'Button'];
+const FRAMING = { Hook: 'Close-up, eye level', Button: 'Wide, desk set', Metaphor: 'Medium, sausage prop in frame' };
+const RECIPES = [
+  ['Dog flex', "If I know I'm a dog, you should know {X}."],
+  ['Contradiction', 'Stop {doing X}. Seriously. Sit.'],
+  ['Size joke', "I'm 30 cm tall and I still {beat you at X}."],
+  ['Callout', 'Your {X} is a sausage with no casing.'],
+  ['Question', 'How much did {X} cost you? Wrong.'],
+  ['Confession', 'I once {made a sausage mistake}. Never again.']
+];
+
+const today = () => new Date().toISOString().slice(0, 10);
+const uid = () => Math.random().toString(36).slice(2, 10);
+const slug = s => (s || 'untitled').toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '')
+  .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60) || 'untitled';
+
+function blank(extra) {
+  return Object.assign({
+    id: uid(), title: 'Untitled video', date: today(), status: 'idea', pillar: 'Campaigns',
+    format: 'Talking head', platform: 'TikTok + Reels', length: 20,
+    hooks: [{ text: '' }], hookIdx: 0, tip: '', metaphor: '', cta: '',
+    beats: [], shots: [], approved: false,
+    swipe: { source: '', why: '', keep: '', change: '', beats: [] },
+    genIds: '', caption: '', links: { tiktok: '', reels: '' }, sponsored: false
+  }, extra || {});
+}
+
+function example() {
+  return blank({
+    title: 'Your CAC is a crime scene (example)', status: 'script', pillar: 'Campaigns', length: 22,
+    hooks: [
+      { text: "If I know I'm a dog, you should know your CAC." },
+      { text: '9 out of 10 brands lose money on every sausage. The 10th is me.' },
+      { text: 'How much did your last customer cost you? Wrong.' }
+    ],
+    tip: 'Customer acquisition cost is ad spend divided by new customers. Know it before you scale.',
+    metaphor: 'A hot dog stand spends 9 euros on flyers to sell one 3 euro sausage.',
+    cta: "I'd help more, but I'm a dog. Follow for part two.",
+    beats: [
+      { t: '0-2s', beat: 'Hook', line: "If I know I'm a dog, you should know your CAC.", ost: 'KNOW YOUR CAC' },
+      { t: '2-7s', beat: 'Metaphor', line: 'Picture a hot dog stand. It spends nine euros on flyers to sell one three euro sausage.', ost: '€9 TO SELL €3' },
+      { t: '7-14s', beat: 'Turn', line: "That's you. Except your flyers are Meta ads and your sausage is a candle.", ost: '' },
+      { t: '14-19s', beat: 'Lesson', line: 'Ad spend divided by new customers. Write it on a napkin. Look at it. Cry a little.', ost: 'SPEND ÷ NEW CUSTOMERS' },
+      { t: '19-22s', beat: 'Button', line: "I'd help more, but I'm a dog. Follow for part two.", ost: 'PART 2 →' }
+    ]
+  });
+}
+
+/* ---------- state ---------- */
+let state = { pieces: [], current: null, ideas: [], screen: 'board' };
+function load() {
+  try { const raw = localStorage.getItem(KEY); if (raw) state = Object.assign(state, JSON.parse(raw)); } catch (e) {}
+  if (!state.pieces.length) { const ex = example(); state.pieces.push(ex); state.current = ex.id; }
+  state.pieces = state.pieces.map(p => blank(p));
+  if (!Array.isArray(state.ideas)) state.ideas = [];
+}
+let saveT;
+function save() { clearTimeout(saveT); saveT = setTimeout(() => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }, 150); }
+window.addEventListener('pagehide', () => { clearTimeout(saveT); try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} });
+const cur = () => state.pieces.find(p => p.id === state.current) || null;
+
+function getPath(o, path) { return path.split('.').reduce((a, k) => (a == null ? a : a[k]), o); }
+function setPath(o, path, v) { const ks = path.split('.'); const last = ks.pop(); const t = ks.reduce((a, k) => (a[k] = a[k] || {}), o); t[last] = v; }
+
+/* ---------- utils ---------- */
+let toastT;
+function toast(m) { const t = $('#toast'); t.textContent = m; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => (t.hidden = true), 2400); }
+async function copy(text, what) {
+  try { await navigator.clipboard.writeText(text); toast((what || 'Text') + ' copied'); }
+  catch (e) { openSheet({ title: 'Copy this', note: "Your browser blocked the clipboard. Select all and copy.", text, ok: 'Done', readonly: true }); }
+}
+function el(tag, attrs, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (k === 'class') n.className = v; else if (k === 'text') n.textContent = v;
+    else if (k.startsWith('on')) n.addEventListener(k.slice(2), v);
+    else if (v === true) n.setAttribute(k, ''); else if (v !== false && v != null) n.setAttribute(k, v);
+  }
+  kids.flat().forEach(k => k != null && n.append(k));
+  return n;
+}
+const words = s => (s || '').trim().split(/\s+/).filter(Boolean).length;
+const hookText = p => (p.hooks[p.hookIdx] || {}).text || '';
+const briefPath = p => `content/briefs/${p.date || today()}-${slug(p.title.replace(/\(example\)/i, ''))}.md`;
+const swipePath = p => `content/swipes/${p.date || today()}-${slug(p.title.replace(/\(example\)/i, ''))}.md`;
+const cell = s => (s || '').replace(/\|/g, '\\|').replace(/\n+/g, ' ').trim();
+
+/* ---------- screens ---------- */
+function go(screen) {
+  state.screen = screen; save();
+  $$('section[data-screen]').forEach(s => (s.hidden = s.dataset.screen !== screen));
+  $$('.nav button').forEach(b => b.setAttribute('aria-selected', b.dataset.go === screen));
+  render();
+  window.scrollTo({ top: 0 });
+}
+
+function render() {
+  const p = cur();
+  const needs = state.screen !== 'board';
+  $('#no-piece').hidden = !(needs && !p);
+  $$('[data-needs-piece]').forEach(n => (n.hidden = !p));
+  renderPickers();
+  if (state.screen === 'board') renderBoard();
+  if (!p) return;
+  $$('[data-bind-title]').forEach(h => (h.textContent = p.title || 'Untitled video'));
+  fillFields(p);
+  if (state.screen === 'write') { renderHooks(p); renderBeats(p); renderChecks(p); }
+  if (state.screen === 'swipe') { renderRefBeats(p); renderSwipeOut(p); }
+  if (state.screen === 'story') renderStory(p);
+  if (state.screen === 'ship') renderShip(p);
+}
+
+function renderPickers() {
+  $$('.piece-select').forEach(sel => {
+    sel.replaceChildren(...state.pieces.map(p => el('option', { value: p.id, text: p.title || 'Untitled video' })));
+    sel.value = state.current || '';
+  });
+  const st = $('#f-status');
+  if (!st.options.length) STAGES.forEach(([v, l]) => st.append(el('option', { value: v, text: l })));
+}
+
+function fillFields(p) {
+  $$('[data-f]').forEach(inp => {
+    if (document.activeElement === inp) return;
+    const v = getPath(p, inp.dataset.f);
+    if (inp.type === 'checkbox') inp.checked = !!v; else inp.value = v == null ? '' : v;
+  });
+}
+
+/* board */
+function renderBoard() {
+  const k = $('#kanban'); k.replaceChildren();
+  STAGES.forEach(([id, label]) => {
+    const items = state.pieces.filter(p => p.status === id);
+    const list = el('div', { class: 'list' });
+    items.forEach(p => {
+      const w = words(p.beats.map(b => b.line).join(' '));
+      list.append(el('button', { class: 'card', onclick: () => { state.current = p.id; go(nextScreen(p)); } },
+        el('span', { class: 't', text: p.title || 'Untitled video' }),
+        hookText(p) ? el('span', { class: 'h', text: '"' + hookText(p) + '"' }) : null,
+        el('span', { class: 'row' },
+          el('span', { class: 'chip', text: p.format || 'No format' }),
+          p.shots.length ? el('span', { class: 'chip ' + (p.approved ? 'good' : 'warn'), text: p.shots.length + ' shots' + (p.approved ? '' : ', unapproved') }) : null,
+          w ? el('span', { class: 'mono', text: Math.round(w / WPS) + 's' }) : null)));
+    });
+    k.append(el('div', { class: 'col' }, el('h3', {}, label, el('span', { class: 'mono', text: String(items.length) })), list));
+  });
+  const ul = $('#ideas'); ul.replaceChildren();
+  if (!state.ideas.length) ul.append(el('li', {}, el('span', { class: 'note', text: 'No ideas yet. Add hooks and angles as they come to you.' })));
+  state.ideas.forEach((idea, i) => ul.append(el('li', {},
+    el('span', { text: idea }),
+    el('span', { class: 'row' },
+      el('button', { class: 'btn small', text: 'Make video', onclick: () => {
+        const p = blank({ title: idea.slice(0, 70), status: 'script', hooks: [{ text: idea }] });
+        state.pieces.push(p); state.current = p.id; state.ideas.splice(i, 1); save(); go('write');
+      } }),
+      el('button', { class: 'x-btn', 'aria-label': 'Remove idea', text: '×', onclick: () => { state.ideas.splice(i, 1); save(); renderBoard(); } })))));
+}
+const nextScreen = p => ({ idea: 'write', script: 'write', storyboard: 'story' }[p.status] || 'ship');
+
+/* write */
+function renderHooks(p) {
+  const box = $('#hooks'); box.replaceChildren();
+  p.hooks.forEach((h, i) => {
+    const row = el('div', { class: 'hook' + (i === p.hookIdx ? ' on' : '') },
+      el('input', { type: 'radio', name: 'hookpick', 'aria-label': 'Use this hook', checked: i === p.hookIdx, onchange: () => { p.hookIdx = i; syncHookBeat(p); save(); renderHooks(p); renderBeats(p); renderChecks(p); } }),
+      el('input', { type: 'text', id: 'hook-' + i, value: h.text, placeholder: 'Write a hook', oninput: e => { h.text = e.target.value; if (i === p.hookIdx) syncHookBeat(p, true); save(); renderChecks(p); } }),
+      el('button', { class: 'x-btn', 'aria-label': 'Remove hook', text: '×', onclick: () => {
+        if (p.hooks.length === 1) { h.text = ''; } else { p.hooks.splice(i, 1); if (p.hookIdx >= p.hooks.length) p.hookIdx = p.hooks.length - 1; }
+        save(); renderHooks(p); renderChecks(p);
+      } }));
+    box.append(row);
+  });
+  const r = $('#recipes');
+  if (!r.childElementCount) RECIPES.forEach(([name, tpl]) => r.append(el('button', { type: 'button', text: name, title: tpl, onclick: () => {
+    const q = cur(); const empty = q.hooks.findIndex(h => !h.text.trim());
+    if (empty >= 0) q.hooks[empty].text = tpl; else q.hooks.push({ text: tpl });
+    save(); renderHooks(q); renderChecks(q);
+    const idx = empty >= 0 ? empty : q.hooks.length - 1; const inp = $('#hook-' + idx); if (inp) { inp.focus(); const a = tpl.indexOf('{'); if (a >= 0) inp.setSelectionRange(a, tpl.indexOf('}') + 1); }
+  } })));
+}
+function syncHookBeat(p, live) {
+  const hb = p.beats.find(b => b.beat === 'Hook');
+  if (hb) { hb.line = hookText(p); if (live) { const i = p.beats.indexOf(hb); const t = $('#beat-line-' + i); if (t && document.activeElement !== t) t.value = hb.line; } }
+}
+function renderBeats(p) {
+  const tb = $('#beats'); tb.replaceChildren();
+  if (!p.beats.length) tb.append(el('tr', {}, el('td', { colspan: 5, class: 'note', text: 'No beats yet. Add one, or start with the hook: it becomes beat one.' })));
+  p.beats.forEach((b, i) => {
+    const up = (k) => e => { b[k] = e.target.value; save(); renderChecks(p); };
+    const beatSel = el('select', { 'aria-label': 'Beat', onchange: up('beat') }, ...BEATS.map(x => el('option', { text: x, selected: x === b.beat })));
+    tb.append(el('tr', {},
+      el('td', { class: 't' }, el('input', { type: 'text', value: b.t, 'aria-label': 'Time', class: 'mono', oninput: up('t') })),
+      el('td', { class: 'b' }, beatSel),
+      el('td', {}, el('textarea', { id: 'beat-line-' + i, rows: 2, 'aria-label': 'Line', oninput: up('line') }, b.line)),
+      el('td', {}, el('input', { type: 'text', value: b.ost, 'aria-label': 'On-screen text', placeholder: 'Caption', oninput: up('ost') })),
+      el('td', { class: 'x' }, el('button', { class: 'x-btn', 'aria-label': 'Remove beat', text: '×', onclick: () => { p.beats.splice(i, 1); save(); renderBeats(p); renderChecks(p); } }))));
+  });
+}
+function retime(p) {
+  let t = 0;
+  p.beats.forEach(b => { const d = Math.max(1, Math.round(words(b.line) / WPS)); b.t = `${t}-${t + d}s`; t += d; });
+}
+
+const GREETING = /^\s*(hi|hey|hello|hola|welcome|what'?s up|good (morning|evening)|today (i|we)('m| am| will)?)\b/i;
+const INCOME = /(\d+\s?k\s*(a|per|\/)\s*(month|mo|week|day))|((make|earn)\s+[$€£]?\d)|(passive income)|(guaranteed)/i;
+const BACK = /\b(jump(s|ing)?|leap(s|ing)?|stairs?|climb(s|ing)?|hop(s|ping)? (off|down)|lifted|picked up)\b/i;
+function checks(p) {
+  const all = [p.beats.map(b => b.line).join(' '), p.tip, p.cta, p.caption].join(' ');
+  const hook = hookText(p);
+  const spoken = words(p.beats.map(b => b.line).join(' '));
+  const secs = Math.round(spoken / WPS);
+  const out = [];
+  const add = (lvl, msg) => out.push([lvl, msg]);
+  if (!hook.trim()) add('bad', 'Pick a hook. It decides whether anyone stays past second one.');
+  else if (GREETING.test(hook)) add('bad', 'The hook opens with a greeting. Open mid-thought with a claim, contradiction or question.');
+  else if (/\{.*\}/.test(hook)) add('warn', 'The hook still has a {blank} from the recipe.');
+  else if (words(hook) > 14) add('warn', `The hook is ${words(hook)} words. Aim for 12 or fewer so it lands in about 2 seconds.`);
+  else add('ok', 'Hook opens mid-thought and is short enough.');
+  if (!/sausage|hot ?dog|frank(furter)?|bratwurst|chorizo|salami|wiener/i.test(all + ' ' + p.metaphor) || !p.metaphor.trim())
+    add('bad', 'No sausage metaphor yet. Every piece needs one.');
+  else add('ok', 'Sausage metaphor is in.');
+  if (!p.tip.trim()) add('bad', 'Write the one real tip. The joke is the casing, the advice is the meat.');
+  else add('ok', 'There is a real tip under the joke.');
+  const target = +p.length || 0;
+  if (spoken && target) {
+    if (secs > target + 3) add('warn', `Spoken length is about ${secs}s, over the ${target}s target. Cut about ${Math.round((secs - target) * WPS)} words.`);
+    else if (secs < target - 6) add('warn', `Spoken length is about ${secs}s, well under ${target}s. Room for another joke or pause.`);
+    else add('ok', `Spoken length about ${secs}s fits the ${target}s target.`);
+  }
+  if (p.beats.length && !p.beats.some(b => (b.ost || '').trim())) add('warn', 'No on-screen text. The hook should be on screen for sound-off viewers.');
+  if (INCOME.test(all)) add('bad', 'Sounds like an income promise. Brand rules ban those unless the irony is unmistakable.');
+  if (BACK.test(p.beats.map(b => b.line).join(' ') + ' ' + p.shots.map(s => s.action).join(' '))) add('bad', 'Nugget jumps, climbs stairs or gets lifted somewhere. Dachshund backs: never show that.');
+  if (p.sponsored && !/#ad\b/i.test(p.caption)) add('warn', 'Sponsored post: add #ad to the caption and turn on the paid-partnership label.');
+  return { out, spoken, secs, hookW: words(hook) };
+}
+function renderChecks(p) {
+  const c = checks(p);
+  $('#s-words').textContent = c.spoken; $('#s-secs').textContent = c.secs + 's'; $('#s-hookw').textContent = c.hookW;
+  const ul = $('#checks'); ul.replaceChildren(...c.out.map(([lvl, msg]) =>
+    el('li', { class: lvl }, el('span', { class: 'i', text: lvl === 'ok' ? '✓' : '!' }), el('span', { text: msg }))));
+}
+
+/* swipe */
+function renderRefBeats(p) {
+  const tb = $('#ref-beats'); tb.replaceChildren();
+  const rb = p.swipe.beats;
+  if (!rb.length) tb.append(el('tr', {}, el('td', { colspan: 4, class: 'note', text: 'Add a row per beat of the reference: what they do, then what Nugget does instead.' })));
+  rb.forEach((b, i) => {
+    const up = k => e => { b[k] = e.target.value; save(); renderSwipeOut(p); };
+    tb.append(el('tr', {},
+      el('td', { class: 't' }, el('input', { type: 'text', class: 'mono', value: b.t, 'aria-label': 'Time', oninput: up('t') })),
+      el('td', {}, el('textarea', { rows: 2, 'aria-label': 'Their beat', oninput: up('theirs') }, b.theirs)),
+      el('td', {}, el('textarea', { rows: 2, 'aria-label': "Nugget's beat", oninput: up('ours') }, b.ours)),
+      el('td', { class: 'x' }, el('button', { class: 'x-btn', 'aria-label': 'Remove beat', text: '×', onclick: () => { rb.splice(i, 1); save(); renderRefBeats(p); renderSwipeOut(p); } }))));
+  });
+}
+function swipeMd(p) {
+  const s = p.swipe;
+  const L = [`# Swipe: ${p.title}`, '', `- **Source:** ${s.source || ''}`, `- **Why it works:** ${cell(s.why)}`,
+    `- **What we keep:** ${cell(s.keep)}`, `- **What we change:** ${cell(s.change)}`, `- **Brief it became:** ../briefs/${briefPath(p).split('/').pop()}`];
+  if (s.beats.length) {
+    L.push('', '## Beat map', '', '| Time | Theirs | Nugget |', '|---|---|---|');
+    s.beats.forEach(b => L.push(`| ${cell(b.t)} | ${cell(b.theirs)} | ${cell(b.ours)} |`));
+  }
+  return L.join('\n') + '\n';
+}
+function renderSwipeOut(p) {
+  $('#swipe-md').textContent = swipeMd(p);
+  $('#swipe-path').textContent = swipePath(p);
+  $('#swipe-ask').textContent = [
+    '/sausage-dog', '',
+    `Swipe this reference for Nugget: ${p.swipe.source || '<paste link>'}`, '',
+    'Use the swipe-ad skill for the teardown (import the link into Higgsfield and analyse it).',
+    'Give me: why it works (hook, structure, pacing), a beat-by-beat timing table, and Nugget\'s version of every beat in his voice with one sausage metaphor.',
+    `Log it in ${swipePath(p)} from content/swipes/_template.md. Do not generate any images or video yet.`
+  ].join('\n');
+}
+
+/* storyboard */
+function renderGate(p) {
+  const steps = [['Script', true], ['Storyboard', p.approved], ['Keyframes', ['render', 'ready', 'posted'].includes(p.status)], ['Video', ['ready', 'posted'].includes(p.status)]];
+  let nowSet = false;
+  $('#steps').replaceChildren(...steps.map(([n, done]) => { const cls = done ? 'done' : (nowSet ? '' : (nowSet = true, 'now')); return el('span', { class: cls, text: n }); }));
+  $('#approve-sb').textContent = p.approved ? 'Unapprove' : 'Approve storyboard';
+  $('#gate-note').textContent = p.approved ? 'Approved. Ship the brief to Claude to generate keyframes.' : `${p.shots.length} shots. Nothing is generated until you approve.`;
+}
+function renderStory(p) {
+  renderGate(p);
+  const sb = $('#sb'); sb.replaceChildren();
+  if (!p.shots.length) { sb.append(el('div', { class: 'empty', text: 'No shots yet. "Build from script" makes one per beat.' })); return; }
+  p.shots.forEach((s, i) => {
+    const frame = el('div', { class: 'frame' }, el('span', { class: 'tc', text: s.t || '' }), el('div', { class: 'safe' }),
+      s.ost ? el('div', { class: 'ost' }, el('span', { text: s.ost })) : null,
+      el('div', { class: 'dog', style: `bottom:${10 + (i * 7) % 20}%;left:${8 + (i * 11) % 18}%` }, svgDog()));
+    const flag = el('span', { class: 'flag', text: 'Back-safety: remove jumping, stairs or lifting' });
+    flag.hidden = !BACK.test(s.action || '');
+    const up = k => e => {
+      s[k] = e.target.value; save();
+      if (p.approved) { p.approved = false; renderGate(p); }
+      if (k === 'action') flag.hidden = !BACK.test(s.action);
+      if (k === 'ost') { let o = frame.querySelector('.ost'); if (!o) { o = el('div', { class: 'ost' }, el('span')); frame.append(o); } o.firstChild.textContent = s.ost; o.hidden = !s.ost; }
+    };
+    sb.append(el('div', { class: 'shot' }, frame, el('div', { class: 'fields' },
+      el('div', { class: 'head' }, el('b', { text: `${i + 1}. ${s.beat || 'Shot'}` }),
+        el('span', { class: 'row' },
+          i > 0 ? el('button', { class: 'x-btn', 'aria-label': 'Move shot earlier', text: '↑', onclick: () => { p.shots.splice(i - 1, 0, p.shots.splice(i, 1)[0]); p.approved = false; save(); renderStory(p); } }) : null,
+          el('button', { class: 'x-btn', 'aria-label': 'Remove shot', text: '×', onclick: () => { p.shots.splice(i, 1); p.approved = false; save(); renderStory(p); } }))),
+      el('input', { type: 'text', value: s.framing, placeholder: 'Framing', 'aria-label': 'Framing', oninput: up('framing') }),
+      el('textarea', { rows: 2, placeholder: 'What Nugget does', 'aria-label': 'Action', oninput: up('action') }, s.action),
+      el('textarea', { rows: 2, placeholder: 'Voiceover', 'aria-label': 'Voiceover', oninput: up('vo') }, s.vo),
+      el('input', { type: 'text', value: s.ost, placeholder: 'On-screen text', 'aria-label': 'On-screen text', oninput: up('ost') }),
+      el('input', { type: 'text', value: s.camera, placeholder: 'Camera', 'aria-label': 'Camera', oninput: up('camera') }),
+      flag)));
+  });
+}
+function svgDog() {
+  const ns = 'http://www.w3.org/2000/svg'; const s = document.createElementNS(ns, 'svg'); s.setAttribute('viewBox', '0 0 200 90');
+  const u = document.createElementNS(ns, 'use'); u.setAttribute('href', '#doxie'); s.append(u); return s;
+}
+function buildStory(p) {
+  p.shots = p.beats.map(b => ({
+    t: b.t, beat: b.beat, framing: FRAMING[b.beat] || 'Medium, desk set', action: '', vo: b.line, ost: b.ost,
+    camera: b.beat === 'Hook' ? 'Slow push in' : 'Static'
+  }));
+  p.approved = false;
+}
+
+/* ship */
+function briefMd(p) {
+  const L = [`# ${p.title.replace(/\s*\(example\)/i, '')}`, '',
+    `- **Date:** ${p.date}`, `- **Pillar:** ${p.pillar}`, `- **Format:** ${p.format}`,
+    `- **Swiped from:** ${p.swipe.source ? swipePath(p).replace('content/', '../') : ''}`,
+    `- **Platform:** ${p.platform}`, `- **Length:** ${p.length}s`,
+    `- **Hook:** ${cell(hookText(p))}`, `- **Tip:** ${cell(p.tip)}`,
+    `- **Sausage metaphor:** ${cell(p.metaphor)}`, `- **Punchline / CTA:** ${cell(p.cta)}`];
+  const alts = p.hooks.filter((h, i) => i !== p.hookIdx && h.text.trim());
+  if (alts.length) L.push(`- **Other hooks:** ${alts.map(h => '"' + cell(h.text) + '"').join('; ')}`);
+  L.push('', '## Script', '');
+  if (p.beats.length) { L.push('| Time | Beat | Nugget says | On screen |', '|---|---|---|---|'); p.beats.forEach(b => L.push(`| ${cell(b.t)} | ${cell(b.beat)} | ${cell(b.line)} | ${cell(b.ost)} |`)); }
+  L.push('', '## Storyboard', '');
+  if (p.shots.length) {
+    L.push(`Status: ${p.approved ? 'approved' : 'draft, not approved'}. Vertical 9:16.`, '');
+    L.push('| # | Time | Framing | Action | Voiceover | On screen | Camera |', '|---|---|---|---|---|---|---|');
+    p.shots.forEach((s, i) => L.push(`| ${i + 1} | ${cell(s.t)} | ${cell(s.framing)} | ${cell(s.action)} | ${cell(s.vo)} | ${cell(s.ost)} | ${cell(s.camera)} |`));
+  }
+  L.push('', '## Generation IDs', '');
+  if (p.genIds.trim()) L.push(p.genIds.trim());
+  if (p.caption.trim()) L.push('', '## Caption', '', p.caption.trim());
+  return L.join('\n') + '\n';
+}
+function command(kind, p) {
+  if (kind === 'ideas') return '# Ideas\n\nBacklog of hooks and angles. One line each; move it to a brief when you make it.\n\n' + (state.ideas.map(i => '- ' + i).join('\n') || '- ') + '\n';
+  if (kind === 'published') {
+    const links = [p.links.tiktok && `TikTok ${p.links.tiktok}`, p.links.reels && `Reels ${p.links.reels}`].filter(Boolean).join(', ');
+    return `- ${today()} · ${p.title.replace(/\s*\(example\)/i, '')} · ${links || 'links TBD'} · brief: ${briefPath(p).replace('content/', '')}`;
+  }
+  const head = ['/sausage-dog', ''];
+  if (kind === 'generate') return head.concat([
+    `Save this brief to ${briefPath(p)} (create or overwrite it), then run the pipeline on it.`,
+    p.approved ? 'I already approved the storyboard below, so start at keyframes. Stop for my approval before any video.'
+      : 'Show me the storyboard first and wait for my approval before any keyframes or video.',
+    'Use Nugget\'s locked IDs from brand/dogs/nugget.md. Vertical 9:16. Check copy against brand/claims.md.', '', '---', '', briefMd(p)]).join('\n');
+  const asks = {
+    hooks: 'Write 5 more hooks for this video in Nugget\'s voice, each tagged with its type (claim, contradiction, question, callout, confession) and a 0-100 hook-strength guess with one line on why. Keep them under 12 words.',
+    tighten: 'Tighten the script to the target length. Keep the hook, the tip and the sausage metaphor. Return the same beat table.',
+    sarcasm: 'Make the script more sarcastic and deadpan without getting mean to the viewer. Return the same beat table.'
+  };
+  return head.concat([asks[kind], 'Read brand/voice.md, brand/formats.md and brand/claims.md first. Do not generate any images or video.', '', '---', '', briefMd(p)]).join('\n');
+}
+function renderShip(p) {
+  $('#brief-md').textContent = briefMd(p);
+  $('#brief-path').textContent = briefPath(p);
+  $$('[data-path]').forEach(n => (n.textContent = briefPath(p)));
+}
+
+/* ---------- import ---------- */
+function parseBrief(md) {
+  const p = blank({ status: 'script' });
+  const t = md.match(/^#\s+(.+)$/m); if (t) p.title = t[1].trim();
+  const f = k => { const m = md.match(new RegExp('^-\\s+\\*\\*' + k.replace(/[/]/g, '\\/') + ':\\*\\*\\s*(.*)$', 'mi')); return m ? m[1].trim() : ''; };
+  p.date = f('Date') || today(); p.pillar = f('Pillar') || p.pillar; p.format = f('Format') || p.format;
+  p.platform = f('Platform') || p.platform; p.length = parseInt(f('Length'), 10) || p.length;
+  p.tip = f('Tip'); p.metaphor = f('Sausage metaphor'); p.cta = f('Punchline / CTA');
+  p.hooks = [{ text: f('Hook') }];
+  (f('Other hooks').match(/"([^"]+)"/g) || []).forEach(h => p.hooks.push({ text: h.slice(1, -1) }));
+  const section = name => { const m = md.split(new RegExp('^##\\s+' + name + '\\s*$', 'mi'))[1]; return m ? m.split(/^##\s+/m)[0] : ''; };
+  const rows = s => s.split('\n').filter(l => /^\|/.test(l) && !/^\|\s*-/.test(l)).slice(1)
+    .map(l => l.replace(/^\||\|$/g, '').split(/(?<!\\)\|/).map(c => c.trim().replace(/\\\|/g, '|')));
+  p.beats = rows(section('Script')).map(r => ({ t: r[0] || '', beat: r[1] || 'Setup', line: r[2] || '', ost: r[3] || '' }));
+  const sbSec = section('Storyboard');
+  p.shots = rows(sbSec).map(r => ({ t: r[1] || '', beat: '', framing: r[2] || '', action: r[3] || '', vo: r[4] || '', ost: r[5] || '', camera: r[6] || '' }));
+  p.approved = /Status:\s*approved/i.test(sbSec);
+  p.genIds = section('Generation IDs').trim();
+  p.caption = section('Caption').trim();
+  if (p.shots.length) p.status = 'storyboard';
+  return p;
+}
+
+/* ---------- sheet ---------- */
+let sheetOk = null;
+function openSheet({ title, note, text, ok, onOk, readonly }) {
+  $('#sheet-title').textContent = title; $('#sheet-note').textContent = note || '';
+  const ta = $('#sheet-text'); ta.value = text || ''; ta.readOnly = !!readonly;
+  $('#sheet-ok').textContent = ok; sheetOk = onOk || null; $('#sheet').hidden = false;
+  setTimeout(() => { ta.focus(); if (readonly) ta.select(); }, 30);
+}
+function closeSheet() { $('#sheet').hidden = true; sheetOk = null; }
+$('#sheet-cancel').addEventListener('click', closeSheet);
+$('#sheet-ok').addEventListener('click', () => { const fn = sheetOk; const v = $('#sheet-text').value; closeSheet(); if (fn) fn(v); });
+$('#sheet').addEventListener('click', e => { if (e.target.id === 'sheet') closeSheet(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#sheet').hidden) closeSheet(); });
+
+/* ---------- events ---------- */
+document.addEventListener('click', e => {
+  const g = e.target.closest('[data-go]'); if (g) { go(g.dataset.go); return; }
+  const n = e.target.closest('[data-new]');
+  if (n) { const p = blank({ status: n.dataset.new === 'swipe' ? 'script' : 'idea', format: n.dataset.new === 'swipe' ? 'Swipe' : 'Talking head' }); state.pieces.push(p); state.current = p.id; save(); go(n.dataset.new); setTimeout(() => $(n.dataset.new === 'swipe' ? '#w-source' : '#f-title').focus(), 50); return; }
+  const c = e.target.closest('[data-copy]'); if (c) { copy($('#' + c.dataset.copy).textContent, 'Copied'); return; }
+  const cc = e.target.closest('[data-copy-cmd]'); if (cc && cur()) { copy(command(cc.dataset.copyCmd, cur()), cc.dataset.copyCmd === 'generate' ? 'Message for Claude' : 'Text'); return; }
+  const a = e.target.closest('[data-ask]'); if (a && cur()) { copy(command(a.dataset.ask, cur()), 'Message for Claude'); }
+});
+document.addEventListener('input', e => {
+  const f = e.target.dataset && e.target.dataset.f; const p = cur(); if (!f || !p) return;
+  let v = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+  if (f === 'length') v = parseInt(v, 10) || 0;
+  setPath(p, f, v); save();
+  if (f === 'title') { renderPickers(); $$('[data-bind-title]').forEach(h => (h.textContent = v || 'Untitled video')); }
+  if (state.screen === 'write') renderChecks(p);
+  if (state.screen === 'swipe') renderSwipeOut(p);
+  if (state.screen === 'ship') renderShip(p);
+});
+document.addEventListener('change', e => {
+  if (e.target.classList.contains('piece-select')) { state.current = e.target.value; save(); render(); }
+  if (e.target.id === 'f-status' || e.target.id === 'g-ad') render();
+});
+$$('.nav button').forEach(b => b.addEventListener('click', () => go(b.dataset.go)));
+
+$('#add-hook').addEventListener('click', () => { const p = cur(); p.hooks.push({ text: '' }); save(); renderHooks(p); $('#hook-' + (p.hooks.length - 1)).focus(); });
+$('#add-beat').addEventListener('click', () => {
+  const p = cur();
+  if (!p.beats.length) p.beats.push({ t: '0-2s', beat: 'Hook', line: hookText(p), ost: '' });
+  else p.beats.push({ t: '', beat: BEATS[Math.min(p.beats.length, BEATS.length - 1)], line: '', ost: '' });
+  if (p.status === 'idea') p.status = 'script';
+  save(); renderBeats(p); renderChecks(p); fillFields(p);
+});
+$('#retime').addEventListener('click', () => { const p = cur(); retime(p); save(); renderBeats(p); toast('Timed at about 2.6 words a second'); });
+$('#idea-form').addEventListener('submit', e => { e.preventDefault(); const i = $('#idea-input'); const v = i.value.trim(); if (!v) return; state.ideas.unshift(v); i.value = ''; save(); renderBoard(); });
+
+$('#add-ref-beat').addEventListener('click', () => { const p = cur(); p.swipe.beats.push({ t: '', theirs: '', ours: '' }); save(); renderRefBeats(p); renderSwipeOut(p); });
+$('#ref-to-script').addEventListener('click', () => {
+  const p = cur(); if (!p.swipe.beats.length) { toast('Add some beats first'); return; }
+  p.beats = p.swipe.beats.map((b, i) => ({ t: b.t, beat: i === 0 ? 'Hook' : (i === p.swipe.beats.length - 1 ? 'Button' : 'Setup'), line: b.ours, ost: '' }));
+  if (p.beats[0].line) { p.hooks.unshift({ text: p.beats[0].line }); p.hookIdx = 0; }
+  if (p.status === 'idea') p.status = 'script';
+  save(); go('write'); toast('Beats moved to the script');
+});
+
+$('#build-sb').addEventListener('click', () => {
+  const p = cur(); if (!p.beats.length) { toast('Write some script beats first'); return; }
+  const go2 = () => { buildStory(p); if (['idea', 'script'].includes(p.status)) p.status = 'storyboard'; save(); renderStory(p); toast(`${p.shots.length} shots built from the script`); };
+  if (p.shots.length) openSheet({ title: 'Rebuild the storyboard?', note: 'This replaces the current shots with one per script beat.', text: '', ok: 'Rebuild', onOk: go2, readonly: true }); else go2();
+});
+$('#add-shot').addEventListener('click', () => { const p = cur(); p.shots.push({ t: '', beat: '', framing: '', action: '', vo: '', ost: '', camera: '' }); p.approved = false; save(); renderStory(p); });
+$('#approve-sb').addEventListener('click', () => {
+  const p = cur(); if (!p.shots.length) { toast('Build the storyboard first'); return; }
+  const bad = p.shots.findIndex(s => BACK.test(s.action || ''));
+  if (!p.approved && bad >= 0) { toast(`Shot ${bad + 1} breaks the back-safety rule`); return; }
+  p.approved = !p.approved; save(); renderStory(p); if (p.approved) toast('Approved. Next: Ship the brief to Claude.');
+});
+$('#mark-posted').addEventListener('click', () => { const p = cur(); p.status = 'posted'; save(); toast('Marked as posted. Copy the log line for content/published.md.'); fillFields(p); });
+$('#delete-piece').addEventListener('click', () => {
+  const p = cur();
+  openSheet({ title: `Delete "${p.title}"?`, note: 'This removes it from this browser. Briefs already saved in the repo are not affected.', text: '', ok: 'Delete', readonly: true,
+    onOk: () => { state.pieces = state.pieces.filter(x => x.id !== p.id); state.current = state.pieces[0] ? state.pieces[0].id : null; save(); go('board'); toast('Deleted'); } });
+});
+$('#import-btn').addEventListener('click', () => openSheet({
+  title: 'Import a brief', note: 'Paste a brief from content/briefs/, or a backup copied from this page.', text: '', ok: 'Import',
+  onOk: v => {
+    v = v.trim(); if (!v) return;
+    try { const j = JSON.parse(v); if (j && Array.isArray(j.pieces)) { state = Object.assign(state, j); state.pieces = state.pieces.map(p => blank(p)); save(); go('board'); toast('Backup restored'); return; } } catch (e) {}
+    const p = parseBrief(v); state.pieces.push(p); state.current = p.id; save(); go('write'); toast('Brief imported');
+  }
+}));
+$('#backup-btn').addEventListener('click', () => copy(JSON.stringify({ pieces: state.pieces, ideas: state.ideas }), 'Backup'));
+
+load();
+const h = (location.hash || '').slice(1);
+go(['board', 'write', 'swipe', 'story', 'ship'].includes(h) ? h : (state.screen || 'board'));
+})();
+</script>
+</body>
+</html>
