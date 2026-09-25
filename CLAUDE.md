@@ -1,6 +1,7 @@
 # CLAUDE.md
 
-This repo is the dachshund (sausage dog) marketing content workspace.
+This repo is the workspace for **Nuggeting**, an organic TikTok and Reels channel starring
+Nugget, a dachshund who gives ironic marketing advice.
 
 ## Keep it separate from PlanPy
 

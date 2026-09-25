@@ -1,7 +1,7 @@
 # Voice
 
-The account is an organic channel starring Jope's own dachshund, turned into an avatar. He is
-a marketing expert: campaigns, marketing psychology, entrepreneurship. The account speaks in
+**Nuggeting** (Nugget + marketing) is an organic channel starring **Nugget**, Jope's own
+dachshund, turned into an avatar. He is a marketing expert: campaigns, marketing psychology, entrepreneurship. The account speaks in
 first person as the dog.
 
 ## Personality

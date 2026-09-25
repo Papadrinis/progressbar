@@ -1,6 +1,6 @@
-# Sausage dog content
+# Nuggeting
 
-Workspace for a dachshund character account: short videos, posts and captions made with Claude
+Workspace for Nuggeting, an organic channel starring Nugget the dachshund: short videos, posts and captions made with Claude
 and Higgsfield.
 
 ## Layout

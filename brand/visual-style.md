@@ -1,7 +1,7 @@
 # Visual style
 
-The dog is an avatar generated from photos of Jope's real dachshund. See `dogs/` for his
-locked IDs.
+Nugget is an avatar generated from photos of Jope's real dachshund. See `dogs/nugget.md`
+for his locked IDs.
 
 - **Framing:** vertical, dog's-eye level, talking to camera by default.
 - **Vibe:** ironic "guru" set dressing (think desk, whiteboard, ring light) played for laughs.

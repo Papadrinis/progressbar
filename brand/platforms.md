@@ -9,6 +9,7 @@ Organic only, no paid ads for now.
 
 Both formats are vertical 9:16 (not 16:9).
 
-- **Handle(s):** TODO.
+- **Channel name:** Nuggeting
+- **Handle(s):** TODO (e.g. @nuggeting, if free on both platforms).
 - **Posting rhythm:** TODO.
 - **Hashtags:** TODO.
