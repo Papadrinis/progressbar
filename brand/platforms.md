@@ -1,5 +1,13 @@
 # Platforms
 
-Which platforms first, with aspect ratio, length, hashtags and posting times for each.
+A character account lives on short vertical video first.
 
-TODO: fill in.
+| Platform | Priority | Aspect | Length | Notes |
+|---|---|---|---|---|
+| TikTok | TODO | 9:16 | 8-30s | |
+| Instagram Reels | TODO | 9:16 | 8-30s | |
+| YouTube Shorts | TODO | 9:16 | 8-60s | |
+
+- **Handle(s):** TODO.
+- **Posting rhythm:** TODO.
+- **Hashtags:** TODO.

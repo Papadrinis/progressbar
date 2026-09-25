@@ -1,6 +1,6 @@
 # Sausage dog content
 
-Workspace for making dachshund marketing content (short videos, posts, captions) with Claude
+Workspace for a dachshund character account: short videos, posts and captions made with Claude
 and Higgsfield.
 
 ## Layout
