@@ -1111,7 +1111,7 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
   async function responder(p, revId, estado, comentario) {
     try {
       await db.doc('pedidos/' + p.id).update({ respuestas: { [revId]: { estado, comentario: comentario || '', fecha: new Date().toISOString() } } });
-      toast(estado === 'aprobado' ? 'Aprobado: la producción puede seguir' : 'Cambio enviado a producción');
+      toast(estado === 'aprobado' ? 'Aprobado. Claude lo verá en su próxima revisión (unos minutos) o al instante si le escribe «sigue» en el chat.' : 'Cambio guardado. Claude lo verá en su próxima revisión o al instante si le escribe «sigue» en el chat.');
     } catch (e) { toast(dbErr(e)); }
   }
 
@@ -1171,6 +1171,7 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
         h('div', { class: 'ped-row' }, h('strong', {}, r.titulo || 'Revisión'),
           resp ? h('span', { class: resp.estado === 'aprobado' ? 'pill ok' : 'pill warn' }, resp.estado === 'aprobado' ? 'aprobado' : 'cambios pedidos') : h('span', { class: 'pill warn' }, 'espera su aprobación')),
         r.nota ? h('p', { class: 'muted' }, r.nota) : null,
+        resp && !p.produccion?.pasos?.some((x) => x.estado === 'en curso') && p.estado === 'esperando aprobación' ? h('p', { class: 'hint' }, 'Respuesta guardada. Claude la toma en su próxima revisión; para que siga ya, escríbale «sigue» en el chat de Claude Code.') : null,
         h('div', { class: 'gal' }, (r.items || []).map((it) => h('figure', {}, assetEl(it), it.etiqueta ? h('figcaption', {}, it.etiqueta) : null))),
         resp?.comentario ? h('p', {}, h('b', {}, 'Su comentario: '), resp.comentario) : null,
         resp ? null : h('div', { class: 'rev-actions' },
