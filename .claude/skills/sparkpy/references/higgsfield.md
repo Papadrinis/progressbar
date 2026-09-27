@@ -97,3 +97,24 @@ lee". Para una toma de noche en casa, mismo personaje, sala sencilla y cálida.
 |---|---|---|
 | V7 barbería | `760e6f4c-05b4-4fa1-965b-1979bc0b0d16` | 6 tomas, ~377 créditos |
 | V8 mascotas | `315180e5-7ca1-4c3b-bbfc-e9e4f3ec165e` | toma 4 con fotograma (deriva de cara) |
+
+## Hablando a cámara (sincronía de labios) — plan ahorro
+
+Precios consultados con `get_cost` (2026-09-27), toma de 5 s en 9:16:
+
+| Modelo | Uso | Créditos |
+|---|---|---|
+| **wan2_7** 1080p (`start_image` + `audio_references`) | Labios sincronizados con la voz | **12,5** |
+| wan2_7 720p | Idem, más barato | 7,5 |
+| kling3_0 std | Movimiento general | 10 |
+| seedance_2_5 omni 720p / 1080p | Movimiento general (voz en off) | 35 / 60 |
+| Voz ElevenLabs (text2speech_v2) | Por clip | 0,3 |
+
+Reglas para no gastar de más:
+- Tomas a cámara con **wan2_7 1080p**: fotograma aprobado como `start_image` y el clip de voz como
+  `audio_references`. Primero **una** toma de prueba; si la boca no sincroniza bien, se cambia el
+  modelo antes de hacer las demás.
+- Tomas de apoyo sin labios (voz en off con interfaz encima): el fotograma aprobado con push-in en
+  Remotion (0 créditos). Solo si hace falta movimiento real, Seedance 720p.
+- Fotogramas y casting: `count` 1 salvo el casting (2 opciones); regenerar solo lo rechazado.
+- El CTA reutiliza `public/voz/cta.mp3` (voz de marca), sin generar otro clip.
