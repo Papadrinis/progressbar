@@ -281,6 +281,34 @@ pre.raw { white-space: pre-wrap; font-family: var(--mono); font-size: 12px; back
 .fr-txt { font-family: var(--display); font-weight: 800; font-size: 11px; line-height: 1.15; text-align: center; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 .bench { display: flex; gap: 10px; align-items: center; }
 .bench img { width: 64px; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 8px; }
+.ped-intro { margin-top: 20px; display: flex; flex-direction: column; gap: 2px; font-size: 14px; color: var(--muted); max-width: 70ch; }
+.ped-intro strong { color: var(--ink); }
+.ped-box { border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; background: var(--surface); }
+.ped-box p { margin: 0; }
+.ped-box.wait { background: var(--surface-2); }
+.ped-box.pend { border-color: var(--warn); }
+.ped-box.done-box { border-color: var(--brand); background: var(--sel-bg); }
+.ped-row { display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.pasos { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.pasos li { display: grid; grid-template-columns: 14px 1fr auto; gap: 10px; align-items: center; font-size: 14px; }
+.dotst { width: 10px; height: 10px; border-radius: 50%; background: var(--line); }
+.st-hecho .dotst { background: var(--brand); }
+.st-en-curso .dotst { background: var(--brand); animation: pulse 1s ease-in-out infinite; }
+.st-esperando-aprobacion .dotst { background: var(--warn); }
+@media (prefers-reduced-motion: reduce) { .st-en-curso .dotst { animation: none; } }
+.gal { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.gal.big { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.gal figure { margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.gal img, .gal video { width: 100%; max-width: 100%; border-radius: 10px; background: var(--surface-2); display: block; }
+.gal figcaption { font-size: 12.5px; color: var(--muted); }
+.rev-actions { display: flex; flex-direction: column; gap: 8px; }
+.rev-actions textarea, .ped-box > textarea { border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 8px 10px; min-height: 56px; resize: vertical; width: 100%; }
+.cambios { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+.order.attn { border-color: var(--warn); }
+.attn-note { color: var(--warn); font-weight: 700; font-size: 13px; margin-top: 2px; }
+.ok-note { color: var(--brand-ink); font-weight: 700; font-size: 13px; margin-top: 2px; }
+details.prev > summary { cursor: pointer; font-weight: 600; font-size: 13.5px; color: var(--muted); padding: 4px 0; }
+.small-code { font-size: 11.5px !important; padding: 4px 8px !important; }
 </style>
 
 <header class="top">
@@ -590,9 +618,11 @@ pre.raw { white-space: pre-wrap; font-family: var(--mono); font-size: 12px; back
       h('div', { class: 'step-head' }, h('span', { class: 'n' }, 'PASO 4'), h('h2', {}, 'Enviar a producción'), h('p', {}, 'El pedido queda en la cola. En Claude Code, /sparkpy lo toma y lo produce con aprobaciones en cada etapa.')));
     if (pedidoCreado) {
       const cmd = `/sparkpy pedido ${pedidoCreado}`;
-      s4.append(h('div', { class: 'done' }, h('strong', {}, 'Pedido en cola'),
+      s4.append(h('div', { class: 'done' }, h('strong', {}, 'Pedido guardado'),
+        h('div', {}, 'Todavía no se está produciendo. Para arrancar, pegue este comando en Claude Code (en el repositorio del proyecto):'),
         h('div', { class: 'cmd' }, h('code', {}, cmd), h('button', { class: 'btn small', onclick: () => copy(cmd) }, 'Copiar')),
-        h('div', { class: 'muted' }, 'Péguelo en Claude Code dentro del repositorio del proyecto.'),
+        h('div', { class: 'muted' }, 'Mientras se produce, en la pestaña Pedidos verá cada etapa, aprobará las piezas y al final podrá ver y descargar el anuncio.'),
+        h('div', {}, h('button', { class: 'btn small', onclick: () => { abiertos.add(pedidoCreado); setView('ped'); } }, 'Ver en Pedidos')),
         h('div', {}, h('button', { class: 'btn ghost small', onclick: () => { pedidoCreado = null; opciones = []; elegido = null; guion = null; render(); } }, 'Empezar otro anuncio'))));
     } else {
       const falta = [!guion && (esImagen() ? 'un copy' : 'un guion'), !est2 && 'un estilo'].filter(Boolean);
@@ -1049,44 +1079,151 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
   }
 
   // ---------- PEDIDOS ----------
-  const ESTADOS = ['en cola', 'en producción', 'listo', 'descartado'];
+  // La sesión de Claude Code que produce el pedido escribe en `produccion`:
+  //   pasos: [{nombre, estado: 'hecho'|'en curso'|'esperando aprobación'|'pendiente', nota}]
+  //   revisiones: [{id, titulo, nota, items: [{asset, tipo: 'image'|'video', etiqueta}]}]
+  //   entregas: [{asset, tipo, nombre, formato, version, fecha}]
+  //   creditos: {estimado, gastado}
+  // La página escribe las respuestas en `respuestas.<revisionId>` y los cambios en `cambios.<id>`
+  // (mapas, para que cada escritura se mezcle sin pisar las demás).
+  const ESTADOS = ['en cola', 'en producción', 'esperando aprobación', 'cambios pedidos', 'listo', 'descartado'];
+  const abiertos = new Set();
+  let downloads = null;
+  const atencion = (p) => p.estado === 'esperando aprobación' || (p.produccion?.revisiones || []).some((r) => !p.respuestas?.[r.id]);
+  const fmtFecha = (iso) => (iso ? new Date(iso).toLocaleString('es-CO', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '');
+  const assetEl = (it) => (it.tipo === 'video' ? h('video', { src: imgSrc(it.asset), controls: true, playsinline: true, preload: 'metadata' }) : h('img', { src: imgSrc(it.asset), alt: it.etiqueta || '', loading: 'lazy' }));
+
+  async function descargar(it, p) {
+    if (!downloads) { toast('Las descargas no están disponibles en esta vista.'); return; }
+    try {
+      const r = await fetch(imgSrc(it.asset));
+      if (!r.ok) throw new Error('fetch');
+      const blob = await r.blob();
+      const ext = it.tipo === 'video' ? 'mp4' : /png/.test(blob.type) ? 'png' : 'jpg';
+      const base = slug(`${p.titulo || 'anuncio'}-${it.formato || ''}-v${it.version || 1}`);
+      await downloads.save({ filename: `${base}.${ext}`, data: blob });
+    } catch (e) {
+      if (e?.code === 'declined') return;
+      toast(e?.code === 'rate_limited' ? 'Ya hay una descarga abierta.' : 'No se pudo descargar el archivo.');
+    }
+  }
+
+  async function responder(p, revId, estado, comentario) {
+    try {
+      await db.doc('pedidos/' + p.id).update({ respuestas: { [revId]: { estado, comentario: comentario || '', fecha: new Date().toISOString() } } });
+      toast(estado === 'aprobado' ? 'Aprobado: la producción puede seguir' : 'Cambio enviado a producción');
+    } catch (e) { toast(dbErr(e)); }
+  }
+
+  async function pedirCambio(p, texto) {
+    if (!texto.trim()) { toast('Escriba qué quiere cambiar'); return false; }
+    const id = 'c' + Date.now().toString(36);
+    try {
+      await db.doc('pedidos/' + p.id).update({ cambios: { [id]: { texto: texto.trim(), fecha: new Date().toISOString(), estado: 'pendiente' } }, estado: 'cambios pedidos' });
+      toast('Cambio pedido. Aparece aquí cuando esté listo.');
+      return true;
+    } catch (e) { toast(dbErr(e)); return false; }
+  }
+
   function renderPed() {
     const root = document.getElementById('view-ped');
     root.replaceChildren();
+    root.append(h('div', { class: 'ped-intro' },
+      h('strong', {}, 'Cómo funciona'),
+      h('span', {}, 'Cada pedido se produce en Claude Code con su comando. Mientras avanza, aquí ve cada etapa, aprueba o pide cambios en las piezas (casting, fotogramas, tomas), y al final ve y descarga el anuncio.')));
     const list = h('div', { class: 'orders' });
     if (!pedidos.length) list.append(h('div', { class: 'empty' }, loaded ? 'Todavía no hay pedidos. Créelos desde «Crear».' : 'Cargando pedidos…'));
-    for (const p of pedidos) {
-      const cmd = `/sparkpy pedido ${p.id}`;
-      const fecha = p.creado ? new Date(p.creado).toLocaleString('es-CO', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
-      let confirm = false;
-      const del = h('button', { class: 'btn danger small', onclick: async (e) => {
-        e.preventDefault();
-        if (!confirm) { confirm = true; del.textContent = '¿Borrar? Pulse otra vez'; return; }
-        try { await db.doc('pedidos/' + p.id).delete(); toast('Pedido borrado'); } catch (err) { toast(dbErr(err)); }
-      } }, 'Borrar');
-      const estadoSel = h('select', { 'aria-label': 'Estado', onclick: (e) => e.stopPropagation(), onchange: async (e) => {
-        try { await db.doc('pedidos/' + p.id).update({ estado: e.target.value }); toast('Estado actualizado'); } catch (err) { toast(dbErr(err)); }
-      } }, ESTADOS.map((s) => h('option', { value: s, selected: p.estado === s }, s)));
-      const g = p.guion || {};
-      list.append(h('details', { class: 'order' },
-        h('summary', {},
-          h('div', {}, h('strong', {}, p.titulo || 'Anuncio'), h('div', { class: 'meta' }, [fecha, p.tipo === 'imagen' ? `Imagen ${(p.formatos || []).join(' · ')}` : 'Video', p.persona?.nombre, p.rubro?.nombre, p.angulo?.nombre, p.estructura?.nombre, p.estilo?.nombre].filter(Boolean).join(' · '))),
-          estadoSel),
-        h('div', { class: 'body' },
-          h('div', { class: 'cmd' }, h('code', {}, cmd), h('button', { class: 'btn small', onclick: () => copy(cmd) }, 'Copiar comando')),
-          p.avatar ? h('div', { class: 'muted' }, 'Avatar: ', h('b', {}, p.avatar.nombre), p.avatar.look ? ` · ${[p.avatar.look.vestuario, p.avatar.look.escenario].filter(Boolean).join(' · ')}` : '') : null,
-          p.nota ? h('div', { class: 'muted' }, 'Nota: ', p.nota) : null,
-          h('div', { class: 'board-wrap' }, h('table', { class: 'board' },
-            h('thead', {}, h('tr', {}, (p.tipo === 'imagen' ? ['Zona', 'Copy'] : ['Paso', 'Voz', 'Pantalla', 'Toma']).map((x, j) => h('th', j === 1 && p.tipo === 'imagen' ? { colspan: '3' } : {}, x)))),
-            p.tipo === 'imagen' ? h('tbody', {}, Object.entries(g.copy || {}).map(([z, v]) => h('tr', {}, h('td', { class: 'paso' }, z), h('td', { class: 'pant', colspan: '3' }, Array.isArray(v) ? v.join(' / ') : v))), h('tr', {}, h('td', { class: 'paso' }, 'Visual'), h('td', { colspan: '3' }, g.visual || '—'))) : h('tbody', {}, (g.bloques || []).map((b) => h('tr', {}, h('td', { class: 'paso' }, b.paso), h('td', { class: 'voz' }, b.voz), h('td', { class: 'pant' }, (b.pantalla || []).join(' / ')), h('td', {}, b.toma))),
-              g.cta ? h('tr', {}, h('td', { class: 'paso' }, 'CTA'), h('td', { class: 'voz' }, g.cta.voz), h('td', { class: 'pant' }, g.cta.pantalla), h('td', {}, 'Cierre de marca')) : null))),
-          h('div', {}, del))));
-    }
+    for (const p of pedidos) list.append(renderPedido(p));
     root.append(list);
   }
 
+  function renderPedido(p) {
+    const cmd = `/sparkpy pedido ${p.id}`;
+    const pr = p.produccion || {};
+    const g = p.guion || {};
+    let confirm = false;
+    const del = h('button', { class: 'btn danger small', onclick: async (e) => {
+      e.preventDefault();
+      if (!confirm) { confirm = true; del.textContent = '¿Borrar? Pulse otra vez'; return; }
+      try { await db.doc('pedidos/' + p.id).delete(); toast('Pedido borrado'); } catch (err) { toast(dbErr(err)); }
+    } }, 'Borrar pedido');
+    const estadoSel = h('select', { 'aria-label': 'Estado', onclick: (e) => e.stopPropagation(), onchange: async (e) => {
+      try { await db.doc('pedidos/' + p.id).update({ estado: e.target.value }); toast('Estado actualizado'); } catch (err) { toast(dbErr(err)); }
+    } }, ESTADOS.map((s) => h('option', { value: s, selected: p.estado === s }, s)));
+
+    // 1. Estado de producción
+    const sinEmpezar = !p.produccion;
+    const avance = sinEmpezar
+      ? h('div', { class: 'ped-box wait' },
+          h('strong', {}, 'Todavía no se está produciendo'),
+          h('p', {}, 'Para arrancar, abra Claude Code en el repositorio del proyecto y pegue este comando. Claude le mostrará el presupuesto de créditos y le irá pidiendo aprobación; puede aprobar allí o aquí mismo.'),
+          h('div', { class: 'cmd' }, h('code', {}, cmd), h('button', { class: 'btn small', onclick: () => copy(cmd) }, 'Copiar comando')))
+      : h('div', { class: 'ped-box' },
+          h('div', { class: 'ped-row' }, h('strong', {}, 'Producción'),
+            pr.creditos ? h('span', { class: 'mono muted' }, `Créditos: ${pr.creditos.gastado ?? 0} de ~${pr.creditos.estimado ?? '?'}`) : null),
+          h('ol', { class: 'pasos' }, (pr.pasos || []).map((s) => h('li', { class: 'st-' + slug(s.estado || 'pendiente') }, h('span', { class: 'dotst' }), h('span', {}, h('b', {}, s.nombre), s.nota ? h('span', { class: 'muted' }, ' · ' + s.nota) : null), h('span', { class: 'mono muted' }, s.estado || 'pendiente')))));
+
+    // 2. Revisiones: piezas para aprobar
+    const revs = (pr.revisiones || []).map((r) => {
+      const resp = p.respuestas?.[r.id];
+      const txtId = `rev-${p.id}-${r.id}`;
+      return h('div', { class: 'ped-box' + (resp ? '' : ' pend') },
+        h('div', { class: 'ped-row' }, h('strong', {}, r.titulo || 'Revisión'),
+          resp ? h('span', { class: resp.estado === 'aprobado' ? 'pill ok' : 'pill warn' }, resp.estado === 'aprobado' ? 'aprobado' : 'cambios pedidos') : h('span', { class: 'pill warn' }, 'espera su aprobación')),
+        r.nota ? h('p', { class: 'muted' }, r.nota) : null,
+        h('div', { class: 'gal' }, (r.items || []).map((it) => h('figure', {}, assetEl(it), it.etiqueta ? h('figcaption', {}, it.etiqueta) : null))),
+        resp?.comentario ? h('p', {}, h('b', {}, 'Su comentario: '), resp.comentario) : null,
+        resp ? null : h('div', { class: 'rev-actions' },
+          h('textarea', { id: txtId, placeholder: 'Si quiere cambios, escríbalos aquí (p. ej. «la opción 2, pero más joven»)' }),
+          h('div', { class: 'cmd' },
+            h('button', { class: 'btn small', onclick: () => responder(p, r.id, 'aprobado', document.getElementById(txtId)?.value) }, 'Aprobar'),
+            h('button', { class: 'btn ghost small', onclick: () => { const t = document.getElementById(txtId)?.value || ''; if (!t.trim()) { toast('Escriba qué quiere cambiar'); return; } responder(p, r.id, 'cambios', t); } }, 'Pedir cambios'))));
+    });
+
+    // 3. Entregas: el anuncio terminado
+    const entregas = pr.entregas || [];
+    const ultimaVersion = Math.max(0, ...entregas.map((e) => e.version || 1));
+    const entregaEls = entregas.length ? h('div', { class: 'ped-box done-box' },
+      h('div', { class: 'ped-row' }, h('strong', {}, `Anuncio listo${ultimaVersion > 1 ? ` · versión ${ultimaVersion}` : ''}`)),
+      h('div', { class: 'gal big' }, entregas.filter((e) => (e.version || 1) === ultimaVersion).map((it) => h('figure', {}, assetEl(it),
+        h('figcaption', {}, [it.nombre || it.formato || (it.tipo === 'video' ? 'Video' : 'Imagen'), it.formato && it.nombre ? ` · ${it.formato}` : ''].join('')),
+        h('button', { class: 'btn small', onclick: () => descargar(it, p) }, 'Descargar')))),
+      ultimaVersion > 1 ? h('details', { class: 'prev' }, h('summary', {}, 'Versiones anteriores'),
+        h('div', { class: 'gal' }, entregas.filter((e) => (e.version || 1) < ultimaVersion).map((it) => h('figure', {}, assetEl(it), h('figcaption', {}, `v${it.version || 1} · ${it.formato || ''}`), h('button', { class: 'add', onclick: () => descargar(it, p) }, 'Descargar'))))) : null) : null;
+
+    // 4. Pedir cambios sobre el anuncio (o antes de empezar)
+    const cambios = Object.entries(p.cambios || {}).sort((a, b) => String(a[1].fecha).localeCompare(String(b[1].fecha)));
+    const cambioId = `cambio-${p.id}`;
+    const cambiosEl = h('div', { class: 'ped-box' },
+      h('strong', {}, entregas.length ? '¿Quiere cambiar algo?' : 'Indicaciones para producción'),
+      cambios.length ? h('ul', { class: 'cambios' }, cambios.map(([, c]) => h('li', {}, h('span', { class: c.estado === 'atendido' ? 'pill ok' : 'pill warn' }, c.estado || 'pendiente'), ' ', c.texto, h('span', { class: 'mono muted' }, ' · ' + fmtFecha(c.fecha)), c.respuesta ? h('div', { class: 'muted' }, '↳ ', c.respuesta) : null))) : null,
+      h('textarea', { id: cambioId, placeholder: entregas.length ? 'Ej.: el titular más corto; cambiar la toma 3; versión en 1:1' : 'Ej.: que Julián hable a cámara en el gancho' }),
+      h('div', {}, h('button', { class: 'btn small', onclick: async () => { const el = document.getElementById(cambioId); if (await pedirCambio(p, el?.value || '')) el.value = ''; } }, entregas.length ? 'Pedir cambios' : 'Enviar indicación')));
+
+    const det = h('details', { class: 'order' + (atencion(p) ? ' attn' : ''), ontoggle: (e) => { if (e.target.open) abiertos.add(p.id); else abiertos.delete(p.id); } },
+      h('summary', {},
+        h('div', {}, h('strong', {}, p.titulo || 'Anuncio'),
+          h('div', { class: 'meta' }, [fmtFecha(p.creado), p.tipo === 'imagen' ? `Imagen ${(p.formatos || []).join(' · ')}` : 'Video', p.persona?.nombre, p.estructura?.nombre, p.estilo?.nombre].filter(Boolean).join(' · ')),
+          atencion(p) ? h('div', { class: 'attn-note' }, 'Hay piezas esperando su aprobación') : entregas.length ? h('div', { class: 'ok-note' }, 'Listo para ver y descargar') : null),
+        estadoSel),
+      h('div', { class: 'body' },
+        entregaEls, revs, avance, cambiosEl,
+        h('details', { class: 'prev' }, h('summary', {}, p.tipo === 'imagen' ? 'Ver el copy aprobado' : 'Ver el guion aprobado'),
+          p.avatar ? h('p', { class: 'muted' }, 'Avatar: ', h('b', {}, p.avatar.nombre), p.avatar.look ? ` · ${[p.avatar.look.vestuario, p.avatar.look.escenario].filter(Boolean).join(' · ')}` : '') : null,
+          p.nota ? h('p', { class: 'muted' }, 'Nota: ', p.nota) : null,
+          h('div', { class: 'board-wrap' }, h('table', { class: 'board' },
+            h('thead', {}, h('tr', {}, (p.tipo === 'imagen' ? ['Zona', 'Copy'] : ['Paso', 'Voz', 'Pantalla', 'Toma']).map((x, j) => h('th', j === 1 && p.tipo === 'imagen' ? { colspan: '3' } : {}, x)))),
+            p.tipo === 'imagen'
+              ? h('tbody', {}, Object.entries(g.copy || {}).map(([z, v]) => h('tr', {}, h('td', { class: 'paso' }, z), h('td', { class: 'pant', colspan: '3' }, Array.isArray(v) ? v.join(' / ') : v))), h('tr', {}, h('td', { class: 'paso' }, 'Visual'), h('td', { colspan: '3' }, g.visual || '—')))
+              : h('tbody', {}, (g.bloques || []).map((b) => h('tr', {}, h('td', { class: 'paso' }, b.paso), h('td', { class: 'voz' }, b.voz), h('td', { class: 'pant' }, (b.pantalla || []).join(' / ')), h('td', {}, b.toma))),
+                  g.cta ? h('tr', {}, h('td', { class: 'paso' }, 'CTA'), h('td', { class: 'voz' }, g.cta.voz), h('td', { class: 'pant' }, g.cta.pantalla), h('td', {}, 'Cierre de marca')) : null)))),
+        h('div', { class: 'cmd' }, h('code', { class: 'small-code' }, cmd), h('button', { class: 'add', onclick: () => copy(cmd) }, 'Copiar comando'), del)));
+    if (abiertos.has(p.id)) det.open = true;
+    return det;
+  }
+
   function render() {
-    document.getElementById('ped-count').textContent = pedidos.filter((p) => p.estado === 'en cola').length;
+    document.getElementById('ped-count').textContent = pedidos.filter((p) => p.estado === 'en cola' || atencion(p)).length;
     if (view === 'crear') renderCrear();
     else if (view === 'lib') renderLib();
     else renderPed();
@@ -1095,8 +1232,8 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
   // ---------- arranque ----------
   setView(view);
   (async () => {
-    const [d, s, a] = await Promise.all([claude.use('db'), claude.use('sample'), claude.use('assets')].map((p) => p.catch(() => null)));
-    db = d; sample = s; assets = a;
+    const [d, s, a, dl] = await Promise.all([claude.use('db'), claude.use('sample'), claude.use('assets'), claude.use('downloads')].map((p) => p.catch(() => null)));
+    db = d; sample = s; assets = a; downloads = dl;
     if (!db) {
       const b = document.getElementById('banner');
       b.textContent = 'La librería vive en claude.ai: abra esta página allí para ver y editar rubros, personas, ángulos y pedidos.';
@@ -1127,7 +1264,7 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
     db.collection('pedidos').orderBy('creado', 'desc').limit(200).onSnapshot((snap) => {
       pedidos = snap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       if (firstP) { firstP = false; doneOne(); }
-      if (view === 'ped' && document.activeElement?.tagName === 'SELECT') { document.getElementById('ped-count').textContent = pedidos.filter((p) => p.estado === 'en cola').length; return; }
+      if (view === 'ped' && document.activeElement?.tagName === 'SELECT') { document.getElementById('ped-count').textContent = pedidos.filter((p) => p.estado === 'en cola' || atencion(p)).length; return; }
       soon();
     }, onErr);
     render();

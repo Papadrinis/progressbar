@@ -58,6 +58,28 @@ Cuando llegue `/sparkpy pedido <id>`:
    Si el avatar se castea nuevo y se aprueba, guarda el job en `avatares/<id>.casting_job`, sube el
    retrato como `imagen`, pasa su estado a «aprobado» y añade el anuncio a `usado_en`.
 
+### Seguimiento en la pestaña Pedidos (obligatorio)
+
+El usuario sigue la producción en la pestaña **Pedidos** del Estudio, no solo en el chat. Todo lo que se
+le muestra para aprobar o se entrega se publica también ahí:
+
+- **Avance**: `ArtifactData update` del pedido con `produccion.pasos` (array completo: `{nombre, estado:
+  "hecho"|"en curso"|"esperando aprobación"|"pendiente", nota}`) y `produccion.creditos: {estimado, gastado}`.
+  Actualiza al empezar y al cerrar cada etapa.
+- **Piezas para aprobar** (castings, fotogramas, tomas, piezas estáticas): sube cada archivo como asset
+  del artifact (`Artifact` publish con `url`, `asset: true`, `file_paths`; solo imagen o video: png, jpg,
+  webp, mp4) y agrega a `produccion.revisiones` `{id, titulo, nota, items: [{asset, tipo: "image"|"video",
+  etiqueta}]}`; pon `estado: "esperando aprobación"`. Pregunta también en el chat.
+- **Respuestas**: la página escribe `respuestas.<id>: {estado: "aprobado"|"cambios", comentario, fecha}`.
+  Vale la que llegue primero (chat o página). Si el usuario no está en el chat, programa un check-in
+  (`send_later`, ~15 min) y vuelve a leer el pedido; no sigas gastando créditos sin aprobación.
+- **Entregas**: el MP4 o las imágenes finales van como assets en `produccion.entregas: [{asset, tipo,
+  nombre, formato, version, fecha}]` y `estado: "listo"`. El usuario las ve y descarga desde la página.
+- **Cambios pedidos**: `cambios.<id>: {texto, fecha, estado: "pendiente"}` (y `estado` del pedido «cambios
+  pedidos»). Atiéndelos, sube la nueva versión como entrega con `version` + 1, y marca cada cambio
+  `{estado: "atendido", respuesta: "qué se hizo"}`.
+- Usa siempre `if_version` al escribir el pedido: el usuario puede estar respondiendo a la vez.
+
 ### Pedidos de imagen estática (`pedido.tipo == "imagen"`)
 
 El pedido trae `formatos` (1:1, 4:5, 9:16, 1.91:1), el **template** (`estructura`: `zonas`, `layout`,
