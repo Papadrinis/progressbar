@@ -98,23 +98,38 @@ lee". Para una toma de noche en casa, mismo personaje, sala sencilla y cálida.
 | V7 barbería | `760e6f4c-05b4-4fa1-965b-1979bc0b0d16` | 6 tomas, ~377 créditos |
 | V8 mascotas | `315180e5-7ca1-4c3b-bbfc-e9e4f3ec165e` | toma 4 con fotograma (deriva de cara) |
 
-## Hablando a cámara (sincronía de labios) — plan ahorro
+## Hablando a cámara (sincronía de labios)
 
-Precios consultados con `get_cost` (2026-09-27), toma de 5 s en 9:16:
+**Receta que funciona (V11, 2026-09-28):** dos pasos por toma.
+
+1. `veo3_1` · `variant: "veo-3-1-preview"` · `quality: "high"` · `duration` 4–8 · `aspect_ratio: "9:16"`,
+   fotograma aprobado como `start_image`, `declined_preset_id` del preset «IN THE DARK». Prompt: la frase
+   exacta entre comillas en español colombiano, **«calm confidence, slight friendly smile, natural relaxed
+   face, subtle expressions, no frowning, no exaggerated gestures»**. **40 créditos** (4 s).
+2. `sync_so` (Sync Lipsync 3) · `sync_mode: "silence"` · `medias`: el job de Veo como `input_video` y el
+   job de la voz aprobada como `input_audio`. **14,4 créditos** (4 s). Deja la voz aprobada en el video.
+
+Total ≈ **54 créditos por toma a cámara**. Primero una sola toma de prueba y aprobación.
+
+**No usar `wan2_7` para hablar a cámara:** con `audio_references` exagera gestos (ceño fruncido, boca muy
+abierta). Descartado por el usuario («horrible»). Tampoco pedir «energía» en el prompt de video: la
+energía va en la voz; al video se le pide naturalidad.
+
+Precios consultados con `get_cost`:
 
 | Modelo | Uso | Créditos |
 |---|---|---|
-| **wan2_7** 1080p (`start_image` + `audio_references`) | Labios sincronizados con la voz | **12,5** |
-| wan2_7 720p | Idem, más barato | 7,5 |
-| kling3_0 std | Movimiento general | 10 |
-| seedance_2_5 omni 720p / 1080p | Movimiento general (voz en off) | 35 / 60 |
+| veo3_1 preview high, 4 s | Video base natural | 40 |
+| sync_so, 4 s | Labios a un audio dado | 14,4 |
+| seedance_2_5 omni 1080p, 4 s / 5 s | Movimiento general | 48 / 60 |
+| wan3_0_prime 1080p, 4 s | Alternativa sin probar | 24 |
+| wan2_7 1080p, 4 s | **Descartado para labios** | 10 |
 | Voz ElevenLabs (text2speech_v2) | Por clip | 0,3 |
 
 Reglas para no gastar de más:
-- Tomas a cámara con **wan2_7 1080p**: fotograma aprobado como `start_image` y el clip de voz como
-  `audio_references`. Primero **una** toma de prueba; si la boca no sincroniza bien, se cambia el
-  modelo antes de hacer las demás.
 - Tomas de apoyo sin labios (voz en off con interfaz encima): el fotograma aprobado con push-in en
   Remotion (0 créditos). Solo si hace falta movimiento real, Seedance 720p.
-- Fotogramas y casting: `count` 1 salvo el casting (2 opciones); regenerar solo lo rechazado.
-- El CTA reutiliza `public/voz/cta.mp3` (voz de marca), sin generar otro clip.
+- Fotogramas: `count` 1; casting: 2 opciones; regenerar solo lo rechazado.
+- La energía de la voz se consigue con el texto (exclamaciones, frases cortas): el motor no tiene control
+  de estilo. El CTA reutiliza `public/voz/cta.mp3`.
+- Revisa los cuadros de la toma base (Veo) **antes** de pagar Sync.
