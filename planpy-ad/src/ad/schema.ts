@@ -73,6 +73,8 @@ export const bloque = z.object({
   lineas: z.array(z.string()).min(1).max(4),
   claves: z.array(z.string()).default([]),
   cola: z.number().int().min(0).optional(),
+  // Frames antes de que arranque la voz (3 por defecto). 0 en tomas con labios sincronizados.
+  entrada: z.number().int().min(0).optional(),
   // Duración de la voz en segundos. Si falta, se mide del archivo al cargar la composición.
   duracion: z.number().positive().optional(),
   extras: z.array(extra).default([]),

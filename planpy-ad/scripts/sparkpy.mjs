@@ -70,7 +70,7 @@ const duracion = (ruta) => {
 const tramos = (a) => {
   const rate = a.velocidadVoz ?? 1.08;
   const cierre = a.cierre ?? {voz: 'voz/cta.mp3', cola: 50};
-  const pasos = [...a.bloques.map((b) => ({id: b.id, voz: b.voz, d: b.duracion, cola: b.cola ?? 6, lead: 3, lineas: b.lineas, locucion: b.locucion, extras: b.extras ?? []})), {id: 'cierre', voz: cierre.voz, d: cierre.duracion, cola: cierre.cola ?? 50, lead: 8, lineas: [], extras: []}];
+  const pasos = [...a.bloques.map((b) => ({id: b.id, voz: b.voz, d: b.duracion, cola: b.cola ?? 6, lead: b.entrada ?? 3, lineas: b.lineas, locucion: b.locucion, extras: b.extras ?? []})), {id: 'cierre', voz: cierre.voz, d: cierre.duracion, cola: cierre.cola ?? 50, lead: 8, lineas: [], extras: []}];
   let from = 0;
   return pasos.map((p) => {
     const d = p.d ?? duracion(p.voz);

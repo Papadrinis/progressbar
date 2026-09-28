@@ -1,0 +1,165 @@
+{
+  "id": "PLANPY_CO_ESCALA_ROPA_V11_JULIAN",
+  "titulo": "V11 · No lo compró para seguir igual (Julián a cámara, UGC)",
+  "velocidadVoz": 1,
+  "musica": {
+    "src": "music/cama-112bpm.wav",
+    "volumen": 0.2,
+    "bajo": 0.06
+  },
+  "bloques": [
+    {
+      "id": "a",
+      "voz": "voz/v11/a-mic.wav",
+      "locucion": "¡Yo no compré esta tienda para manejarla como me la dejaron!",
+      "entrada": 0,
+      "toma": "v11/shot1.mp4",
+      "lineas": [
+        "Yo no compré esta tienda",
+        "para manejarla",
+        "como me la dejaron."
+      ],
+      "claves": [
+        "tienda"
+      ],
+      "cola": 6,
+      "extras": [],
+      "duracion": 3.57
+    },
+    {
+      "id": "i",
+      "voz": "voz/v11/i-mic.wav",
+      "locucion": "¡Llegué y todo estaba en un cuaderno! ¿Las ventas? ¡Nadie las sumaba!",
+      "entrada": 0,
+      "toma": "v11/shot2.mp4",
+      "lineas": [
+        "Llegué y todo estaba",
+        "en un cuaderno.",
+        "¿Las ventas?",
+        "Nadie las sumaba."
+      ],
+      "claves": [
+        "cuaderno",
+        "nadie"
+      ],
+      "cola": 6,
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": "30%",
+          "texto": "📒 todo a mano",
+          "x": 760,
+          "y": 1520,
+          "giro": 6,
+          "tamano": 58,
+          "fondo": "#ffd400",
+          "sfx": "boing",
+          "volumenSfx": 0.35
+        }
+      ],
+      "duracion": 5.84
+    },
+    {
+      "id": "d1",
+      "voz": "voz/v11/d1-mic.wav",
+      "locucion": "¡Con Planpi busco cada prenda y sé cuántas me quedan, en los dos locales!",
+      "toma": "v11/shot3.png",
+      "lineas": [
+        "Con PlanPy busco cada prenda",
+        "y sé cuántas me quedan,",
+        "en los dos locales."
+      ],
+      "claves": [
+        "prenda",
+        "dos"
+      ],
+      "cola": 8,
+      "extras": [
+        {
+          "tipo": "tarjeta",
+          "en": 14,
+          "formato": "computador",
+          "titulo": "Camisa de lino blanca",
+          "seccion": "Inventario",
+          "filas": [
+            [
+              "Local Centro",
+              "6 unid."
+            ],
+            [
+              "Local Laureles",
+              "3 unid."
+            ],
+            [
+              "Total",
+              "9 unid."
+            ]
+          ],
+          "resaltar": 2
+        }
+      ],
+      "duracion": 4.8
+    },
+    {
+      "id": "d2",
+      "voz": "voz/v11/d2-mic.wav",
+      "locucion": "¡Y ahora el negocio no depende de que yo esté ahí!",
+      "entrada": 0,
+      "toma": "v11/shot4.mp4",
+      "lineas": [
+        "Y ahora el negocio",
+        "no depende de que",
+        "yo esté ahí."
+      ],
+      "claves": [
+        "depende"
+      ],
+      "cola": 14,
+      "extras": [],
+      "duracion": 3.26
+    }
+  ],
+  "cierre": {
+    "voz": "voz/cta.mp3",
+    "locucion": "Pruébelo quince días gratis, en planpi punto io.",
+    "cola": 50,
+    "duracion": 3.474
+  },
+  "fuentes": [
+    {
+      "ruta": "voz/v11/a.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20260927_143607_f4102774-a8b6-4670-8e9f-0e804d3c53c8.mp3",
+      "job": "f4102774-a8b6-4670-8e9f-0e804d3c53c8"
+    },
+    {
+      "ruta": "voz/v11/i.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20260927_143608_956c54f3-4560-41d0-914c-4702fbe72c83.mp3",
+      "job": "956c54f3-4560-41d0-914c-4702fbe72c83"
+    },
+    {
+      "ruta": "voz/v11/d1.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20260927_143608_004222a3-d58d-4dc4-97fc-cb6d50f6f1dd.mp3",
+      "job": "004222a3-d58d-4dc4-97fc-cb6d50f6f1dd"
+    },
+    {
+      "ruta": "voz/v11/d2.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20260927_143607_02976618-f579-4029-85f5-48d2e3562962.mp3",
+      "job": "02976618-f579-4029-85f5-48d2e3562962"
+    }
+  ],
+  "receta": {
+    "pedido": "ecby8fs5netq0nhdda4j",
+    "guion": "guiones/ropa-v11-julian.md",
+    "casting": "880b15c3-1412-43a7-ab19-d0eea4f9baac (opción 2)",
+    "voz": "text2speech_v2 elevenlabs · preset ceee41dc-0ee8-59a7-b3e8-2744116fcb5e · texto con exclamaciones",
+    "voz_mic": "Tomas a cámara: la voz sale del audio de cada toma de Sync (alineada con los labios; Sync la retrasa 160–450 ms), recortada y con tratamiento de micrófono. d1: voz original con el mismo tratamiento.",
+    "tomas_a_camara": "veo3_1 preview high + sync_so (silence)",
+    "fotogramas_mic": [
+      "355bd421-8228-49f8-b810-328f83a47a77",
+      "bc997f3c-1b81-4055-b858-0814435cc3bb",
+      "9635abd1-8421-435d-8afa-c59087cfec5a"
+    ],
+    "toma_apoyo": "bc2da6cd-33f4-4535-9931-f8747fa2d7aa (fotograma con push-in)",
+    "aviso": "Personaje generado por IA hablando en primera persona: marcar como contenido con IA en pauta."
+  }
+}

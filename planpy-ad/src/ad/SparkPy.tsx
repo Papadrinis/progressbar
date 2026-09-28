@@ -17,7 +17,7 @@ type Tramo = {i: number; from: number; len: number; lead: number; vf: number};
 export const lineaDeTiempo = (datos: Anuncio, duraciones: number[]) => {
   let from = 0;
   const tramos: Tramo[] = [];
-  const pasos = [...datos.bloques.map((b) => ({cola: b.cola ?? 6, lead: 3})), {cola: datos.cierre.cola, lead: 8}];
+  const pasos = [...datos.bloques.map((b) => ({cola: b.cola ?? 6, lead: b.entrada ?? 3})), {cola: datos.cierre.cola, lead: 8}];
   pasos.forEach((p, i) => {
     const vf = Math.ceil((duraciones[i] / datos.velocidadVoz) * FPS_SPARKPY);
     const len = p.lead + vf + p.cola;

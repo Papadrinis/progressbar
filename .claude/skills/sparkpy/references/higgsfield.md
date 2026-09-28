@@ -109,7 +109,18 @@ lee". Para una toma de noche en casa, mismo personaje, sala sencilla y cálida.
 2. `sync_so` (Sync Lipsync 3) · `sync_mode: "silence"` · `medias`: el job de Veo como `input_video` y el
    job de la voz aprobada como `input_audio`. **14,4 créditos** (4 s). Deja la voz aprobada en el video.
 
-Total ≈ **54 créditos por toma a cámara**. Primero una sola toma de prueba y aprobación.
+Total ≈ **54 créditos por toma a cámara** (6 s: Veo ~60 + Sync ~22). Primero una sola toma de prueba y aprobación.
+
+**Ojo con la sincronía en el montaje:** Sync entrega la voz **retrasada entre 160 y 450 ms** (distinto en
+cada toma) y los labios siguen a esa voz retrasada. No uses el mp3 original: extrae el audio de cada toma
+de Sync, recórtalo al final de la frase, aplícale el tratamiento que toque y úsalo como `voz` del bloque
+con `entrada: 0` y `velocidadVoz: 1`. Verifica con la envolvente del audio que el desfase final quede
+< 45 ms (V11 quedó en 40 ms).
+
+**Estilo UGC que funciona:** Julián sostiene un mini micrófono inalámbrico cerca de la barbilla (se pide en
+el fotograma y en el prompt de Veo: «the microphone stays near his chin»). La voz lleva tratamiento de
+micrófono real: pasa-altos 110 Hz, pasa-bajos 9,5 kHz, compresión 3:1, sala corta y ambiente muy bajo
+(ver `receta` de `public/ads/v11-julian.json`). V11 completo: ~283 créditos.
 
 **No usar `wan2_7` para hablar a cámara:** con `audio_references` exagera gestos (ceño fruncido, boca muy
 abierta). Descartado por el usuario («horrible»). Tampoco pedir «energía» en el prompt de video: la
