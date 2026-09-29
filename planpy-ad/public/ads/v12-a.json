@@ -1,0 +1,204 @@
+{
+  "id": "PLANPY_CO_ESCALA_ROPA_V12_A",
+  "titulo": "V12-A · El número que no tiene (tienda de ropa)",
+  "bloques": [
+    {
+      "id": "b1",
+      "voz": "voz/v12/b1.mp3",
+      "locucion": "¿Cuánto le ha faltado en la caja este mes? Ni usted lo sabe.",
+      "toma": "v10/shot1.mp4",
+      "lineas": [
+        "¿Cuánto le ha faltado",
+        "en la caja este mes?",
+        "Ni usted lo sabe."
+      ],
+      "claves": [
+        "faltado",
+        "sabe"
+      ],
+      "cola": 8,
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": "40%",
+          "texto": "Caja: $ ??? 🤔",
+          "x": 740,
+          "y": 1500,
+          "giro": 6,
+          "tamano": 66,
+          "fondo": "#ffd400",
+          "sfx": "boing",
+          "volumenSfx": 0.4
+        },
+        {
+          "tipo": "sfx",
+          "en": 4,
+          "nombre": "scribble",
+          "volumen": 0.35
+        }
+      ],
+      "duracion": 4.049
+    },
+    {
+      "id": "b2",
+      "voz": "voz/v12/b2.mp3",
+      "locucion": "Entre buscar la talla y cuadrar la caja, se le va la tarde... y la clienta.",
+      "toma": "v10/shot3.mp4",
+      "lineas": [
+        "Entre buscar la talla",
+        "y cuadrar la caja,",
+        "se le va la tarde…",
+        "y la clienta."
+      ],
+      "claves": [
+        "tarde",
+        "clienta"
+      ],
+      "cola": 10,
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": "80%",
+          "texto": "👋 Se fue",
+          "x": 760,
+          "y": 1300,
+          "giro": 6,
+          "tamano": 66,
+          "fondo": "#ffffff"
+        },
+        {
+          "tipo": "sfx",
+          "en": "78%",
+          "nombre": "ding",
+          "volumen": 0.3
+        }
+      ],
+      "duracion": 4.598
+    },
+    {
+      "id": "a",
+      "voz": "voz/v12/a.mp3",
+      "locucion": "Con Planpi, lo busca y sabe cuánto le queda, en segundos.",
+      "toma": "v10/shot4.mp4",
+      "lineas": [
+        "Con PlanPy, lo busca",
+        "y sabe cuánto le queda,",
+        "en segundos."
+      ],
+      "claves": [
+        "busca",
+        "queda"
+      ],
+      "extras": [
+        {
+          "tipo": "tarjeta",
+          "en": 18,
+          "formato": "computador",
+          "titulo": "Blusa verde de lino",
+          "seccion": "Inventario",
+          "filas": [
+            [
+              "Disponible",
+              "5 unid."
+            ],
+            [
+              "Vendidas hoy",
+              "4"
+            ],
+            [
+              "Precio",
+              "$89.900"
+            ]
+          ],
+          "resaltar": 0
+        }
+      ],
+      "duracion": 3.971
+    },
+    {
+      "id": "br",
+      "voz": "voz/v12/br.mp3",
+      "locucion": "Y la caja, cuadrada en unos diez minutos, cada noche.",
+      "toma": "v10/shot9.mp4",
+      "lineas": [
+        "Y la caja, cuadrada",
+        "en unos 10 minutos,",
+        "cada noche."
+      ],
+      "claves": [
+        "cuadrada",
+        "10"
+      ],
+      "cola": 16,
+      "extras": [
+        {
+          "tipo": "tarjeta",
+          "en": 8,
+          "formato": "celular",
+          "titulo": "Cierre de hoy",
+          "seccion": "Caja",
+          "filas": [
+            [
+              "Efectivo",
+              "$212.400"
+            ],
+            [
+              "Transferencias",
+              "$131.900"
+            ],
+            [
+              "Total del día",
+              "$344.300"
+            ]
+          ],
+          "resaltar": 2,
+          "listo": "Caja cuadrada ✓"
+        }
+      ],
+      "duracion": 3.788
+    }
+  ],
+  "cierre": {
+    "voz": "voz/cta.mp3",
+    "cola": 50,
+    "locucion": "Pruébelo quince días gratis, en planpi punto io.",
+    "duracion": 3.474
+  },
+  "fuentes": [
+    {
+      "ruta": "voz/v12/b1.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20260929_232002_a0d786f0-3341-4fb8-be25-2b4c6b60b958.mp3",
+      "job": "a0d786f0-3341-4fb8-be25-2b4c6b60b958",
+      "nota": "Xavier (ElevenLabs) · texto con «Planpi»"
+    },
+    {
+      "ruta": "voz/v12/b2.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20260929_232002_48764b3a-50b5-46c4-a017-32aafe617f9e.mp3",
+      "job": "48764b3a-50b5-46c4-a017-32aafe617f9e",
+      "nota": "Xavier (ElevenLabs) · texto con «Planpi»"
+    },
+    {
+      "ruta": "voz/v12/a.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20260929_232002_dfddeaf4-6226-46a3-b3b4-bd18393a5594.mp3",
+      "job": "dfddeaf4-6226-46a3-b3b4-bd18393a5594",
+      "nota": "Xavier (ElevenLabs) · texto con «Planpi»"
+    },
+    {
+      "ruta": "voz/v12/br.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20260929_232002_c6742bfa-291a-4270-a3cb-527b11a6197a.mp3",
+      "job": "c6742bfa-291a-4270-a3cb-527b11a6197a",
+      "nota": "Xavier (ElevenLabs) · texto con «Planpi»"
+    }
+  ],
+  "receta": {
+    "pedido": "nzts0tnr5solgvduf75d (SparkPy Estudio)",
+    "mercado": "CO (usted)",
+    "eje": "ESCALA",
+    "estructura": "BAB",
+    "guion": "guiones/ropa-v12.md",
+    "voz": "Higgsfield text2speech_v2 · elevenlabs · Xavier 43173c95-3ec8-446a-a162-6504332c578b",
+    "tomas": "Reutilizadas de V10 (shot1, shot3, shot4, shot9), aprobado por el usuario: 0 créditos de video",
+    "creditos": 1.2,
+    "cta": "Cierre estándar con precio (regla de marca); la nota del pedido pedía quitarlo y decir «sin tarjeta» (no confirmado)"
+  }
+}
