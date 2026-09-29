@@ -19,6 +19,11 @@ falla con la ruta exacta del campo. Ejemplos completos: `public/ads/v10-a.json`,
 }
 ```
 
+`cierre.pantalla` (opcional) cambia los textos del cierre: `{"titulo", "oferta", "nota", "pie", "boton"}`.
+Lo que falte sale como el cierre de marca; `""` oculta esa línea; `oferta` admite saltos de línea (`\n`).
+Úsalo solo cuando el guion aprobado traiga `cta_editado: true`, p. ej.
+`{"oferta": "Sin tarjeta durante\nla prueba.", "nota": ""}`.
+
 `musica.volumen` es el nivel sin voz; `musica.bajo`, mientras habla la voz (ducking). La música
 termina con un fade de 24 frames. Pistas disponibles: `music/cama-112bpm.wav` (sobria),
 `music/alegre-124bpm.wav` (juguetona).

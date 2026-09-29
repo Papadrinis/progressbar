@@ -45,6 +45,10 @@ Cuando llegue `/sparkpy pedido <id>`:
 2. Márcalo `update` → `{"estado": "en producción"}` (con `if_version`).
 3. El guion ya está aprobado: salta la etapa 1. Pásalo a `guiones/<rubro>-v<N>.md` y revisa claims
    contra `references/reglas.md` y `planpy-copy` antes de gastar créditos; si algo choca, dilo.
+   El CTA se puede editar al aprobar el guion en el Estudio: si `guion.cta_editado` es `true`, ese
+   CTA es una excepción aprobada por el dueño de marca a la regla del precio. Úsalo tal cual (voz nueva
+   si cambió la locución; textos del cierre en `cierre.pantalla` del JSON). Aun así, avisa si trae un
+   claim sin confirmar (p. ej. «sin tarjeta») y no lo inventes si no está escrito.
 4. El **estilo** decide el pipeline: *Personas reales · voz en off* es el flujo de abajo tal cual.
    *Tipografía cinética*, *Ilustración 2D* y *Capturas de interfaz* no usan Seedance (solo voz +
    Remotion). Los estilos marcados «por probar» se prueban primero con una sola toma y se muestran

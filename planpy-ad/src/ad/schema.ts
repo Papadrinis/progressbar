@@ -100,7 +100,14 @@ export const anuncio = z.object({
     .nullable()
     .default({src: 'music/cama-112bpm.wav', volumen: 0.28, bajo: 0.1}),
   bloques: z.array(bloque).min(1),
-  cierre: z.object({voz: z.string(), locucion: z.string().optional(), cola: z.number().int().min(0).default(50), duracion: z.number().positive().optional()}).default({voz: 'voz/cta.mp3', cola: 50}),
+  cierre: z.object({
+    voz: z.string(),
+    locucion: z.string().optional(),
+    cola: z.number().int().min(0).default(50),
+    duracion: z.number().positive().optional(),
+    // Textos en pantalla; si faltan, sale el cierre de marca. "" oculta la línea.
+    pantalla: z.object({titulo: z.string().optional(), oferta: z.string().optional(), nota: z.string().optional(), pie: z.string().optional(), boton: z.string().optional()}).optional(),
+  }).default({voz: 'voz/cta.mp3', cola: 50}),
   // Receta reproducible: de dónde sale cada archivo (job de Higgsfield + URL de descarga).
   fuentes: z.array(fuente).default([]),
   receta: z.record(z.string(), z.unknown()).optional(),

@@ -142,7 +142,7 @@ export const SparkPy: React.FC<SparkPyProps> = ({datos, duraciones}) => {
       })}
       <Sequence name="cierre" from={cta.from} durationInFrames={cta.len}>
         <Whip>
-          <CierreDesde />
+          <CierreDesde {...datos.cierre.pantalla} />
           {[2, 10, 20, 40].map((a) => (
             <Sfx key={a} at={a} name="pop" volume={0.4} />
           ))}

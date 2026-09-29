@@ -7,6 +7,8 @@ Estas reglas son posteriores a `planpy-marca` y `planpy-copy`; si chocan, mandan
 - **Siempre el precio más barato**: "15 días gratis · Desde $46.500 al mes con el plan anual ·
   Plan mensual: desde $62.000 al mes". Nunca nombrar los planes PYME o Pro.
 - El cierre de SparkPy (`CierreDesde`) ya lo trae; voz del CTA: `public/voz/cta.mp3`.
+- Excepción: un CTA editado en el Estudio al aprobar el guion (`guion.cta_editado`) cuenta como
+  aprobado por el dueño de marca para ese anuncio. Los claims sin confirmar se siguen avisando.
 - Ninguna cifra de resultado inventada ("ahorra 3 horas"). "En unos 10 minutos" para el cierre de
   caja sí está aprobado.
 

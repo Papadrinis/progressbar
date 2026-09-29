@@ -117,7 +117,10 @@ export const AgendaDesktop: React.FC<{cols: string[]; hours: string[]; citas: Ci
 };
 
 // Cierre de marca: SIEMPRE el precio más barato ("desde"), por decisión del dueño de marca.
-export const CierreDesde: React.FC = () => {
+// Textos del cierre; sin props sale el de marca (precio más barato de Colombia).
+export type CierreTextos = {titulo?: string; oferta?: string; nota?: string; pie?: string; boton?: string};
+
+export const CierreDesde: React.FC<CierreTextos> = ({titulo, oferta, nota, pie, boton}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const up = (d: number) => {
@@ -129,16 +132,20 @@ export const CierreDesde: React.FC = () => {
       <div style={up(2)}>
         <Img src={staticFile('logo-horizontal.png')} style={{width: 520}} />
       </div>
-      <div style={{...up(10), marginTop: 80, fontSize: 108, fontWeight: 800, letterSpacing: -3, lineHeight: 1}}>15 días gratis.</div>
-      <div style={{...up(20), marginTop: 50, fontSize: 52, fontWeight: 600, lineHeight: 1.2}}>
-        Desde <b>$46.500 al mes</b>
-        <br />
-        con el plan anual.
-      </div>
-      <div style={{...up(26), marginTop: 14, fontSize: 34, color: '#5c574f'}}>Plan mensual: desde $62.000 al mes.</div>
-      <div style={{...up(32), marginTop: 50, fontSize: 36, color: '#2b2824'}}>En computador y celular, sin instalar nada.</div>
+      <div style={{...up(10), marginTop: 80, fontSize: 108, fontWeight: 800, letterSpacing: -3, lineHeight: 1}}>{titulo ?? '15 días gratis.'}</div>
+      {oferta === undefined ? (
+        <div style={{...up(20), marginTop: 50, fontSize: 52, fontWeight: 600, lineHeight: 1.2}}>
+          Desde <b>$46.500 al mes</b>
+          <br />
+          con el plan anual.
+        </div>
+      ) : oferta ? (
+        <div style={{...up(20), marginTop: 50, fontSize: 52, fontWeight: 600, lineHeight: 1.2, whiteSpace: 'pre-line'}}>{oferta}</div>
+      ) : null}
+      {(nota ?? 'Plan mensual: desde $62.000 al mes.') ? <div style={{...up(26), marginTop: 14, fontSize: 34, color: '#5c574f'}}>{nota ?? 'Plan mensual: desde $62.000 al mes.'}</div> : null}
+      {(pie ?? 'En computador y celular, sin instalar nada.') ? <div style={{...up(32), marginTop: 50, fontSize: 36, color: '#2b2824'}}>{pie ?? 'En computador y celular, sin instalar nada.'}</div> : null}
       <div style={{...up(40), marginTop: 70, height: 130, borderRadius: 30, background: '#141414', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 46, fontWeight: 800}}>
-        Pruébelo en <span style={{color: BRAND_GREEN, marginLeft: 14}}>planpy.io</span>
+        {boton ?? 'Pruébelo en'} <span style={{color: BRAND_GREEN, marginLeft: 14}}>planpy.io</span>
       </div>
       <Texture strength={0.3} />
     </div>

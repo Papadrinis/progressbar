@@ -697,7 +697,19 @@ details.prev > summary { cursor: pointer; font-weight: 600; font-size: 13.5px; c
       h('td', { class: 'pant' }, isSel ? edit(b, 'pantalla', b.pantalla, true) : (b.pantalla || []).map((l) => h('div', {}, keyed(l, b.claves)))),
       h('td', {}, isSel ? edit(b, 'toma', b.toma) : b.toma),
       h('td', { class: 'muted' }, isSel ? edit(b, 'interfaz', b.interfaz) : b.interfaz || '—')));
-    if (g.cta) rows.push(h('tr', {}, h('td', {}, h('div', { class: 'paso' }, 'CTA'), h('div', { class: 'tc' }, tc(g.cta.seg || 4))), h('td', { class: 'voz' }, `“${g.cta.voz || ''}”`), h('td', { class: 'pant' }, g.cta.pantalla || ''), h('td', {}, 'Cierre de marca (logo, oferta, precio)'), h('td', { class: 'muted' }, 'CierreDesde')));
+    if (isSel && !g.cta) g.cta = ctaMarca();
+    if (g.cta) {
+      const aviso = h('div', {});
+      const pintarAviso = () => aviso.replaceChildren(...ctaAvisos(g.cta).map((t) => h('div', { class: 'pill warn', style: 'margin-top:6px;text-transform:none;letter-spacing:0' }, t)));
+      const editCta = (field) => h('textarea', { 'aria-label': `CTA ${field}`, oninput: (e) => { g.cta[field] = e.target.value; pintarAviso(); } }, g.cta[field] || '');
+      pintarAviso();
+      rows.push(h('tr', {},
+        h('td', {}, h('div', { class: 'paso' }, 'CTA'), h('div', { class: 'tc' }, tc(g.cta.seg || 4))),
+        h('td', { class: 'voz' }, isSel ? editCta('voz') : `“${g.cta.voz || ''}”`),
+        h('td', { class: 'pant' }, isSel ? [editCta('pantalla'), aviso] : [g.cta.pantalla || '', aviso]),
+        h('td', {}, isSel ? h('div', {}, 'Cierre de marca con este texto. ', h('button', { class: 'add', onclick: () => { g.cta = ctaMarca(g.cta.seg); render(); } }, 'Restaurar el de marca')) : 'Cierre de marca (logo, oferta, precio)'),
+        h('td', { class: 'muted' }, 'CierreDesde')));
+    }
     return h('article', { class: 'opt', 'aria-current': String(isSel) },
       h('div', { class: 'opt-head' },
         h('div', {}, h('h3', {}, `${String.fromCharCode(65 + i)} · ${o.titulo || 'Opción'}`), h('p', { class: 'idea' }, o.idea || '')),
@@ -727,7 +739,22 @@ details.prev > summary { cursor: pointer; font-weight: 600; font-size: 13.5px; c
     CO: 'Colombia, trato de usted, montos en pesos con punto de miles. CTA (siempre el precio más barato, nunca nombrar PYME/Pro): "15 días gratis · Desde $46.500 al mes con el plan anual · Plan mensual: desde $62.000". Voz del CTA: "Pruébelo quince días gratis, en planpi punto io."',
     AR: 'Argentina, voseo, precio en dólares y nunca otra moneda. CTA: "15 días gratis · USD $15 al mes con el plan anual (USD $180 al año) · gestionás y pagás en tu moneda". Voz del CTA: "Probalo quince días gratis, en planpi punto io."',
   };
-  const pickFields = (d, keys) => d ? Object.fromEntries(keys.filter((k) => d[k]).map((k) => [k, d[k]])) : null;
+  // CTA por defecto de cada mercado; en el guion elegido se puede cambiar (queda marcado en el pedido).
+  const CTA_MARCA = {
+    CO: { voz: 'Pruébelo quince días gratis, en planpi punto io.', pantalla: '15 días gratis · Desde $46.500 al mes' },
+    AR: { voz: 'Probalo quince días gratis, en planpi punto io.', pantalla: '15 días gratis · USD $15 al mes con el plan anual' },
+  };
+  const ctaMarca = (seg) => ({ ...CTA_MARCA[sel.mercado] || CTA_MARCA.CO, seg: seg || 4 });
+  const ctaEditado = (cta) => { const m = CTA_MARCA[sel.mercado] || CTA_MARCA.CO; return !!cta && ((cta.voz || '').trim() !== m.voz || (cta.pantalla || '').trim() !== m.pantalla); };
+  const ctaAvisos = (cta) => {
+    const out = [];
+    const p = cta?.pantalla || '';
+    if (!/\$\s?\d/.test(p)) out.push('Sin precio: excepción a la regla de marca');
+    if (/tarjeta/i.test(p + ' ' + (cta?.voz || ''))) out.push('«Sin tarjeta» está sin confirmar con producto');
+    if (/\b(pyme|pro)\b/i.test(p)) out.push('No nombrar los planes PYME o Pro');
+    return out;
+  };
+  const pickFields = (d, keys) => d ?Object.fromEntries(keys.filter((k) => d[k]).map((k) => [k, d[k]])) : null;
 
   function buildPrompt() {
     const est = byId('estructuras', sel.estructura);
@@ -822,7 +849,7 @@ Responde SOLO con JSON con esta forma:
       features: (guion.features || []).map((f) => snap('features', f)).filter(Boolean),
       avatar: (() => { const a = byId('avatares', avatarActual()); return a ? { id: a.id, nombre: a.nombre, casting_job: a.casting_job || '', rasgos: a.rasgos || '', imagen: a.imagen || '', look: guion.look || null } : null; })(),
       estructura: (() => { const e = byId('estructuras', sel.estructura); return e ? { id: e.id, nombre: e.nombre, tipo: tipoDe(e), ...(tipoDe(e) === 'imagen' ? pickFields(e, ['zonas', 'layout', 'produccion', 'referencia']) : {}) } : null; })(), estilo: est ? { id: est.id, nombre: est.nombre, pipeline: est.pipeline } : null,
-      guion, nota, titulo: guion.titulo || 'Anuncio',
+      guion: esImagen() ? guion : { ...guion, cta_editado: ctaEditado(guion.cta) }, nota, titulo: guion.titulo || 'Anuncio',
     };
     try {
       const ref = await db.collection('pedidos').add(doc);
@@ -1217,7 +1244,7 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
             p.tipo === 'imagen'
               ? h('tbody', {}, Object.entries(g.copy || {}).map(([z, v]) => h('tr', {}, h('td', { class: 'paso' }, z), h('td', { class: 'pant', colspan: '3' }, Array.isArray(v) ? v.join(' / ') : v))), h('tr', {}, h('td', { class: 'paso' }, 'Visual'), h('td', { colspan: '3' }, g.visual || '—')))
               : h('tbody', {}, (g.bloques || []).map((b) => h('tr', {}, h('td', { class: 'paso' }, b.paso), h('td', { class: 'voz' }, b.voz), h('td', { class: 'pant' }, (b.pantalla || []).join(' / ')), h('td', {}, b.toma))),
-                  g.cta ? h('tr', {}, h('td', { class: 'paso' }, 'CTA'), h('td', { class: 'voz' }, g.cta.voz), h('td', { class: 'pant' }, g.cta.pantalla), h('td', {}, 'Cierre de marca')) : null)))),
+                  g.cta ? h('tr', {}, h('td', { class: 'paso' }, 'CTA'), h('td', { class: 'voz' }, g.cta.voz), h('td', { class: 'pant' }, g.cta.pantalla), h('td', {}, g.cta_editado ? h('span', { class: 'pill warn' }, 'CTA editado') : 'Cierre de marca')) : null)))),
         h('div', { class: 'cmd' }, h('code', { class: 'small-code' }, cmd), h('button', { class: 'add', onclick: () => copy(cmd) }, 'Copiar comando'), del)));
     if (abiertos.has(p.id)) det.open = true;
     return det;
