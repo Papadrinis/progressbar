@@ -21,6 +21,27 @@ consulta `models_explore` para ese modelo y ajusta; anota aquí el cambio.
 | **Xavier** | `43173c95-3ec8-446a-a162-6504332c578b` | Narrador de todos los anuncios |
 | Andre | `f1e8226e-2248-4d5f-b43c-0a79e9949dbf` | Segunda voz (proveedor, cliente al teléfono) |
 
+### Voces de los avatares (siempre en español)
+
+Cada avatar tiene voz fija en el Estudio (`avatares/<id>.voz`); se usa sin pedir aprobación cuando el
+avatar habla. El texto va en español con el registro del mercado (usted / vos) y el motor lo lee en
+español. Muestras en `public/voz/avatares/<id>.mp3`.
+
+| Género | Voz | voice_id | Avatar |
+|---|---|---|---|
+| hombre | Andre | `f1e8226e-2248-4d5f-b43c-0a79e9949dbf` | Andrés |
+| hombre | Ken | `ceee41dc-0ee8-59a7-b3e8-2744116fcb5e` | Julián (elegida por el usuario en V11) |
+| hombre | Marcus | `6f98d3dd-324f-4845-8c28-c1d1647a06cd` | Don Hernán |
+| hombre | Orion | `ed69c516-92d2-4b30-a967-617737a342e5` | Tomás |
+| hombre | Julian | `95429266-c0ac-4137-a209-63b8812b0f23` | Nico |
+| mujer | Marisol | `75e72cd5-011b-4130-a474-e8b1ab341f04` | Carolina |
+| mujer | Isabella | `80924413-1ea8-4e64-9719-e00b86796f05` | Daniela |
+| mujer | Ines | `023ebf5e-1970-40d8-825c-a5ef6a1dd4ff` | Marcela |
+| mujer | Elena | `ca83ca7f-c186-493d-bd69-0d765fa861b2` | Paula |
+| mujer | Luna | `375a3398-e3b4-4f91-845d-42181e352899` | Rocío |
+
+Xavier queda reservado para el narrador. Un avatar nuevo recibe la voz de su género menos usada.
+
 - Un clip por bloque, con `generate_audio_batch` (índice = orden del bloque).
 - La marca se escribe **"Planpi"** en el texto de la voz; "planpi punto io" para la web.
 - Números en palabras ("ocho de la noche", "diez minutos") para que los lea bien.

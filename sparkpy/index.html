@@ -390,6 +390,7 @@ details.prev > summary { cursor: pointer; font-weight: 600; font-size: 13.5px; c
       ['rasgos', 'Rasgos fijos (identidad)', 'textarea', null, 'Solo lo que no cambia entre anuncios: edad, rasgos, pelo, contextura, piel. Nada de ropa de oficio ni negocio'],
       ['estilo', 'Actitud en cámara', 'textarea', null, 'Cómo se mueve y se expresa: p. ej. «tranquilo, de pocas palabras»'],
       ['personas', 'Buyer personas que puede encarnar', 'refs', 'personas', 'Los buyer personas cuya edad y perfil le quedan creíbles'],
+      ['voz', 'Voz (siempre en español)', 'voz', null, null],
       ['casting_job', 'Job de casting (Higgsfield)', 'text', null, null],
       ['estado', 'Estado', 'select', ['aprobado', 'propuesto'], null],
       ['usado_en', 'Usado en', 'text', null, null]] },
@@ -418,6 +419,27 @@ details.prev > summary { cursor: pointer; font-weight: 600; font-size: 13.5px; c
       ['usado_en', 'Usado en', 'text', null, null],
       ['riesgos', 'Riesgos y reglas', 'textarea', null, 'Qué cuidar para respetar la marca']] },
   };
+  // Voces de ElevenLabs (Higgsfield text2speech_v2) que se usan en español. Xavier queda para el narrador.
+  const VOCES = [
+    { voice_id: 'f1e8226e-2248-4d5f-b43c-0a79e9949dbf', nombre: 'Andre', genero: 'hombre' },
+    { voice_id: 'ceee41dc-0ee8-59a7-b3e8-2744116fcb5e', nombre: 'Ken', genero: 'hombre' },
+    { voice_id: '6f98d3dd-324f-4845-8c28-c1d1647a06cd', nombre: 'Marcus', genero: 'hombre' },
+    { voice_id: 'ed69c516-92d2-4b30-a967-617737a342e5', nombre: 'Orion', genero: 'hombre' },
+    { voice_id: '95429266-c0ac-4137-a209-63b8812b0f23', nombre: 'Julian', genero: 'hombre' },
+    { voice_id: '75e72cd5-011b-4130-a474-e8b1ab341f04', nombre: 'Marisol', genero: 'mujer' },
+    { voice_id: '80924413-1ea8-4e64-9719-e00b86796f05', nombre: 'Isabella', genero: 'mujer' },
+    { voice_id: '023ebf5e-1970-40d8-825c-a5ef6a1dd4ff', nombre: 'Ines', genero: 'mujer' },
+    { voice_id: 'ca83ca7f-c186-493d-bd69-0d765fa861b2', nombre: 'Elena', genero: 'mujer' },
+    { voice_id: '375a3398-e3b4-4f91-845d-42181e352899', nombre: 'Luna', genero: 'mujer' },
+  ];
+  const vozRef = (v) => (v ? { voice_id: v.voice_id, voice_type: 'preset', nombre: v.nombre } : null);
+  // Voz por defecto: la del mismo género que menos avatares usan.
+  const vozPorDefecto = (genero, sinId) => {
+    const pool = VOCES.filter((v) => !genero || v.genero === genero);
+    const usos = (v) => lib.avatares.filter((a) => a.id !== sinId && a.voz?.voice_id === v.voice_id).length;
+    return vozRef([...pool].sort((a, b) => usos(a) - usos(b))[0]);
+  };
+  const vozDe = (a) => (a?.voz?.voice_id ? a.voz : a ? vozPorDefecto(a.genero, a.id) : null);
   const ORDER = Object.keys(COLS);
   const lib = Object.fromEntries(ORDER.map((k) => [k, []]));
   let pedidos = [];
@@ -571,6 +593,7 @@ details.prev > summary { cursor: pointer; font-weight: 600; font-size: 13.5px; c
         h('div', { class: 'hint', style: 'margin:0 0 10px' }, avSel
           ? [h('b', {}, avSel.nombre), sel.avatarManual ? ' · elegido por usted. ' : ` · propuesto para «${persona?.nombre || ''}». `,
              rubro ? `Aparece con el look de ${rubro.nombre.toLowerCase()}: el guion define vestuario y escenario. ` : 'El look (vestuario y escenario) sale del rubro. ',
+             vozDe(avSel) ? `Habla con la voz ${vozDe(avSel).nombre}. ` : '',
              sel.avatarManual ? h('button', { class: 'add', onclick: () => { sel.avatarManual = false; save(); render(); } }, 'Volver al propuesto') : null]
           : 'Elija un buyer persona y le propongo el avatar que mejor encaja.'),
         h('div', { class: 'avatars' }, avs.map(avCard)),
@@ -847,7 +870,7 @@ Responde SOLO con JSON con esta forma:
       creado: new Date().toISOString(), estado: 'en cola', tipo: sel.tipo, mercado: sel.mercado, eje: derivedEje().eje, ...(esImagen() ? { formatos: sel.formatos } : { duracion: sel.duracion }),
       rubro: snap('rubros', sel.rubro), persona: snap('personas', sel.persona), angulo: snap('angulos', sel.angulo),
       features: (guion.features || []).map((f) => snap('features', f)).filter(Boolean),
-      avatar: (() => { const a = byId('avatares', avatarActual()); return a ? { id: a.id, nombre: a.nombre, casting_job: a.casting_job || '', rasgos: a.rasgos || '', imagen: a.imagen || '', look: guion.look || null } : null; })(),
+      avatar: (() => { const a = byId('avatares', avatarActual()); return a ? { id: a.id, nombre: a.nombre, genero: a.genero || '', casting_job: a.casting_job || '', rasgos: a.rasgos || '', imagen: a.imagen || '', voz: vozDe(a), look: guion.look || null } : null; })(),
       estructura: (() => { const e = byId('estructuras', sel.estructura); return e ? { id: e.id, nombre: e.nombre, tipo: tipoDe(e), ...(tipoDe(e) === 'imagen' ? pickFields(e, ['zonas', 'layout', 'produccion', 'referencia']) : {}) } : null; })(), estilo: est ? { id: est.id, nombre: est.nombre, pipeline: est.pipeline } : null,
       guion: esImagen() ? guion : { ...guion, cta_editado: ctaEditado(guion.cta) }, nota, titulo: guion.titulo || 'Anuncio',
     };
@@ -973,13 +996,29 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
       if (type === 'text') input = h('input', { type: 'text', id: fid, value: draft[k] || '', oninput: (e) => (draft[k] = e.target.value) });
       else if (type === 'textarea') input = h('textarea', { id: fid, oninput: (e) => (draft[k] = e.target.value) }, draft[k] || '');
       else if (type === 'list') input = h('textarea', { id: fid, oninput: (e) => (draft[k] = e.target.value.split('\n').map((s) => s.trim()).filter(Boolean)) }, (draft[k] || []).join('\n'));
-      else if (type === 'select') input = h('select', { id: fid, onchange: (e) => { draft[k] = e.target.value; if (k === 'tipo' && col === 'estructuras') openEditor(col, id, { ...opts, draft }); } }, h('option', { value: '' }, '—'), extra.map((o) => h('option', { value: o, selected: draft[k] === o }, o)));
+      else if (type === 'select') input = h('select', { id: fid, onchange: (e) => {
+        draft[k] = e.target.value;
+        if (k === 'tipo' && col === 'estructuras') openEditor(col, id, { ...opts, draft });
+        if (k === 'genero' && col === 'avatares' && draft.voz?.voice_id && VOCES.find((v) => v.voice_id === draft.voz.voice_id)?.genero !== draft[k]) { delete draft.voz; delete draft.voz_muestra; openEditor(col, id, { ...opts, draft }); }
+      } }, h('option', { value: '' }, '—'), extra.map((o) => h('option', { value: o, selected: draft[k] === o }, o)));
       else if (type === 'ref') input = h('select', { id: fid, onchange: (e) => (draft[k] = e.target.value) }, h('option', { value: '' }, '—'), lib[extra].map((o) => h('option', { value: o.id, selected: draft[k] === o.id }, o.nombre)));
       else if (type === 'refs') {
         const box = h('div', { class: 'chips', id: fid });
         const paint = () => box.replaceChildren(...[...lib[extra]].sort((a, b) => (a.orden ?? 999) - (b.orden ?? 999)).map((o) => chip(o.nombre, (draft[k] || []).includes(o.id), () => {
           draft[k] = (draft[k] || []).includes(o.id) ? draft[k].filter((x) => x !== o.id) : [...(draft[k] || []), o.id]; paint();
         })));
+        paint(); input = box;
+      } else if (type === 'voz') {
+        const box = h('div', { class: 'upl' });
+        const paint = () => {
+          const actual = draft.voz?.voice_id ? draft.voz : vozPorDefecto(draft.genero, id);
+          const pool = VOCES.filter((v) => !draft.genero || v.genero === draft.genero);
+          box.replaceChildren(
+            h('select', { id: fid, onchange: (e) => { draft.voz = vozRef(VOCES.find((v) => v.voice_id === e.target.value)); delete draft.voz_muestra; paint(); } },
+              pool.map((v) => h('option', { value: v.voice_id, selected: actual?.voice_id === v.voice_id }, v.nombre))),
+            draft.voz_muestra ? h('audio', { src: imgSrc(draft.voz_muestra), controls: true, preload: 'none' }) : null,
+            h('span', { class: 'hint', style: 'margin:0' }, draft.voz?.voice_id ? (draft.voz_muestra ? 'Muestra en español con su registro.' : 'Claude genera la muestra la próxima vez que use este avatar.') : `Se asigna sola por género (${actual?.nombre || '—'}) al guardar.`));
+        };
         paint(); input = box;
       } else if (type === 'image' || type === 'media') {
         const box = h('div', { class: 'imgbox' });
@@ -997,6 +1036,7 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
     const onSave = async () => {
       if (!(draft.nombre || '').trim()) { toast('Ponga un nombre'); return; }
       const docId = id || `${slug(draft.nombre)}-${Math.random().toString(36).slice(2, 6)}`;
+      if (col === 'avatares' && !draft.voz?.voice_id) draft.voz = vozPorDefecto(draft.genero, id);
       try {
         await db.doc(`${col}/${docId}`).set(draft);
         toast(id ? 'Guardado' : `${c.one[0].toUpperCase() + c.one.slice(1)} añadido`);
@@ -1237,7 +1277,7 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
       h('div', { class: 'body' },
         entregaEls, revs, avance, cambiosEl,
         h('details', { class: 'prev' }, h('summary', {}, p.tipo === 'imagen' ? 'Ver el copy aprobado' : 'Ver el guion aprobado'),
-          p.avatar ? h('p', { class: 'muted' }, 'Avatar: ', h('b', {}, p.avatar.nombre), p.avatar.look ? ` · ${[p.avatar.look.vestuario, p.avatar.look.escenario].filter(Boolean).join(' · ')}` : '') : null,
+          p.avatar ? h('p', { class: 'muted' }, 'Avatar: ', h('b', {}, p.avatar.nombre), p.avatar.voz ? ` · voz ${p.avatar.voz.nombre}` : '', p.avatar.look ? ` · ${[p.avatar.look.vestuario, p.avatar.look.escenario].filter(Boolean).join(' · ')}` : '') : null,
           p.nota ? h('p', { class: 'muted' }, 'Nota: ', p.nota) : null,
           h('div', { class: 'board-wrap' }, h('table', { class: 'board' },
             h('thead', {}, h('tr', {}, (p.tipo === 'imagen' ? ['Zona', 'Copy'] : ['Paso', 'Voz', 'Pantalla', 'Toma']).map((x, j) => h('th', j === 1 && p.tipo === 'imagen' ? { colspan: '3' } : {}, x)))),
