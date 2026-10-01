@@ -18,14 +18,14 @@ consulta `models_explore` para ese modelo y ajusta; anota aquí el cambio.
 
 | Voz | voice_id | Uso |
 |---|---|---|
-| **Xavier** | `43173c95-3ec8-446a-a162-6504332c578b` | Narrador cuando el anuncio no tiene avatar |
+| **Xavier** | `43173c95-3ec8-446a-a162-6504332c578b` | Narrador opcional, solo en anuncios 100 % voz en off |
 | Andre | `f1e8226e-2248-4d5f-b43c-0a79e9949dbf` | Segunda voz (proveedor, cliente al teléfono) |
 
 ### Voces de los avatares (siempre en español)
 
 Cada avatar tiene voz fija en el Estudio (`avatares/<id>.voz`); se usa sin pedir aprobación en todo el
 anuncio: voz en off, tomas a cámara y CTA (`public/voz/cta/<voz>-co.mp3` o `-ar.mp3`). El texto va en español con el registro del mercado (usted / vos) y el motor lo lee en
-español. Muestras en `public/voz/avatares/<id>.mp3`.
+español. Muestras en `public/voz/muestras/<voz>.mp3`.
 
 | Género | Voz | voice_id | Avatar |
 |---|---|---|---|
@@ -40,7 +40,8 @@ español. Muestras en `public/voz/avatares/<id>.mp3`.
 | mujer | Elena | `ca83ca7f-c186-493d-bd69-0d765fa861b2` | Paula |
 | mujer | Luna | `375a3398-e3b4-4f91-845d-42181e352899` | Rocío |
 
-Xavier queda para anuncios sin avatar. Un avatar nuevo recibe la voz de su género menos usada.
+Xavier es opción de narrador en el Estudio cuando nadie habla a cámara. Muestras de cada voz con una frase
+sobre PlanPy en `public/voz/muestras/<voz>.mp3` (también como assets del Estudio). Un avatar nuevo recibe la voz de su género menos usada.
 
 - Un clip por bloque, con `generate_audio_batch` (índice = orden del bloque).
 - La marca se escribe **"Planpi"** en el texto de la voz; "planpi punto io" para la web.
@@ -163,5 +164,5 @@ Reglas para no gastar de más:
   Remotion (0 créditos). Solo si hace falta movimiento real, Seedance 720p.
 - Fotogramas: `count` 1; casting: 2 opciones; regenerar solo lo rechazado.
 - La energía de la voz se consigue con el texto (exclamaciones, frases cortas): el motor no tiene control
-  de estilo. El CTA reutiliza `public/voz/cta/<voz>-<co|ar>.mp3` (o `cta.mp3` si no hay avatar).
+  de estilo. El CTA reutiliza `public/voz/cta/<voz>-<co|ar>.mp3` (o `cta.mp3` si narra Xavier).
 - Revisa los cuadros de la toma base (Veo) **antes** de pagar Sync.

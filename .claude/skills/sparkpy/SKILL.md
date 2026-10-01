@@ -37,9 +37,10 @@ Cuando llegue `/sparkpy pedido <id>`:
    **Voz del avatar**: cada avatar trae `avatar.voz` (`voice_id`, `voice_type`, `nombre`), asignada por
    género y siempre en español (catálogo en `references/higgsfield.md`). Cuando el avatar habla (a cámara,
    primera persona, UGC) se usa esa voz **sin pedir aprobación**; solo se cambia si el usuario lo pide.
-   **La voz en off también es la del avatar** (bloques y CTA), así todo el anuncio suena con una sola
-   voz. El CTA ya está grabado por voz en `public/voz/cta/<voz>-<co|ar>.mp3`; si falta, se genera.
-   Xavier solo narra cuando el pedido no trae avatar. Si un avatar no tiene voz, asígnale la del catálogo
+   **La voz del anuncio es `pedido.voz`** y narra todo (bloques y CTA): por defecto la del avatar; si el
+   usuario eligió Xavier (`voz.narrador: true`, solo posible cuando nadie habla a cámara), narra Xavier.
+   El CTA ya está grabado por voz en `public/voz/cta/<voz>-<co|ar>.mp3` (Xavier: `public/voz/cta.mp3`);
+   si falta, se genera. Pedidos viejos sin `pedido.voz`: usa `avatar.voz`. Si un avatar no tiene voz, asígnale la del catálogo
    de su género que menos avatares usen y guárdala en `avatares/<id>.voz`.
    Vocabulario del Estudio: el **buyer persona** (`personas/`) es el tipo de cliente (arquetipo, identidad,
    tensión emocional, resultado soñado, disparador de compra, cita). El **avatar** (`avatares/`) es un
@@ -150,7 +151,7 @@ Marca en el guion lo que dependa de funciones sin confirmar (`references/reglas.
 
 `generate_audio_batch`, un clip por bloque con la voz del avatar (`avatar.voz`; ver
 `references/higgsfield.md`). El CTA ya existe por voz: `public/voz/cta/<voz>-co.mp3` ("Pruébelo quince
-días gratis, en planpi punto io.") o `-ar.mp3` ("Probalo…"); sin avatar, `public/voz/cta.mp3` (Xavier). Con `jobs_wait` espera los
+días gratis, en planpi punto io.") o `-ar.mp3` ("Probalo…"); con Xavier, `public/voz/cta.mp3`. Con `jobs_wait` espera los
 jobs; anota cada URL de resultado en `fuentes` del JSON (ruta `voz/v<N>/<bloque>.mp3`) y corre
 `npm run sparkpy -- descargar <ad>`, que baja los archivos y escribe la `duracion` de cada voz.
 Escúchalos con el usuario si pide cambios de tono; regenerar es barato.

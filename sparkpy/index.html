@@ -308,6 +308,10 @@ pre.raw { white-space: pre-wrap; font-family: var(--mono); font-size: 12px; back
 .attn-note { color: var(--warn); font-weight: 700; font-size: 13px; margin-top: 2px; }
 .ok-note { color: var(--brand-ink); font-weight: 700; font-size: 13px; margin-top: 2px; }
 details.prev > summary { cursor: pointer; font-weight: 600; font-size: 13.5px; color: var(--muted); padding: 4px 0; }
+.avwrap { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.play { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 4px 10px; font-size: 12.5px; font-weight: 600; cursor: pointer; width: fit-content; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.play:hover { border-color: var(--brand); }
+.seg button:disabled { opacity: .45; cursor: not-allowed; }
 .small-code { font-size: 11.5px !important; padding: 4px 8px !important; }
 </style>
 
@@ -419,19 +423,41 @@ details.prev > summary { cursor: pointer; font-weight: 600; font-size: 13.5px; c
       ['usado_en', 'Usado en', 'text', null, null],
       ['riesgos', 'Riesgos y reglas', 'textarea', null, 'Qué cuidar para respetar la marca']] },
   };
-  // Voces de ElevenLabs (Higgsfield text2speech_v2) que se usan en español. El avatar narra con su voz; Xavier solo sin avatar.
+  // Voces de ElevenLabs (Higgsfield text2speech_v2) que se usan en español. `muestra`: asset con una frase sobre PlanPy.
+  // Por defecto narra la voz del avatar; Xavier es opción de narrador solo si nadie habla a cámara.
   const VOCES = [
-    { voice_id: 'f1e8226e-2248-4d5f-b43c-0a79e9949dbf', nombre: 'Andre', genero: 'hombre' },
-    { voice_id: 'ceee41dc-0ee8-59a7-b3e8-2744116fcb5e', nombre: 'Ken', genero: 'hombre' },
-    { voice_id: '6f98d3dd-324f-4845-8c28-c1d1647a06cd', nombre: 'Marcus', genero: 'hombre' },
-    { voice_id: 'ed69c516-92d2-4b30-a967-617737a342e5', nombre: 'Orion', genero: 'hombre' },
-    { voice_id: '95429266-c0ac-4137-a209-63b8812b0f23', nombre: 'Julian', genero: 'hombre' },
-    { voice_id: '75e72cd5-011b-4130-a474-e8b1ab341f04', nombre: 'Marisol', genero: 'mujer' },
-    { voice_id: '80924413-1ea8-4e64-9719-e00b86796f05', nombre: 'Isabella', genero: 'mujer' },
-    { voice_id: '023ebf5e-1970-40d8-825c-a5ef6a1dd4ff', nombre: 'Ines', genero: 'mujer' },
-    { voice_id: 'ca83ca7f-c186-493d-bd69-0d765fa861b2', nombre: 'Elena', genero: 'mujer' },
-    { voice_id: '375a3398-e3b4-4f91-845d-42181e352899', nombre: 'Luna', genero: 'mujer' },
+    { voice_id: 'f1e8226e-2248-4d5f-b43c-0a79e9949dbf', nombre: 'Andre', genero: 'hombre', muestra: 'd9046d01074f8922ff4dee074c296a04' },
+    { voice_id: 'ceee41dc-0ee8-59a7-b3e8-2744116fcb5e', nombre: 'Ken', genero: 'hombre', muestra: 'dcf425bad6d7f51bfe37d2ea0a089dd4' },
+    { voice_id: '6f98d3dd-324f-4845-8c28-c1d1647a06cd', nombre: 'Marcus', genero: 'hombre', muestra: 'e806b363ee212bcf142c1c6486813873' },
+    { voice_id: 'ed69c516-92d2-4b30-a967-617737a342e5', nombre: 'Orion', genero: 'hombre', muestra: '2cb4d0085f8009bab41218f25d16793c' },
+    { voice_id: '95429266-c0ac-4137-a209-63b8812b0f23', nombre: 'Julian', genero: 'hombre', muestra: 'd2acfcc181251191df2aa3d50bdbcf49' },
+    { voice_id: '75e72cd5-011b-4130-a474-e8b1ab341f04', nombre: 'Marisol', genero: 'mujer', muestra: 'e81d90ca9a87369078d2714993d3c8a4' },
+    { voice_id: '80924413-1ea8-4e64-9719-e00b86796f05', nombre: 'Isabella', genero: 'mujer', muestra: 'c86006d9fefe2290f34413950e8965f0' },
+    { voice_id: '023ebf5e-1970-40d8-825c-a5ef6a1dd4ff', nombre: 'Ines', genero: 'mujer', muestra: 'ffb3e0d70ace55c6a879961ad792d085' },
+    { voice_id: 'ca83ca7f-c186-493d-bd69-0d765fa861b2', nombre: 'Elena', genero: 'mujer', muestra: '705d0779931ea16d92b4b6086a3ccd18' },
+    { voice_id: '375a3398-e3b4-4f91-845d-42181e352899', nombre: 'Luna', genero: 'mujer', muestra: 'f67103f6123d51631e2545a0330aa7b5' },
   ];
+  const XAVIER = { voice_id: '43173c95-3ec8-446a-a162-6504332c578b', nombre: 'Xavier', genero: 'hombre', muestra: '8f631c1533015e2650f9c1b0a8a2796b' };
+  const muestraDe = (voz) => [...VOCES, XAVIER].find((v) => v.voice_id === voz?.voice_id)?.muestra || null;
+  // Estilos donde una persona habla a cámara: ahí la voz tiene que ser la del avatar.
+  const aCamara = (st) => !!st && (['reales-a-camara', 'creador-fondo'].includes(st.id) || /hablando a cámara|presentador|testimonio/i.test(st.nombre || ''));
+  // Botón para escuchar una muestra; un solo reproductor para toda la página.
+  const player = new Audio();
+  let sonando = null;
+  const playBtn = (muestra, label = 'Escuchar') => {
+    if (!muestra) return null;
+    const b = h('button', { type: 'button', class: 'play', 'aria-label': label, onclick: (e) => {
+      e.stopPropagation(); e.preventDefault();
+      if (sonando === b) { player.pause(); return; }
+      player.src = imgSrc(muestra); player.currentTime = 0; player.play().catch(() => toast('No se pudo reproducir la muestra.'));
+      if (sonando) sonando.textContent = '▶ ' + sonando.dataset.l;
+      sonando = b; b.textContent = '❚❚ ' + label;
+    } }, '▶ ' + label);
+    b.dataset.l = label;
+    return b;
+  };
+  player.addEventListener('pause', () => { if (sonando) { sonando.textContent = '▶ ' + sonando.dataset.l; sonando = null; } });
+  player.addEventListener('ended', () => player.pause());
   const vozRef = (v) => (v ? { voice_id: v.voice_id, voice_type: 'preset', nombre: v.nombre } : null);
   // Voz por defecto: la del mismo género que menos avatares usan.
   const vozPorDefecto = (genero, sinId) => {
@@ -561,10 +587,11 @@ details.prev > summary { cursor: pointer; font-weight: 600; font-size: 13.5px; c
     const avId = avatarActual();
     const avList = sel.persona ? propuestos() : byOrden('avatares');
     const avs = verTodosAv ? avList : avList.slice(0, 4);
-    const avCard = (a, k) => h('button', { class: 'av', 'aria-pressed': String(avId === a.id), onclick: () => { sel.avatar = a.id; sel.avatarManual = true; save(); render(); } },
+    const avCard = (a, k) => h('div', { class: 'avwrap' }, h('button', { class: 'av', 'aria-pressed': String(avId === a.id), onclick: () => { sel.avatar = a.id; sel.avatarManual = true; save(); render(); } },
       a.imagen ? h('img', { src: imgSrc(a.imagen), alt: a.nombre, loading: 'lazy' }) : h('div', { class: 'ph' }, (a.nombre || '?').slice(0, 1)),
       h('div', { class: 't' }, h('strong', {}, a.nombre), h('span', { class: 'sub mono' }, [a.edad && `${a.edad} años`, a.mercado].filter(Boolean).join(' · ')),
-        k === 0 && sel.persona && !sel.avatarManual ? h('span', { class: 'pill ok' }, 'propuesto') : h('span', { class: pillClass(a.estado) }, a.estado)));
+        k === 0 && sel.persona && !sel.avatarManual ? h('span', { class: 'pill ok' }, 'propuesto') : h('span', { class: pillClass(a.estado) }, a.estado))),
+      playBtn(muestraDe(vozDe(a)), `Voz ${vozDe(a)?.nombre || ''}`));
     const avSel = byId('avatares', avId);
     const angSel = byId('angulos', sel.angulo);
 
@@ -593,7 +620,7 @@ details.prev > summary { cursor: pointer; font-weight: 600; font-size: 13.5px; c
         h('div', { class: 'hint', style: 'margin:0 0 10px' }, avSel
           ? [h('b', {}, avSel.nombre), sel.avatarManual ? ' · elegido por usted. ' : ` · propuesto para «${persona?.nombre || ''}». `,
              rubro ? `Aparece con el look de ${rubro.nombre.toLowerCase()}: el guion define vestuario y escenario. ` : 'El look (vestuario y escenario) sale del rubro. ',
-             vozDe(avSel) ? `Narra y habla con la voz ${vozDe(avSel).nombre}. ` : '',
+             vozDe(avSel) ? `Su voz: ${vozDe(avSel).nombre}. ` : '',
              sel.avatarManual ? h('button', { class: 'add', onclick: () => { sel.avatarManual = false; save(); render(); } }, 'Volver al propuesto') : null]
           : 'Elija un buyer persona y le propongo el avatar que mejor encaja.'),
         h('div', { class: 'avatars' }, avs.map(avCard)),
@@ -633,7 +660,17 @@ details.prev > summary { cursor: pointer; font-weight: 600; font-size: 13.5px; c
       h('div', { class: 'step-head' }, h('span', { class: 'n' }, 'PASO 3'), h('h2', {}, 'Estilo de ad'), h('p', {}, esImagen() ? 'Cómo se va a producir la imagen. El costo es en créditos de Higgsfield.' : 'Cómo se va a producir. El costo es en créditos de Higgsfield.')),
       h('div', { class: 'styles' }, byOrden('estilos').filter(estiloSirve).map((s) => h('button', { class: 'style', 'aria-pressed': String(estilo === s.id), onclick: () => { estilo = estilo === s.id ? null : s.id; save(); render(); } },
         h('strong', {}, s.nombre), h('p', {}, s.descripcion),
-        h('div', { class: 'meta' }, h('span', { class: pillClass(s.estado) }, s.estado), h('span', { class: 'cost' }, s.costo))))));
+        h('div', { class: 'meta' }, h('span', { class: pillClass(s.estado) }, s.estado), h('span', { class: 'cost' }, s.costo))))),
+      esImagen() ? null : (() => {
+        const av = byId('avatares', avatarActual()), va = vozDe(av), camara = aCamara(byId('estilos', estilo));
+        const usaXavier = sel.vozAnuncio === 'xavier' && !camara;
+        return h('div', { class: 'field', style: 'margin-top:16px;border-top:1px solid var(--line);padding-top:16px' }, h('span', { class: 'lbl' }, 'Voz del anuncio'), h('div', {},
+          h('div', { class: 'seg' },
+            h('button', { 'aria-pressed': String(!usaXavier), onclick: () => { sel.vozAnuncio = 'avatar'; save(); render(); } }, va ? `${av.nombre} · ${va.nombre}` : 'La del avatar'),
+            h('button', { 'aria-pressed': String(usaXavier), disabled: camara, title: camara ? 'Con alguien hablando a cámara la voz es la del avatar' : null, onclick: () => { sel.vozAnuncio = 'xavier'; save(); render(); } }, 'Xavier · narrador')),
+          h('div', { class: 'cmd', style: 'margin-top:8px' }, playBtn(muestraDe(va), `Escuchar ${va?.nombre || 'avatar'}`), camara ? null : playBtn(XAVIER.muestra, 'Escuchar Xavier')),
+          h('div', { class: 'hint' }, camara ? 'Este estilo tiene a alguien hablando a cámara: todo el anuncio va con la voz del avatar.' : usaXavier ? 'Xavier narra todo el anuncio en off (bloques y CTA).' : 'La voz del avatar narra todo el anuncio (bloques y CTA). Xavier es opción porque nadie habla a cámara.')));
+      })());
 
     // paso 4
     const est2 = byId('estilos', estilo);
@@ -873,6 +910,7 @@ Responde SOLO con JSON con esta forma:
       avatar: (() => { const a = byId('avatares', avatarActual()); return a ? { id: a.id, nombre: a.nombre, genero: a.genero || '', casting_job: a.casting_job || '', rasgos: a.rasgos || '', imagen: a.imagen || '', voz: vozDe(a), look: guion.look || null } : null; })(),
       estructura: (() => { const e = byId('estructuras', sel.estructura); return e ? { id: e.id, nombre: e.nombre, tipo: tipoDe(e), ...(tipoDe(e) === 'imagen' ? pickFields(e, ['zonas', 'layout', 'produccion', 'referencia']) : {}) } : null; })(), estilo: est ? { id: est.id, nombre: est.nombre, pipeline: est.pipeline } : null,
       guion: esImagen() ? guion : { ...guion, cta_editado: ctaEditado(guion.cta) }, nota, titulo: guion.titulo || 'Anuncio',
+      ...(esImagen() ? {} : { voz: (() => { const a = byId('avatares', avatarActual()); return sel.vozAnuncio === 'xavier' && !aCamara(est) ? { ...vozRef(XAVIER), narrador: true } : vozDe(a); })() }),
     };
     try {
       const ref = await db.collection('pedidos').add(doc);
@@ -1014,10 +1052,10 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
           const actual = draft.voz?.voice_id ? draft.voz : vozPorDefecto(draft.genero, id);
           const pool = VOCES.filter((v) => !draft.genero || v.genero === draft.genero);
           box.replaceChildren(
-            h('select', { id: fid, onchange: (e) => { draft.voz = vozRef(VOCES.find((v) => v.voice_id === e.target.value)); delete draft.voz_muestra; paint(); } },
+            h('select', { id: fid, onchange: (e) => { draft.voz = vozRef(VOCES.find((v) => v.voice_id === e.target.value)); delete draft.voz_muestra; player.pause(); paint(); } },
               pool.map((v) => h('option', { value: v.voice_id, selected: actual?.voice_id === v.voice_id }, v.nombre))),
-            draft.voz_muestra ? h('audio', { src: imgSrc(draft.voz_muestra), controls: true, preload: 'none' }) : null,
-            h('span', { class: 'hint', style: 'margin:0' }, draft.voz?.voice_id ? (draft.voz_muestra ? 'Muestra en español con su registro.' : 'Claude genera la muestra la próxima vez que use este avatar.') : `Se asigna sola por género (${actual?.nombre || '—'}) al guardar.`));
+            playBtn(muestraDe(actual), `Escuchar ${actual?.nombre || ''}`),
+            h('span', { class: 'hint', style: 'margin:0' }, draft.voz?.voice_id ? 'Elija otra voz y escúchela antes de guardar.' : `Se asigna sola por género (${actual?.nombre || '—'}) al guardar.`));
         };
         paint(); input = box;
       } else if (type === 'image' || type === 'media') {
@@ -1277,7 +1315,7 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
       h('div', { class: 'body' },
         entregaEls, revs, avance, cambiosEl,
         h('details', { class: 'prev' }, h('summary', {}, p.tipo === 'imagen' ? 'Ver el copy aprobado' : 'Ver el guion aprobado'),
-          p.avatar ? h('p', { class: 'muted' }, 'Avatar: ', h('b', {}, p.avatar.nombre), p.avatar.voz ? ` · voz ${p.avatar.voz.nombre}` : '', p.avatar.look ? ` · ${[p.avatar.look.vestuario, p.avatar.look.escenario].filter(Boolean).join(' · ')}` : '') : null,
+          p.avatar ? h('p', { class: 'muted' }, 'Avatar: ', h('b', {}, p.avatar.nombre), p.voz || p.avatar.voz ? ` · voz ${(p.voz || p.avatar.voz).nombre}${p.voz?.narrador ? ' (narrador)' : ''}` : '', p.avatar.look ? ` · ${[p.avatar.look.vestuario, p.avatar.look.escenario].filter(Boolean).join(' · ')}` : '') : null,
           p.nota ? h('p', { class: 'muted' }, 'Nota: ', p.nota) : null,
           h('div', { class: 'board-wrap' }, h('table', { class: 'board' },
             h('thead', {}, h('tr', {}, (p.tipo === 'imagen' ? ['Zona', 'Copy'] : ['Paso', 'Voz', 'Pantalla', 'Toma']).map((x, j) => h('th', j === 1 && p.tipo === 'imagen' ? { colspan: '3' } : {}, x)))),
