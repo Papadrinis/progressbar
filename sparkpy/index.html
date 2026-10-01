@@ -419,7 +419,7 @@ details.prev > summary { cursor: pointer; font-weight: 600; font-size: 13.5px; c
       ['usado_en', 'Usado en', 'text', null, null],
       ['riesgos', 'Riesgos y reglas', 'textarea', null, 'Qué cuidar para respetar la marca']] },
   };
-  // Voces de ElevenLabs (Higgsfield text2speech_v2) que se usan en español. Xavier queda para el narrador.
+  // Voces de ElevenLabs (Higgsfield text2speech_v2) que se usan en español. El avatar narra con su voz; Xavier solo sin avatar.
   const VOCES = [
     { voice_id: 'f1e8226e-2248-4d5f-b43c-0a79e9949dbf', nombre: 'Andre', genero: 'hombre' },
     { voice_id: 'ceee41dc-0ee8-59a7-b3e8-2744116fcb5e', nombre: 'Ken', genero: 'hombre' },
@@ -593,7 +593,7 @@ details.prev > summary { cursor: pointer; font-weight: 600; font-size: 13.5px; c
         h('div', { class: 'hint', style: 'margin:0 0 10px' }, avSel
           ? [h('b', {}, avSel.nombre), sel.avatarManual ? ' · elegido por usted. ' : ` · propuesto para «${persona?.nombre || ''}». `,
              rubro ? `Aparece con el look de ${rubro.nombre.toLowerCase()}: el guion define vestuario y escenario. ` : 'El look (vestuario y escenario) sale del rubro. ',
-             vozDe(avSel) ? `Habla con la voz ${vozDe(avSel).nombre}. ` : '',
+             vozDe(avSel) ? `Narra y habla con la voz ${vozDe(avSel).nombre}. ` : '',
              sel.avatarManual ? h('button', { class: 'add', onclick: () => { sel.avatarManual = false; save(); render(); } }, 'Volver al propuesto') : null]
           : 'Elija un buyer persona y le propongo el avatar que mejor encaja.'),
         h('div', { class: 'avatars' }, avs.map(avCard)),
