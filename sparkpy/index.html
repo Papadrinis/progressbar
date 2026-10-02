@@ -336,6 +336,7 @@ canvas.pieza { width: 180px; max-width: 100%; height: auto; border-radius: 8px; 
       <button role="tab" id="tab-lib" data-view="lib" aria-selected="false">Librería</button>
       <button role="tab" id="tab-ped" data-view="ped" aria-selected="false">Pedidos <span class="count" id="ped-count">0</span></button>
     </nav>
+    <button id="tema" class="btn ghost small" type="button" title="Cambiar entre modo claro y oscuro">🌙 Oscuro</button>
   </div>
 </header>
 
@@ -546,6 +547,15 @@ canvas.pieza { width: 180px; max-width: 100%; height: auto; border-radius: 8px; 
     if (e?.code === 'invalid_argument') return 'No tiene permiso para editar esta librería.';
     return 'No se pudo guardar. Inténtelo de nuevo.';
   };
+
+  // ---------- tema: claro por defecto; el oscuro solo si el usuario lo elige ----------
+  const pintarTema = () => {
+    const t = store.get('tema', 'light');
+    document.documentElement.setAttribute('data-theme', t);
+    document.getElementById('tema').textContent = t === 'dark' ? '☀️ Claro' : '🌙 Oscuro';
+  };
+  document.getElementById('tema').addEventListener('click', () => { store.set('tema', store.get('tema', 'light') === 'dark' ? 'light' : 'dark'); pintarTema(); });
+  pintarTema();
 
   // ---------- pestañas ----------
   const setView = (v) => {
