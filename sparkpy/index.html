@@ -1700,8 +1700,8 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
     })();
 
     // 1. Estado de producción
-    const sinEmpezar = !p.produccion;
-    const avance = sinEmpezar
+    const sinEmpezar = !p.produccion && !p.disparado;
+    const avance = !p.produccion && p.disparado ? null : sinEmpezar
       ? h('div', { class: 'ped-box wait' },
           h('strong', {}, 'Todavía no se está produciendo'),
           h('p', {}, p.tipo === 'imagen' ? 'Use «Generar piezas» aquí arriba.' : 'Use «Producir ahora» aquí arriba. También puede pegar este comando en Claude Code:'),
