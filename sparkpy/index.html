@@ -1,7 +1,7 @@
 <title>SparkPy Estudio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Caveat:wght@700&display=swap">
 <style>
 :root {
   --bg: #f3f4ee;
@@ -312,6 +312,10 @@ details.prev > summary { cursor: pointer; font-weight: 600; font-size: 13.5px; c
 .play { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 4px 10px; font-size: 12.5px; font-weight: 600; cursor: pointer; width: fit-content; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .play:hover { border-color: var(--brand); }
 .seg button:disabled { opacity: .45; cursor: not-allowed; }
+.piezas { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; margin: 10px 0; }
+.piezas figure { margin: 0; display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+canvas.pieza { width: 180px; max-width: 100%; height: auto; border-radius: 8px; box-shadow: var(--shadow); }
+.gen-estado { font-size: 13.5px; font-weight: 600; }
 .small-code { font-size: 11.5px !important; padding: 4px 8px !important; }
 </style>
 
@@ -709,7 +713,20 @@ details.prev > summary { cursor: pointer; font-weight: 600; font-size: 13.5px; c
       const falta = [!guion && (esImagen() ? 'un copy' : 'un guion'), !est2 && 'un estilo'].filter(Boolean);
       s4.append(
         h('div', { class: 'fgroup' }, h('label', { for: 'nota-pedido' }, 'Nota para producción (opcional)'), h('textarea', { id: 'nota-pedido', placeholder: 'Ej.: reutilizar la toma del computador de V10; versión corta para retargeting.' })),
-        h('button', { class: 'btn block', disabled: !!falta.length || !db, onclick: crearPedido }, falta.length ? `Falta elegir ${falta.join(' y ')}` : 'Enviar a producción'));
+        esImagen() && guion ? (() => { const cont = h('div', { class: 'piezas' }); vistaPrevia(cont, byId('estructuras', sel.estructura), guion, sel.mercado, sel.formatos); return h('div', {}, h('div', { class: 'hint' }, 'Vista previa con el texto exacto (la foto se genera al producir):'), cont); })() : null,
+        (() => {
+          const estT = byId('estructuras', sel.estructura), costo = esImagen() ? costoEstatico(estT, sel.formatos) : null;
+          const lbl = falta.length ? `Falta elegir ${falta.join(' y ')}` : esImagen() ? (costo ? `Generar ahora · ~${costo} créditos` : 'Generar ahora · gratis') : 'Enviar y producir ahora';
+          const b = h('button', { class: 'btn block', disabled: !!falta.length || !db || !mcp, onclick: async () => {
+            if (esImagen() && costo && !b.dataset.ok) { b.dataset.ok = '1'; b.textContent = `Confirmar: gasta ~${costo} créditos de Higgsfield`; return; }
+            b.disabled = true;
+            const ped = await crearPedido(); if (!ped) { b.disabled = false; return; }
+            abiertos.add(ped.id); setView('ped');
+            if (esImagen()) producirEstatico(ped); else producirVideo(ped, 'pedido');
+          } }, lbl);
+          return h('div', {}, b, !mcp && db ? h('div', { class: 'hint' }, 'Para producir desde aquí, abra la página en claude.ai con los conectores Higgsfield y Claude Code Remote.') : null,
+            h('button', { class: 'btn block ghost small', disabled: !!falta.length || !db, onclick: crearPedido }, 'Solo guardar en la cola'));
+        })());
     }
 
     // receta lateral
@@ -936,8 +953,9 @@ Responde SOLO con JSON con esta forma:
     };
     try {
       const ref = await db.collection('pedidos').add(doc);
-      pedidoCreado = ref.id; toast('Pedido enviado a producción'); render();
-    } catch (e) { toast(dbErr(e)); }
+      pedidoCreado = ref.id; toast('Pedido guardado'); render();
+      return { id: ref.id, ...doc };
+    } catch (e) { toast(dbErr(e)); return null; }
   }
 
   // ---------- LIBRERÍA ----------
@@ -1205,6 +1223,373 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
         body)));
   }
 
+  // ---------- ESTÁTICOS EN LA PÁGINA ----------
+  // La IA (Higgsfield, vía el conector del usuario) solo hace la foto, sin texto; el texto lo dibuja el
+  // código en un canvas, para que precio, tildes y «PlanPy» salgan exactos. Los templates de código no gastan créditos.
+  let mcp = null;
+  const TRIGGER_PRODUCIR = 'trig_01Fy4KcLPn2UReKhCEfWYs1k';
+  const LOGO = 'f41973544407a14867c3957ce486da3b';
+  const TAM = { '1:1': [1080, 1080], '4:5': [1080, 1350], '9:16': [1080, 1920], '1.91:1': [1200, 628] };
+  const AR_IA = { '1:1': '1:1', '4:5': '4:5', '9:16': '9:16', '1.91:1': '16:9' };
+  const COSTO_FOTO = 2.75; // gpt_image_2_5 · high · 2k
+  const K = { verde: '#3DB55C', verdeOsc: '#0D7C39', lima: '#9FE870', tinta: '#141414', papel: '#F4EFE6', gris: '#8A8578', blanco: '#FFFFFF', postit: '#FFE066' };
+  const F_TXT = '"Instrument Sans", system-ui, sans-serif', F_DISP = '"Bricolage Grotesque", "Instrument Sans", sans-serif', F_MANO = '"Caveat", "Comic Sans MS", cursive';
+  const ICONOS = [[/inventario|mercanc|stock/i, '📦'], [/\bventa/i, '🧾'], [/caja|cierre/i, '💵'], [/client/i, '👥'], [/proveedor/i, '🚚'], [/pedido/i, '📋'], [/report|informe/i, '📊'], [/agenda|reserva|turno|cita/i, '📅'], [/punto|fideli/i, '⭐'], [/usuario|permiso|emplead/i, '👤'], [/sede|local|sucursal/i, '🏪'], [/factur/i, '🧾'], [/ia\b|inteligencia/i, '✨']];
+  const icono = (t) => (ICONOS.find(([r]) => r.test(t)) || [0, '✅'])[1];
+  const necesitaFoto = (est) => /foto IA/i.test(est?.produccion || '');
+  const fotosPorFormato = (est) => (est?.id === 'antes-despues' ? 2 : necesitaFoto(est) ? 1 : 0);
+  const costoEstatico = (est, formatos) => fotosPorFormato(est) * formatos.length * COSTO_FOTO;
+
+  const zona = (g, z) => { const v = g?.copy?.[z]; return Array.isArray(v) ? v : v == null ? '' : String(v); };
+  const zonaTxt = (g, z) => { const v = zona(g, z); return Array.isArray(v) ? v.join('\n') : v; };
+  const zonaLista = (g, z) => { const v = zona(g, z); return (Array.isArray(v) ? v : String(v).split('\n')).map((x) => String(x).replace(/^[-•*\d.)\s]+/, '').trim()).filter(Boolean); };
+  const ofertaDe = (mercado) => (mercado === 'AR'
+    ? { cta: 'Probalo 15 días gratis en planpy.io', precio: '15 días gratis · USD $15 al mes con el plan anual' }
+    : { cta: 'Pruébelo 15 días gratis en planpy.io', precio: '15 días gratis · Desde $46.500 al mes con el plan anual' });
+
+  // --- dibujo ---
+  const lineas = (ctx, texto, maxW) => {
+    const out = [];
+    for (const parrafo of String(texto).split('\n')) {
+      let cur = '';
+      for (const w of parrafo.split(/\s+/).filter(Boolean)) {
+        const t = cur ? cur + ' ' + w : w;
+        if (ctx.measureText(t).width <= maxW || !cur) cur = t; else { out.push(cur); cur = w; }
+      }
+      out.push(cur);
+    }
+    return out;
+  };
+  // Escribe `texto` dentro de la caja, achicando la letra hasta que entre.
+  const texto = (ctx, txt, x, y, w, h, o = {}) => {
+    if (!txt) return 0;
+    const fam = o.fam || F_DISP, peso = o.peso || 800, lh = o.lh || 1.08;
+    const min = Math.min(o.min || 18, o.size || 80);
+    let size = Math.max(o.size || 80, min), ls;
+    for (;;) {
+      ctx.font = `${peso} ${size}px ${fam}`;
+      ls = lineas(ctx, txt, w);
+      if (size <= min || (ls.length * size * lh <= h && ls.every((l) => ctx.measureText(l).width <= w))) break;
+      size = Math.max(min, size - 2);
+    }
+    ctx.fillStyle = o.color || K.tinta; ctx.textBaseline = 'top'; ctx.textAlign = o.align || 'left';
+    const total = ls.length * size * lh;
+    let yy = o.valign === 'middle' ? y + (h - total) / 2 : o.valign === 'bottom' ? y + h - total : y;
+    const xx = o.align === 'center' ? x + w / 2 : o.align === 'right' ? x + w : x;
+    for (const l of ls) {
+      ctx.fillText(l, xx, yy + size * (lh - 1) / 2);
+      if (o.tachar) { const lw = ctx.measureText(l).width; const x0 = o.align === 'center' ? xx - lw / 2 : xx; ctx.fillRect(x0, yy + size * 0.55, lw, Math.max(3, size * 0.07)); }
+      yy += size * lh;
+    }
+    ctx.textAlign = 'left';
+    return total;
+  };
+  const rrect = (ctx, x, y, w, h, r, fill, stroke) => {
+    ctx.beginPath(); ctx.roundRect(x, y, w, h, r);
+    if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+    if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 2; ctx.stroke(); }
+  };
+  const cubrir = (ctx, img, x, y, w, h) => {
+    const r = Math.max(w / img.width, h / img.height), iw = img.width * r, ih = img.height * r;
+    ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
+    ctx.drawImage(img, x + (w - iw) / 2, y + (h - ih) / 2, iw, ih); ctx.restore();
+  };
+  const fotoFalsa = (ctx, x, y, w, h, s, etiqueta) => {
+    const gr = ctx.createLinearGradient(x, y, x + w, y + h); gr.addColorStop(0, '#7d8a74'); gr.addColorStop(1, '#3f4a3b');
+    ctx.fillStyle = gr; ctx.fillRect(x, y, w, h);
+    texto(ctx, etiqueta || 'Foto IA del avatar', x, y, w, h, { size: 34 * s, peso: 600, fam: F_TXT, color: 'rgba(255,255,255,.75)', align: 'center', valign: 'middle' });
+  };
+  const degradado = (ctx, W, H, donde, fuerza = 0.78) => {
+    const gr = donde === 'arriba' ? ctx.createLinearGradient(0, 0, 0, H * 0.62) : ctx.createLinearGradient(0, H, 0, H * 0.38);
+    gr.addColorStop(0, `rgba(10,12,8,${fuerza})`); gr.addColorStop(1, 'rgba(10,12,8,0)');
+    ctx.fillStyle = gr; ctx.fillRect(0, 0, W, H);
+  };
+  const dibujarLogo = (ctx, logo, x, y, h, oscuro) => {
+    if (!logo) { texto(ctx, 'PlanPy', x, y, h * 5, h, { size: h, color: oscuro ? K.blanco : K.tinta }); return; }
+    const w = logo.width * (h / logo.height);
+    if (oscuro) rrect(ctx, x - h * 0.3, y - h * 0.22, w + h * 0.6, h * 1.44, h * 0.72, K.blanco);
+    ctx.drawImage(logo, x, y, w, h);
+  };
+  const barraCta = (ctx, x, y, w, h, s, txt, precio, tema) => {
+    const ph = precio ? Math.min(h * 0.32, 40 * s) : 0;
+    if (precio) texto(ctx, precio, x, y, w, ph, { size: 30 * s, peso: 600, fam: F_TXT, color: tema === 'oscuro' ? 'rgba(255,255,255,.9)' : K.tinta, align: 'center', valign: 'middle', min: 14 });
+    const by = y + ph + (precio ? 10 * s : 0), bh = h - ph - (precio ? 10 * s : 0);
+    rrect(ctx, x, by, w, bh, bh / 2, tema === 'verde' ? K.tinta : tema === 'oscuro' ? K.verde : K.tinta);
+    texto(ctx, txt, x + bh * 0.4, by, w - bh * 0.8, bh, { size: 44 * s, peso: 800, color: K.blanco, align: 'center', valign: 'middle', min: 14 });
+  };
+  const datosEjemplo = (ctx, x, y, s, color) => { ctx.font = `600 ${20 * s}px ${F_TXT}`; ctx.fillStyle = color || K.gris; ctx.textBaseline = 'top'; ctx.fillText('Datos de ejemplo', x, y); };
+
+  // Ventana de PlanPy dibujada en código, con filas de ejemplo.
+  const ventana = (ctx, x, y, w, h, s, titulo, filas) => {
+    rrect(ctx, x, y, w, h, 22 * s, K.blanco, '#DCDFD3');
+    ctx.fillStyle = '#EAECE3'; ctx.beginPath(); ctx.roundRect(x, y, w, 48 * s, [22 * s, 22 * s, 0, 0]); ctx.fill();
+    ['#FF5F57', '#FEBC2E', '#28C840'].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x + (26 + i * 22) * s, y + 24 * s, 7 * s, 0, 7); ctx.fill(); });
+    texto(ctx, 'planpy.io', x + 110 * s, y + 10 * s, 300 * s, 30 * s, { size: 22 * s, peso: 500, fam: F_TXT, color: K.gris, valign: 'middle' });
+    texto(ctx, titulo, x + 28 * s, y + 66 * s, w - 56 * s, 52 * s, { size: 40 * s, peso: 800 });
+    const fy = y + 130 * s, fh = Math.min(76 * s, (h - 170 * s) / Math.max(filas.length, 1));
+    filas.forEach((f, i) => {
+      rrect(ctx, x + 22 * s, fy + i * fh, w - 44 * s, fh - 10 * s, 14 * s, i === 0 ? '#E3F5DC' : '#F6F5F0');
+      texto(ctx, '✓  ' + f, x + 40 * s, fy + i * fh, w - 80 * s, fh - 10 * s, { size: 32 * s, peso: 600, fam: F_TXT, valign: 'middle', min: 12 });
+    });
+    datosEjemplo(ctx, x + w - 210 * s, y + h - 34 * s, s);
+  };
+
+  // Recetas: bloques de arriba abajo con su alto relativo. El fondo puede ser papel, tinta, verde o foto.
+  const RECETAS = {
+    'grilla-modulos': { fondo: 'papel', b: [['logo', 0.06], ['t', 'titular', 0.15, { size: 88 }], ['grilla', 'modulos', 0.48], ['t', 'precio', 0.07, { size: 42, peso: 700, color: K.verdeOsc, fam: F_TXT }], ['cta', 0.12, { sinPrecio: true }]] },
+    'titular-impacto': { fondo: 'foto', grad: 'arriba', b: [['logo', 0.06], ['t', 'titular', 0.34, { size: 116, color: K.blanco }], ['vacio', 0.36], ['cta', 0.14]] },
+    'antes-vs-planpy': { fondo: 'papel', b: [['logo', 0.06], ['t', 'titular', 0.15, { size: 84 }], ['columnas', 0.53], ['cta', 0.14]] },
+    'comparacion-directa': { fondo: 'papel', b: [['logo', 0.06], ['t', 'titular', 0.15, { size: 84 }], ['t', 'eje', 0.07, { size: 44, peso: 700, color: K.gris, fam: F_TXT, align: 'center' }], ['duelo', 0.42], ['cta', 0.14]] },
+    'antes-despues': { fondo: 'papel', b: [['logo', 0.06], ['t', 'titular', 0.13, { size: 80 }], ['split', 0.57], ['cta', 0.14]] },
+    'problema-solucion': { fondo: 'papel', b: [['fotoTexto', 'problema', 0.46], ['t', 'solucion', 0.2, { size: 64, color: K.verdeOsc }], ['logo', 0.06], ['cta', 0.14]] },
+    'callouts': { fondo: 'papel', b: [['logo', 0.06], ['t', 'titular', 0.14, { size: 84 }], ['ventana', 'etiquetas', 0.52], ['cta', 0.14]] },
+    'funciones-destacadas': { fondo: 'papel', b: [['logo', 0.06], ['t', 'titular', 0.14, { size: 84 }], ['grilla', 'funciones', 0.52], ['cta', 0.14]] },
+    'foto-de-vida': { fondo: 'foto', grad: 'abajo', b: [['logo', 0.06], ['vacio', 0.5], ['t', 'frase', 0.18, { size: 96, color: K.blanco }], ['cta', 0.14]] },
+    'pregunta-frecuente': { fondo: 'tinta', b: [['logo', 0.06], ['burbuja', 'pregunta', 0.28], ['t', 'respuesta', 0.3, { size: 58, peso: 600, fam: F_TXT, color: K.blanco }], ['cta', 0.14, { tema: 'oscuro' }]] },
+    'creencia-al-reves': { fondo: 'foto', grad: 'arriba', b: [['logo', 0.06], ['t', 'creencia', 0.2, { size: 76, color: 'rgba(255,255,255,.85)', tachar: true }], ['t', 'giro', 0.22, { size: 92, color: K.lima }], ['vacio', 0.22], ['cta', 0.14]] },
+    'infografia-educativa': { fondo: 'papel', b: [['logo', 0.06], ['t', 'titular', 0.14, { size: 84 }], ['pasos', 'pasos', 0.42], ['t', 'cierre', 0.09, { size: 48, peso: 700, color: K.verdeOsc, fam: F_TXT }], ['cta', 0.14]] },
+    'numero-protagonista': { fondo: 'verde', b: [['logo', 0.06], ['t', 'numero', 0.36, { size: 300, color: K.blanco, align: 'center', valign: 'middle' }], ['t', 'contexto', 0.18, { size: 62, peso: 700, color: K.blanco, align: 'center', fam: F_TXT }], ['vacio', 0.1], ['cta', 0.14, { tema: 'verde' }]] },
+    'nota-postit': { fondo: 'foto', grad: 'abajo', fuerza: 0.5, b: [['logo', 0.06], ['postit', 'nota', 0.5], ['vacio', 0.12], ['cta', 0.14]] },
+    'lista-razones': { fondo: 'papel', b: [['logo', 0.06], ['t', 'titular', 0.15, { size: 84 }], ['lista', 'razones', 0.51], ['cta', 0.14]] },
+    'tarjeta-resena': { fondo: 'tinta', b: [['logo', 0.06], ['resena', 0.56], ['vacio', 0.08], ['cta', 0.14, { tema: 'oscuro' }]] },
+    'tres-testimonios': { fondo: 'papel', b: [['logo', 0.06], ['testimonios', 'testimonios', 0.64], ['cta', 0.14]] },
+    'captura-social': { fondo: 'papel', b: [['logo', 0.06], ['post', 0.6], ['vacio', 0.04], ['cta', 0.14]] },
+  };
+
+  function dibujarPieza(est, g, mercado, formato, fotos, logo) {
+    const [W, H] = TAM[formato] || TAM['4:5'];
+    const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    // En horizontal (1.91:1) el contenido va en una columna centrada, para que la letra no quede diminuta.
+    const horizontal = W > H, s = (horizontal ? H * 1.15 : W) / 1080, pad = 72 * s;
+    const ctx = cv.getContext('2d'), x0 = horizontal ? (W - H * 1.15) / 2 : 0;
+    const rec = RECETAS[est?.id] || RECETAS['titular-impacto'];
+    const oferta = ofertaDe(mercado);
+    const fondo = rec.fondo;
+    const oscuro = fondo === 'tinta' || fondo === 'verde' || fondo === 'foto';
+    if (fondo === 'foto') { if (fotos?.[0]) cubrir(ctx, fotos[0], 0, 0, W, H); else fotoFalsa(ctx, 0, 0, W, H, s); degradado(ctx, W, H, rec.grad, rec.fuerza); if (rec.grad === 'arriba') degradado(ctx, W, H, 'abajo', 0.55); }
+    else { ctx.fillStyle = { papel: K.papel, tinta: K.tinta, verde: K.verde }[fondo]; ctx.fillRect(0, 0, W, H); }
+    if (horizontal && fondo !== 'foto') { dibujarLogo(ctx, logo, pad, pad, 56 * s, oscuro); }
+    ctx.save(); ctx.translate(x0, 0);
+    const ancho = (horizontal ? H * 1.15 : W) - pad * 2, util = H - pad * 2;
+    let y = pad;
+    for (const blq of rec.b) {
+      const [tipo] = blq;
+      const conZona = typeof blq[1] === 'string';
+      const z = conZona ? blq[1] : null, frac = conZona ? blq[2] : blq[1], o = (conZona ? blq[3] : blq[2]) || {};
+      const h = frac * util, gap = 14 * s, bh = h - gap;
+      if (tipo === 'logo') { if (!horizontal || fondo === 'foto') dibujarLogo(ctx, logo, pad, y, Math.min(Math.max(bh * 0.8, 40 * s), 56 * s), oscuro); }
+      else if (tipo === 't') texto(ctx, zonaTxt(g, z), pad, y, ancho, bh, { ...o, size: (o.size || 80) * s, min: 14 });
+      else if (tipo === 'cta') barraCta(ctx, pad, y, ancho, bh, s, zonaTxt(g, 'cta') || oferta.cta, o.sinPrecio ? null : oferta.precio, o.tema || (oscuro ? 'oscuro' : 'claro'));
+      else if (tipo === 'grilla') {
+        const items = zonaLista(g, z).slice(0, 9), n = items.length || 1, cols = horizontal ? Math.min(n, 3) : n <= 4 ? 2 : 3, filas = Math.ceil(n / cols);
+        const cw = (ancho - (cols - 1) * 18 * s) / cols, ch = (bh - (filas - 1) * 18 * s) / filas;
+        items.forEach((it, i) => {
+          const cx = pad + (i % cols) * (cw + 18 * s), cy = y + Math.floor(i / cols) * (ch + 18 * s);
+          rrect(ctx, cx, cy, cw, ch, 22 * s, K.blanco, '#DCDFD3');
+          texto(ctx, icono(it), cx, cy + ch * 0.1, cw, ch * 0.4, { size: Math.min(ch * 0.32, 90 * s), peso: 400, fam: F_TXT, align: 'center', valign: 'middle' });
+          texto(ctx, it, cx + 12 * s, cy + ch * 0.52, cw - 24 * s, ch * 0.4, { size: 34 * s, peso: 700, fam: F_TXT, align: 'center', valign: 'middle', min: 12 });
+        });
+      } else if (tipo === 'columnas') {
+        const a = zonaLista(g, 'antes'), d = zonaLista(g, 'despues'), n = Math.max(a.length, d.length, 1), cw = (ancho - 20 * s) / 2, rh = (bh - 70 * s) / n;
+        rrect(ctx, pad, y, cw, bh, 22 * s, '#E7E3DA'); rrect(ctx, pad + cw + 20 * s, y, cw, bh, 22 * s, '#E3F5DC', K.verde);
+        texto(ctx, 'Cuaderno / Excel', pad, y + 14 * s, cw, 46 * s, { size: 36 * s, peso: 800, color: K.gris, align: 'center' });
+        texto(ctx, 'PlanPy', pad + cw + 20 * s, y + 14 * s, cw, 46 * s, { size: 40 * s, peso: 800, color: K.verdeOsc, align: 'center' });
+        for (let i = 0; i < n; i++) {
+          const ry = y + 70 * s + i * rh;
+          if (a[i]) texto(ctx, '✗  ' + a[i], pad + 18 * s, ry, cw - 36 * s, rh - 8 * s, { size: 34 * s, peso: 500, fam: F_TXT, color: K.gris, valign: 'middle', min: 12 });
+          if (d[i]) texto(ctx, '✓  ' + d[i], pad + cw + 38 * s, ry, cw - 36 * s, rh - 8 * s, { size: 34 * s, peso: 700, fam: F_TXT, color: K.tinta, valign: 'middle', min: 12 });
+        }
+      } else if (tipo === 'duelo') {
+        const cw = (ancho - 20 * s) / 2;
+        rrect(ctx, pad, y, cw, bh, 26 * s, '#E7E3DA'); rrect(ctx, pad + cw + 20 * s, y, cw, bh, 26 * s, K.verde);
+        texto(ctx, 'La forma de siempre', pad, y + 20 * s, cw, 44 * s, { size: 32 * s, peso: 700, fam: F_TXT, color: K.gris, align: 'center' });
+        texto(ctx, 'Con PlanPy', pad + cw + 20 * s, y + 20 * s, cw, 44 * s, { size: 32 * s, peso: 700, fam: F_TXT, color: K.blanco, align: 'center' });
+        texto(ctx, zonaTxt(g, 'antes'), pad + 24 * s, y + 80 * s, cw - 48 * s, bh - 110 * s, { size: 70 * s, color: K.gris, align: 'center', valign: 'middle' });
+        texto(ctx, zonaTxt(g, 'con_planpy'), pad + cw + 44 * s, y + 80 * s, cw - 48 * s, bh - 110 * s, { size: 70 * s, color: K.blanco, align: 'center', valign: 'middle' });
+      } else if (tipo === 'split') {
+        const vert = !horizontal, gapS = 16 * s, pw = vert ? ancho : (ancho - gapS) / 2, ph = vert ? (bh - gapS) / 2 : bh;
+        [['antes', 0], ['despues', 1]].forEach(([zz, i]) => {
+          const px = vert ? pad : pad + i * (pw + gapS), py = vert ? y + i * (ph + gapS) : y;
+          ctx.save(); ctx.beginPath(); ctx.roundRect(px, py, pw, ph, 22 * s); ctx.clip();
+          if (fotos?.[i]) cubrir(ctx, fotos[i], px, py, pw, ph); else fotoFalsa(ctx, px, py, pw, ph, s, i ? 'Foto IA · después' : 'Foto IA · antes');
+          ctx.restore();
+          const lh = 64 * s; rrect(ctx, px + 16 * s, py + ph - lh - 16 * s, pw - 32 * s, lh, lh / 2, i ? K.verde : 'rgba(20,20,20,.82)');
+          texto(ctx, zonaTxt(g, zz), px + 34 * s, py + ph - lh - 16 * s, pw - 68 * s, lh, { size: 32 * s, peso: 700, fam: F_TXT, color: K.blanco, align: 'center', valign: 'middle', min: 12 });
+        });
+        texto(ctx, '→', pad, y, ancho, bh, { size: 90 * s, color: K.tinta, align: 'center', valign: 'middle' });
+      } else if (tipo === 'fotoTexto') {
+        ctx.save(); ctx.beginPath(); ctx.roundRect(pad, y, ancho, bh, 26 * s); ctx.clip();
+        if (fotos?.[0]) cubrir(ctx, fotos[0], pad, y, ancho, bh); else fotoFalsa(ctx, pad, y, ancho, bh, s);
+        const gr = ctx.createLinearGradient(0, y + bh, 0, y + bh * 0.35); gr.addColorStop(0, 'rgba(10,12,8,.85)'); gr.addColorStop(1, 'rgba(10,12,8,0)'); ctx.fillStyle = gr; ctx.fillRect(pad, y, ancho, bh);
+        ctx.restore();
+        texto(ctx, zonaTxt(g, z), pad + 30 * s, y + bh * 0.45, ancho - 60 * s, bh * 0.5, { size: 64 * s, color: K.blanco, valign: 'bottom', min: 14 });
+      } else if (tipo === 'ventana') ventana(ctx, pad, y, ancho, bh, s, 'PlanPy', zonaLista(g, z).slice(0, 5));
+      else if (tipo === 'burbuja') {
+        rrect(ctx, pad, y, ancho, bh, 36 * s, K.blanco);
+        texto(ctx, zonaTxt(g, z), pad + 40 * s, y + 30 * s, ancho - 80 * s, bh - 60 * s, { size: 74 * s, valign: 'middle', min: 14 });
+      } else if (tipo === 'pasos') {
+        const ps = zonaLista(g, z).slice(0, 4), n = ps.length || 1, ph = bh / n;
+        ps.forEach((p, i) => {
+          const cy = y + i * ph, r = Math.min(ph * 0.32, 46 * s);
+          ctx.fillStyle = K.verde; ctx.beginPath(); ctx.arc(pad + r, cy + ph / 2 - 6 * s, r, 0, 7); ctx.fill();
+          texto(ctx, String(i + 1), pad, cy + ph / 2 - 6 * s - r, r * 2, r * 2, { size: r * 1.1, color: K.blanco, align: 'center', valign: 'middle' });
+          if (i < n - 1) { ctx.fillStyle = '#C9CCC0'; ctx.fillRect(pad + r - 3 * s, cy + ph / 2 + r, 6 * s, ph - r * 2 - 12 * s); }
+          texto(ctx, p, pad + r * 2 + 28 * s, cy, ancho - r * 2 - 28 * s, ph - 12 * s, { size: 46 * s, peso: 700, fam: F_TXT, valign: 'middle', min: 12 });
+        });
+      } else if (tipo === 'lista') {
+        const it = zonaLista(g, z).slice(0, 5), n = it.length || 1, rh = bh / n;
+        it.forEach((t, i) => {
+          rrect(ctx, pad, y + i * rh, ancho, rh - 14 * s, 20 * s, K.blanco, '#DCDFD3');
+          texto(ctx, `${i + 1}`, pad + 20 * s, y + i * rh, 70 * s, rh - 14 * s, { size: 60 * s, color: K.verde, align: 'center', valign: 'middle' });
+          texto(ctx, t, pad + 110 * s, y + i * rh, ancho - 140 * s, rh - 14 * s, { size: 42 * s, peso: 700, fam: F_TXT, valign: 'middle', min: 12 });
+        });
+      } else if (tipo === 'postit') {
+        const lado = Math.min(ancho * 0.86, bh), px = (W - lado) / 2;
+        ctx.save(); ctx.translate(px + lado / 2, y + lado / 2); ctx.rotate(-0.04);
+        ctx.shadowColor = 'rgba(0,0,0,.35)'; ctx.shadowBlur = 30 * s; ctx.shadowOffsetY = 12 * s;
+        ctx.fillStyle = K.postit; ctx.fillRect(-lado / 2, -lado / 2, lado, lado); ctx.shadowColor = 'transparent';
+        texto(ctx, zonaTxt(g, z), -lado / 2 + 50 * s, -lado / 2 + 50 * s, lado - 100 * s, lado - 100 * s, { size: 92 * s, peso: 700, fam: F_MANO, color: '#2b2824', valign: 'middle', lh: 1.15, min: 18 });
+        ctx.restore();
+      } else if (tipo === 'resena') {
+        rrect(ctx, pad, y, ancho, bh, 30 * s, K.blanco);
+        texto(ctx, '★★★★★', pad + 40 * s, y + 36 * s, ancho - 80 * s, 60 * s, { size: 54 * s, peso: 400, fam: F_TXT, color: '#F5B301' });
+        texto(ctx, `“${zonaTxt(g, 'resena')}”`, pad + 40 * s, y + 110 * s, ancho - 80 * s, bh - 230 * s, { size: 62 * s, peso: 700, fam: F_TXT, min: 14 });
+        texto(ctx, [zonaTxt(g, 'autor'), zonaTxt(g, 'negocio')].filter(Boolean).join(' · '), pad + 40 * s, y + bh - 96 * s, ancho - 80 * s, 56 * s, { size: 36 * s, peso: 600, fam: F_TXT, color: K.gris, valign: 'middle' });
+      } else if (tipo === 'testimonios') {
+        const it = zonaLista(g, z).slice(0, 3), n = it.length || 1, rh = bh / n;
+        it.forEach((t, i) => {
+          rrect(ctx, pad, y + i * rh, ancho, rh - 18 * s, 24 * s, K.blanco, '#DCDFD3');
+          const [quien, ...cita] = t.split(':');
+          texto(ctx, cita.length ? `“${cita.join(':').trim()}”` : `“${t}”`, pad + 34 * s, y + i * rh + 24 * s, ancho - 68 * s, rh - 110 * s, { size: 44 * s, peso: 700, fam: F_TXT, min: 12 });
+          if (cita.length) texto(ctx, '★★★★★  ' + quien.trim(), pad + 34 * s, y + (i + 1) * rh - 74 * s, ancho - 68 * s, 40 * s, { size: 30 * s, peso: 600, fam: F_TXT, color: K.gris, valign: 'middle' });
+        });
+      } else if (tipo === 'post') {
+        rrect(ctx, pad, y, ancho, bh, 28 * s, K.blanco, '#DCDFD3');
+        const autor = zonaTxt(g, 'autor') || 'Cliente';
+        ctx.fillStyle = K.verde; ctx.beginPath(); ctx.arc(pad + 70 * s, y + 70 * s, 36 * s, 0, 7); ctx.fill();
+        texto(ctx, autor.slice(0, 1).toUpperCase(), pad + 34 * s, y + 34 * s, 72 * s, 72 * s, { size: 40 * s, color: K.blanco, align: 'center', valign: 'middle' });
+        texto(ctx, autor, pad + 124 * s, y + 40 * s, ancho - 170 * s, 60 * s, { size: 38 * s, peso: 700, fam: F_TXT, valign: 'middle' });
+        texto(ctx, zonaTxt(g, 'post'), pad + 40 * s, y + 140 * s, ancho - 80 * s, bh - 230 * s, { size: 54 * s, peso: 500, fam: F_TXT, min: 14 });
+        texto(ctx, '♡  💬  ↗', pad + 40 * s, y + bh - 80 * s, ancho - 80 * s, 50 * s, { size: 38 * s, peso: 400, fam: F_TXT, color: K.gris, valign: 'middle' });
+      }
+      y += h;
+    }
+    ctx.restore();
+    return cv;
+  }
+
+  let logoImg = null;
+  const cargarRecursos = async () => {
+    try { await Promise.all(['800 40px "Bricolage Grotesque"', '700 40px "Instrument Sans"', '500 40px "Instrument Sans"', '700 40px "Caveat"'].map((f) => document.fonts.load(f))); } catch {}
+    if (!logoImg) { try { logoImg = await createImageBitmap(await (await fetch(imgSrc(LOGO))).blob()); } catch { logoImg = null; } }
+  };
+
+  // Vista previa gratuita (sin fotos) del copy elegido, en cada formato.
+  async function vistaPrevia(cont, est, g, mercado, formatos) {
+    await cargarRecursos();
+    cont.replaceChildren(...formatos.map((f) => { const cv = dibujarPieza(est, g, mercado, f, null, logoImg); cv.className = 'pieza'; cv.setAttribute('aria-label', `Vista previa ${f}`); return h('figure', {}, cv, h('figcaption', {}, f)); }));
+  }
+
+  // --- conectores ---
+  const errMcp = (e, server) => ({
+    server_not_connected: `Conecte ${server} en claude.ai → Configuración → Conectores.`,
+    needs_reauth: `Vuelva a conectar ${server} en claude.ai → Configuración → Conectores.`,
+    not_in_manifest: `Esta página no tiene permiso para usar ${server}. Recárguela y permítalo.`,
+    selection_required: `Elija cuál conector de ${server} usar en el aviso de claude.ai.`,
+    blocked_by_policy: `Su organización bloquea ${server} en esta página.`,
+    server_unavailable: `${server} no responde ahora. Inténtelo en un momento.`,
+    tool_error: `${server} respondió con un error: ${e?.message || ''}`,
+    not_granted: 'Esta vista no puede usar conectores. Abra la página en claude.ai.',
+    capability_disabled: 'Esta vista no puede usar conectores. Abra la página en claude.ai.',
+  }[e?.code] || `${server} falló: ${e?.message || e?.code || 'error'}`);
+  const llamar = async (server, tool, input) => {
+    if (!mcp) throw { code: 'not_granted' };
+    const r = await mcp.callTool(server, tool, input, { cache: false });
+    return r?.payload ?? r;
+  };
+  const dormir = (ms) => new Promise((r) => setTimeout(r, ms));
+
+  async function generarFotos(est, g, p, formatos, avance) {
+    const av = p.avatar || {};
+    const base = [
+      'Fotografía documental realista, luz natural, cámara de celular de gama media.',
+      g.visual || '',
+      av.rasgos ? `Persona: ${av.nombre || ''}, ${av.rasgos}.` : '',
+      av.look ? `Vestuario: ${av.look.vestuario || ''}. Escenario: ${av.look.escenario || ''}.` : '',
+      'Negocio pequeño de Colombia, humilde pero cuidado: paredes pintadas, ordenado, limpio, nada lujoso.',
+      'Sin texto, sin letras, sin logos, sin pantallas legibles (monitor de espaldas o celular sin leerse).',
+    ].filter(Boolean).join(' ');
+    const aire = /arriba/.test(RECETAS[est.id]?.grad || '') ? 'Deja la parte de arriba despejada (cielo, pared lisa) para poner texto.' : 'Deja una zona despejada para poner texto.';
+    const medias = av.casting_job ? [{ value: av.casting_job, role: 'image_references' }] : undefined;
+    const reqs = [];
+    formatos.forEach((f, fi) => {
+      const variantes = est.id === 'antes-despues' ? [`Momento ANTES: ${zonaTxt(g, 'antes')}. Expresión cansada pero digna.`, `Momento DESPUÉS: ${zonaTxt(g, 'despues')}. Misma persona, tranquila.`] : [''];
+      variantes.forEach((v, vi) => reqs.push({ index: fi * 10 + vi, params: { model: 'gpt_image_2_5', quality: 'high', resolution: '2k', aspect_ratio: AR_IA[f], prompt: `${base} ${v} ${aire}`.trim(), ...(medias ? { medias } : {}) } }));
+    });
+    avance(`Pidiendo ${reqs.length} foto(s) a Higgsfield…`);
+    const sub = await llamar('Higgsfield', 'generate_image_batch', { requests: reqs });
+    const jobs = (sub?.jobs || []).filter((j) => j.job_id).map((j) => ({ index: j.index, job_id: j.job_id }));
+    if (jobs.length < reqs.length) throw { code: 'tool_error', message: (sub?.jobs || []).map((j) => j.error).filter(Boolean).join('; ') || 'no se pudieron enviar todas las fotos' };
+    let res = null;
+    for (let i = 0; i < 40; i++) {
+      res = await llamar('Higgsfield', 'jobs_wait', { jobs, timeout_seconds: 15 });
+      const hechos = (res?.jobs || []).filter((j) => j.status === 'completed').length;
+      avance(`Generando fotos… ${hechos} de ${jobs.length}`);
+      if (res?.all_terminal) break;
+      await dormir(Math.min(15000, (res?.poll_after_seconds || 3) * 1000));
+    }
+    const fallidas = (res?.jobs || []).filter((j) => j.status !== 'completed');
+    if (!res?.all_terminal || fallidas.length) throw { code: 'tool_error', message: `${fallidas.length || 'algunas'} foto(s) no se generaron` };
+    avance('Descargando las fotos…');
+    const porIndice = {};
+    for (const j of res.jobs) {
+      try { porIndice[j.index] = await createImageBitmap(await (await fetch(j.result_url)).blob()); }
+      catch { throw { code: 'descarga', message: 'El navegador no dejó descargar la foto generada.' }; }
+    }
+    return { fotos: formatos.map((f, fi) => [porIndice[fi * 10], porIndice[fi * 10 + 1]].filter(Boolean)), jobs: res.jobs.map((j) => j.job_id), creditos: reqs.length * COSTO_FOTO };
+  }
+
+  const estadoGen = {}; // pedidoId -> texto de avance (solo esta vista)
+  async function producirEstatico(p) {
+    const est = byId('estructuras', p.estructura?.id) || p.estructura;
+    if (!est || !assets) { toast('Falta el template o el permiso para subir archivos.'); return; }
+    const formatos = p.formatos?.length ? p.formatos : ['4:5'];
+    const g = p.guion || {};
+    const ref = db.doc('pedidos/' + p.id);
+    const pasos = (estado, nota) => ({ pasos: [{ nombre: 'Fotos (Higgsfield)', estado: necesitaFoto(est) ? estado.f : 'hecho', nota: necesitaFoto(est) ? nota.f || '' : 'No hace falta: template de código.' }, { nombre: 'Composición y texto', estado: estado.c, nota: nota.c || '' }] });
+    const avance = (t) => { estadoGen[p.id] = t; render(); };
+    try {
+      await ref.update({ estado: 'en producción', produccion: { ...(p.produccion || {}), ...pasos({ f: 'en curso', c: 'pendiente' }, {}), creditos: { estimado: costoEstatico(est, formatos), gastado: p.produccion?.creditos?.gastado || 0 } } });
+      await cargarRecursos();
+      let fotos = formatos.map(() => []), info = { jobs: [], creditos: 0 };
+      if (necesitaFoto(est)) { info = await generarFotos(est, g, p, formatos, avance); fotos = info.fotos; }
+      avance('Componiendo el texto…');
+      const version = Math.max(0, ...(p.produccion?.entregas || []).map((e) => e.version || 1)) + 1;
+      const nuevas = [];
+      for (const [i, f] of formatos.entries()) {
+        const cv = dibujarPieza(est, g, p.mercado, f, fotos[i], logoImg);
+        const blob = await new Promise((r) => cv.toBlob(r, 'image/png'));
+        const up = await assets.upload(new File([blob], `${slug(p.titulo)}-${f.replace(/[:.]/g, '-')}-v${version}.png`, { type: 'image/png' }));
+        nuevas.push({ asset: up.id, tipo: 'image', nombre: `${p.titulo || 'Anuncio'} · ${f}`, formato: f, version, fecha: new Date().toISOString() });
+      }
+      const gastado = (p.produccion?.creditos?.gastado || 0) + info.creditos;
+      await ref.update({ estado: 'listo', resultado: { creditos: gastado, fotos: info.jobs }, produccion: { ...pasos({ f: 'hecho', c: 'hecho' }, { f: info.jobs.length ? `${info.jobs.length} foto(s) · ${info.creditos} créditos` : '' }), creditos: { estimado: costoEstatico(est, formatos), gastado }, entregas: [...(p.produccion?.entregas || []), ...nuevas] } });
+      delete estadoGen[p.id]; toast('Piezas listas'); abiertos.add(p.id); render();
+    } catch (e) {
+      const msg = e?.code === 'descarga' || e?.code === undefined ? (e?.message || 'Algo falló al generar.') : errMcp(e, 'Higgsfield');
+      estadoGen[p.id] = '⚠ ' + msg; render();
+      try { await ref.update({ estado: 'en cola', produccion: { ...(p.produccion || {}), ...pasos({ f: 'esperando aprobación', c: 'pendiente' }, { f: msg }) } }); } catch {}
+    }
+  }
+
+  async function producirVideo(p, orden) {
+    try {
+      await llamar('Claude Code Remote', 'fire_trigger', { trigger_id: TRIGGER_PRODUCIR, text: `${orden} ${p.id}` });
+      await db.doc('pedidos/' + p.id).update({ estado: 'en producción', disparado: { orden, fecha: new Date().toISOString() } });
+      toast('Claude empezó a producirlo. Verá el avance aquí.');
+    } catch (e) { toast(errMcp(e, 'Claude Code Remote')); }
+  }
+
   // ---------- PEDIDOS ----------
   // La sesión de Claude Code que produce el pedido escribe en `produccion`:
   //   pasos: [{nombre, estado: 'hecho'|'en curso'|'esperando aprobación'|'pendiente', nota}]
@@ -1278,12 +1663,33 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
       try { await db.doc('pedidos/' + p.id).update({ estado: e.target.value }); toast('Estado actualizado'); } catch (err) { toast(dbErr(err)); }
     } }, ESTADOS.map((s) => h('option', { value: s, selected: p.estado === s }, s)));
 
+    // 0. Producir desde la página
+    const estP = byId('estructuras', p.estructura?.id) || p.estructura;
+    const gen = estadoGen[p.id];
+    const accion = (() => {
+      if (p.tipo === 'imagen') {
+        const costo = costoEstatico(estP, p.formatos || ['4:5']), hay = (pr.entregas || []).length;
+        const b = h('button', { class: 'btn small', disabled: !mcp && necesitaFoto(estP) || (gen && !gen.startsWith('⚠')), onclick: () => {
+          if (costo && !b.dataset.ok) { b.dataset.ok = '1'; b.textContent = `Confirmar: gasta ~${costo} créditos`; return; }
+          producirEstatico(p);
+        } }, `${hay ? 'Generar otra versión' : 'Generar piezas'} · ${costo ? `~${costo} créditos` : 'gratis'}`);
+        return h('div', { class: 'ped-box' }, h('div', { class: 'ped-row' }, h('strong', {}, 'Producción en esta página'), b), gen ? h('div', { class: 'gen-estado' }, gen) : h('p', { class: 'muted' }, necesitaFoto(estP) ? 'Higgsfield hace la foto (sin texto) y la página pone el copy exacto.' : 'Template de código: la página lo dibuja sin gastar créditos.'));
+      }
+      if (p.estado === 'listo' && !(p.cambios && Object.values(p.cambios).some((c) => c.estado !== 'atendido'))) return null;
+      const cambiosPend = p.estado === 'cambios pedidos';
+      if (p.estado === 'en producción' && p.disparado) return h('div', { class: 'ped-box wait' }, h('strong', {}, 'Claude lo está produciendo'), h('p', { class: 'muted' }, `Arrancó ${fmtFecha(p.disparado.fecha)}. Aquí verá cada etapa y las piezas para aprobar.`));
+      if (p.produccion && !cambiosPend && p.estado !== 'en cola') return null;
+      return h('div', { class: 'ped-box' }, h('div', { class: 'ped-row' }, h('strong', {}, cambiosPend ? 'Hay cambios por hacer' : 'Listo para producir'),
+        h('button', { class: 'btn small', disabled: !mcp, onclick: (e) => { e.target.disabled = true; producirVideo(p, cambiosPend ? 'cambios' : 'pedido'); } }, cambiosPend ? 'Enviar cambios a producción' : 'Producir ahora')),
+        !mcp ? h('p', { class: 'muted' }, 'Abra la página en claude.ai con el conector Claude Code Remote para producir desde aquí.') : null);
+    })();
+
     // 1. Estado de producción
     const sinEmpezar = !p.produccion;
     const avance = sinEmpezar
       ? h('div', { class: 'ped-box wait' },
           h('strong', {}, 'Todavía no se está produciendo'),
-          h('p', {}, 'Para arrancar, abra Claude Code en el repositorio del proyecto y pegue este comando. Claude le mostrará el presupuesto de créditos y le irá pidiendo aprobación; puede aprobar allí o aquí mismo.'),
+          h('p', {}, p.tipo === 'imagen' ? 'Use «Generar piezas» aquí arriba.' : 'Use «Producir ahora» aquí arriba. También puede pegar este comando en Claude Code:'),
           h('div', { class: 'cmd' }, h('code', {}, cmd), h('button', { class: 'btn small', onclick: () => copy(cmd) }, 'Copiar comando')))
       : h('div', { class: 'ped-box' },
           h('div', { class: 'ped-row' }, h('strong', {}, 'Producción'),
@@ -1335,7 +1741,7 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
           atencion(p) ? h('div', { class: 'attn-note' }, 'Hay piezas esperando su aprobación') : entregas.length ? h('div', { class: 'ok-note' }, 'Listo para ver y descargar') : null),
         estadoSel),
       h('div', { class: 'body' },
-        entregaEls, revs, avance, cambiosEl,
+        accion, entregaEls, revs, avance, cambiosEl,
         h('details', { class: 'prev' }, h('summary', {}, p.tipo === 'imagen' ? 'Ver el copy aprobado' : 'Ver el guion aprobado'),
           p.avatar ? h('p', { class: 'muted' }, 'Avatar: ', h('b', {}, p.avatar.nombre), p.voz || p.avatar.voz ? ` · voz ${(p.voz || p.avatar.voz).nombre}${p.voz?.narrador ? ' (narrador)' : ''}` : '', p.avatar.look ? ` · ${[p.avatar.look.vestuario, p.avatar.look.escenario].filter(Boolean).join(' · ')}` : '') : null,
           p.nota ? h('p', { class: 'muted' }, 'Nota: ', p.nota) : null,
@@ -1360,8 +1766,8 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
   // ---------- arranque ----------
   setView(view);
   (async () => {
-    const [d, s, a, dl] = await Promise.all([claude.use('db'), claude.use('sample'), claude.use('assets'), claude.use('downloads')].map((p) => p.catch(() => null)));
-    db = d; sample = s; assets = a; downloads = dl;
+    const [d, s, a, dl, m] = await Promise.all([claude.use('db'), claude.use('sample'), claude.use('assets'), claude.use('downloads'), claude.use('mcp')].map((p) => p.catch(() => null)));
+    db = d; sample = s; assets = a; downloads = dl; mcp = m;
     if (!db) {
       const b = document.getElementById('banner');
       b.textContent = 'La librería vive en claude.ai: abra esta página allí para ver y editar rubros, personas, ángulos y pedidos.';

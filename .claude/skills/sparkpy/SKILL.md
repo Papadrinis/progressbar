@@ -26,6 +26,13 @@ es la interfaz: librería editable (rubros, personas, ángulos, features, avatar
 estilos), generador de guiones y cola de pedidos. Su base de datos se lee y escribe con la herramienta
 `ArtifactData` usando esa URL.
 
+**Producción desde la página.** El usuario ya no copia el comando: en Pedidos pulsa «Producir ahora» y
+la página dispara la rutina `trig_01Fy4KcLPn2UReKhCEfWYs1k`, que despierta esta sesión con el texto
+«pedido <id>» (o «cambios <id>» para atender cambios pedidos). Trátalo igual que `/sparkpy pedido <id>`.
+Los pedidos **de imagen** los produce la propia página (Higgsfield hace la foto sin texto vía el conector
+del usuario y un canvas compone el copy exacto, en `sparkpy/index.html` → «ESTÁTICOS EN LA PÁGINA»);
+solo llegan aquí si el usuario lo pide.
+
 Cuando llegue `/sparkpy pedido <id>`:
 
 1. `ArtifactData` `get`, colección `pedidos`, `doc_id` = `<id>`. El documento trae mercado, eje,
