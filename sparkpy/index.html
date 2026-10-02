@@ -316,6 +316,14 @@ details.prev > summary { cursor: pointer; font-weight: 600; font-size: 13.5px; c
 .piezas figure { margin: 0; display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
 canvas.pieza { width: 180px; max-width: 100%; height: auto; border-radius: 8px; box-shadow: var(--shadow); }
 .gen-estado { font-size: 13.5px; font-weight: 600; }
+.est-wrap { display: grid; grid-template-columns: minmax(0, 420px) minmax(0, 1fr); gap: 24px; margin-top: 24px; align-items: start; }
+@media (max-width: 960px) { .est-wrap { grid-template-columns: 1fr; } }
+.est-wrap .field { grid-template-columns: 1fr; gap: 6px; }
+.est-grid { display: flex; flex-direction: column; gap: 14px; }
+.est-card { border: 1px solid var(--line); background: var(--surface); border-radius: 16px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.est-edit { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+.est-edit[hidden] { display: none; }
+.est-edit textarea { border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 8px 10px; min-height: 56px; resize: vertical; width: 100%; }
 .small-code { font-size: 11.5px !important; padding: 4px 8px !important; }
 </style>
 
@@ -324,6 +332,7 @@ canvas.pieza { width: 180px; max-width: 100%; height: auto; border-radius: 8px; 
     <div class="brand"><h1>Spark<span>Py</span></h1><small>Estudio de anuncios de PlanPy</small></div>
     <nav class="tabs" role="tablist">
       <button role="tab" id="tab-crear" data-view="crear" aria-selected="true">Crear</button>
+      <button role="tab" id="tab-est" data-view="est" aria-selected="false">Estáticos</button>
       <button role="tab" id="tab-lib" data-view="lib" aria-selected="false">Librería</button>
       <button role="tab" id="tab-ped" data-view="ped" aria-selected="false">Pedidos <span class="count" id="ped-count">0</span></button>
     </nav>
@@ -335,6 +344,7 @@ canvas.pieza { width: 180px; max-width: 100%; height: auto; border-radius: 8px; 
   <section id="view-crear"></section>
   <section id="view-lib" hidden></section>
   <section id="view-ped" hidden></section>
+  <section id="view-est" hidden></section>
 </main>
 <div id="editor-root"></div>
 <div id="toast" class="toast" hidden></div>
@@ -541,7 +551,7 @@ canvas.pieza { width: 180px; max-width: 100%; height: auto; border-radius: 8px; 
   const setView = (v) => {
     view = v; store.set('view', v);
     document.querySelectorAll('.tabs button').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.view === v)));
-    for (const k of ['crear', 'lib', 'ped']) document.getElementById('view-' + k).hidden = k !== v;
+    for (const k of ['crear', 'est', 'lib', 'ped']) document.getElementById('view-' + k).hidden = k !== v;
     render();
   };
   document.querySelectorAll('.tabs button').forEach((b) => b.addEventListener('click', () => setView(b.dataset.view)));
@@ -600,6 +610,7 @@ canvas.pieza { width: 180px; max-width: 100%; height: auto; border-radius: 8px; 
     db ? h('button', { class: 'add', onclick: () => openEditor(col, null, { draft: draft ? { ...draft, orden: lib[col].length } : undefined, onSaved: (id) => { onNew(id); save(); } }), title: `${COLS[col].fem ? 'Nueva' : 'Nuevo'} ${COLS[col].one}` }, '+ Nuevo') : null);
 
   function renderCrear() {
+    if (sel.tipo !== 'video') { sel.tipo = 'video'; if (tipoDe(byId('estructuras', sel.estructura)) !== 'video') sel.estructura = null; if (!estiloSirve(byId('estilos', estilo))) estilo = null; }
     const root = document.getElementById('view-crear');
     root.replaceChildren();
     const persona = byId('personas', sel.persona), rubro = byId('rubros', sel.rubro), est = byId('estructuras', sel.estructura);
@@ -622,14 +633,7 @@ canvas.pieza { width: 180px; max-width: 100%; height: auto; border-radius: 8px; 
 
     const s1 = h('div', { class: 'step' },
       h('div', { class: 'step-head' }, h('span', { class: 'n' }, 'PASO 1'), h('h2', {}, 'Brief'), h('p', {}, 'Elija de la librería. El punto verde marca lo que recomienda la persona o el rubro elegido.')),
-      h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Tipo de anuncio'), h('div', {},
-        h('div', { class: 'seg' }, ...[['video', 'Video'], ['imagen', 'Imagen estática']].map(([k, l]) => h('button', { 'aria-pressed': String(sel.tipo === k), onclick: () => {
-          if (sel.tipo === k) return;
-          sel.tipo = k;
-          if (tipoDe(byId('estructuras', sel.estructura)) !== k) sel.estructura = null;
-          if (!estiloSirve(byId('estilos', estilo))) estilo = null;
-          opciones = []; elegido = null; guion = null; errorGen = null; save(); render();
-        } }, l))))),
+      h('div', { class: 'hint', style: 'margin:-6px 0 12px' }, 'Aquí se crean los anuncios en video. Para imágenes estáticas use la pestaña ', h('button', { class: 'add', onclick: () => setView('est') }, 'Estáticos'), '.'),
       h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Mercado'), h('div', {},
         h('div', { class: 'seg' }, ...[['CO', 'Colombia · usted'], ['AR', 'Argentina · vos']].map(([k, l]) => h('button', { 'aria-pressed': String(sel.mercado === k), onclick: () => { sel.mercado = k; save(); render(); } }, l))))),
       h('div', { class: 'field' }, lblNew('Rubro', 'rubros', (id) => (sel.rubro = id)), h('div', { class: 'chips' },
@@ -1541,12 +1545,13 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
     const fallidas = (res?.jobs || []).filter((j) => j.status !== 'completed');
     if (!res?.all_terminal || fallidas.length) throw { code: 'tool_error', message: `${fallidas.length || 'algunas'} foto(s) no se generaron` };
     avance('Descargando las fotos…');
-    const porIndice = {};
+    const porIndice = {}, blobs = {};
     for (const j of res.jobs) {
-      try { porIndice[j.index] = await createImageBitmap(await (await fetch(j.result_url)).blob()); }
+      try { blobs[j.index] = await (await fetch(j.result_url)).blob(); porIndice[j.index] = await createImageBitmap(blobs[j.index]); }
       catch { throw { code: 'descarga', message: 'El navegador no dejó descargar la foto generada.' }; }
     }
-    return { fotos: formatos.map((f, fi) => [porIndice[fi * 10], porIndice[fi * 10 + 1]].filter(Boolean)), jobs: res.jobs.map((j) => j.job_id), creditos: reqs.length * COSTO_FOTO };
+    const porFormato = (m) => formatos.map((f, fi) => [m[fi * 10], m[fi * 10 + 1]].filter(Boolean));
+    return { fotos: porFormato(porIndice), blobs: porFormato(blobs), jobs: res.jobs.map((j) => j.job_id), creditos: reqs.length * COSTO_FOTO };
   }
 
   const estadoGen = {}; // pedidoId -> texto de avance (solo esta vista)
@@ -1756,10 +1761,214 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
     return det;
   }
 
+  // ---------- ESTÁTICOS (pestaña propia) ----------
+  // Brief corto → Claude escribe el copy de varios templates a la vez → la grilla dibuja cada pieza en la página.
+  // Editar el texto es instantáneo y gratis; solo «Poner foto» gasta créditos (Higgsfield). Sin pedidos ni colas.
+  const ES = Object.assign({ mercado: 'CO', rubro: null, persona: null, angulo: null, avatar: null, modo: 'frio', templates: [], formatos: ['4:5'], cantidad: 6 }, store.get('est', {}));
+  let piezas = store.get('estPiezas', []);
+  let guardadas = [], genEst = null, errEst = null, vistaEst = 'lote';
+  const guardarEst = () => { store.set('est', ES); store.set('estPiezas', piezas.slice(0, 40)); };
+  const fotoCache = new Map();
+  const bitmapDe = async (id) => {
+    if (!fotoCache.has(id)) fotoCache.set(id, fetch(imgSrc(id)).then((r) => r.blob()).then((b) => createImageBitmap(b)).catch(() => null));
+    return fotoCache.get(id);
+  };
+  const uid = () => Math.random().toString(36).slice(2, 10);
+  const templatesImagen = () => lib.estructuras.filter((e) => tipoDe(e) === 'imagen').sort((a, b) => tierRank(a) - tierRank(b));
+  const usable = (e) => !(pideResenas(e) && !lib.resenas.some((r) => (r.texto || '').trim()));
+  // Variedad: rota templates según el objetivo. Frío prioriza S/A; retargeting, los B. Nunca D–F en automático.
+  const elegirTemplates = () => {
+    if (ES.modo === 'manual') return ES.templates.map((id) => byId('estructuras', id)).filter(Boolean).filter(usable);
+    const pool = templatesImagen().filter(usable).filter((e) => !/[DEF]/.test(e.tier || ''));
+    const peso = (e) => (ES.modo === 'frio' ? ({ S: 0, A: 0, B: 1, C: 2 }[e.tier] ?? 3) : ({ B: 0, A: 1, S: 1, C: 2 }[e.tier] ?? 3));
+    const orden = [...pool].sort((a, b) => peso(a) - peso(b) || Math.random() - 0.5);
+    return orden.slice(0, Math.max(1, Math.min(ES.cantidad, orden.length)));
+  };
+  const avatarEst = () => byId('avatares', ES.avatar) || [...lib.avatares].sort((a, b) =>
+    ((b.personas || []).includes(ES.persona) - (a.personas || []).includes(ES.persona)) || ((b.mercado === ES.mercado) - (a.mercado === ES.mercado)) || ((a.orden ?? 999) - (b.orden ?? 999)))[0] || null;
+
+  function promptEstaticos(tpls, unoSolo) {
+    const data = {
+      mercado: ES.mercado,
+      rubro: pickFields(byId('rubros', ES.rubro), ['nombre', 'tipo', 'escenario', 'dolor']),
+      buyer_persona: pickFields(byId('personas', ES.persona), ['nombre', 'resumen', 'eje', 'edad', 'negocio', 'identidad', 'tension', 'deseo', 'disparador', 'cita', 'no_decir']),
+      angulo: pickFields(byId('angulos', ES.angulo), ['nombre', 'sobre', 'por_que', 'pregunta', ES.mercado === 'AR' ? 'gancho_ar' : 'gancho_co', 'visual']),
+      avatar: pickFields(avatarEst(), ['nombre', 'edad', 'genero', 'ciudad', 'rasgos']),
+      features: lib.features.map((f) => pickFields(f, ['nombre', 'claim', 'estado'])),
+      templates: tpls.map((e) => ({ id: e.id, ...pickFields(e, ['nombre', 'descripcion', 'zonas', 'layout', 'nota']) })),
+      ...(tpls.some(pideResenas) ? { resenas_reales: lib.resenas.filter((r) => (r.texto || '').trim()).map((r) => pickFields(r, ['texto', 'nombre', 'negocio', 'fuente'])) } : {}),
+    };
+    return `Eres el copywriter de anuncios estáticos de PlanPy para Meta y TikTok. Escribe ${unoSolo ? 'una versión NUEVA y distinta' : 'una pieza por template'} para ${unoSolo ? 'este template' : 'estos templates'}, todos sobre el mismo brief, cada uno con un gancho distinto.
+
+${REGLAS}
+
+Reglas del estático: se lee en 2 segundos. Titular de máximo 8 palabras; ninguna zona de más de 20 palabras. En pantalla se escribe "PlanPy" y "planpy.io". Zona "cta": máximo 6 palabras con la oferta (el precio lo agrega el sistema). Zona "precio" o cifras: solo las aprobadas. Comparaciones siempre contra la forma de siempre (cuaderno, Excel, WhatsApp, memoria), nunca contra una marca. Nada de testimonios inventados: en templates de reseña o publicación usa SOLO resenas_reales, textuales, con su autor y negocio.
+
+Mercado y oferta: ${OFERTA[ES.mercado]}
+
+${HECHOS}
+
+Brief:
+${JSON.stringify(data, null, 1)}
+
+Llena exactamente las zonas de cada template; una zona que sea lista (filas, módulos, pasos, razones, testimonios "Nombre · negocio: cita") va como array de strings. "visual" describe la foto si el template la usa (persona, acción, encuadre; sin texto ni pantallas legibles). "look" es la ropa y el escenario del avatar.
+Responde SOLO con JSON: {"piezas":[{"template":"<id>","idea":"una frase","copy":{"<zona>":"texto o array"},"visual":"...","look":{"vestuario":"...","escenario":"..."}}]}`;
+  }
+
+  async function generarLote() {
+    const tpls = elegirTemplates();
+    if (!sample || !tpls.length || !ES.persona || !ES.angulo) return;
+    const ctl = new AbortController();
+    genEst = ctl; errEst = null; render();
+    try {
+      const res = await sample.json(promptEstaticos(tpls), { signal: ctl.signal, cache: false, modelTier: 'default' });
+      const nuevas = (res?.piezas || []).filter((p) => p && byId('estructuras', p.template) && p.copy).map((p) => ({ uid: uid(), template: p.template, idea: p.idea || '', copy: p.copy, visual: p.visual || '', look: p.look || null, fotos: {} }));
+      if (!nuevas.length) throw { code: 'invalid_json' };
+      piezas = [...nuevas, ...piezas].slice(0, 40); guardarEst();
+    } catch (e) { errEst = e?.code === 'cancelled' ? null : sampleErr(e); }
+    finally { genEst = null; render(); }
+  }
+
+  async function otraVersion(pz, btn) {
+    const e = byId('estructuras', pz.template);
+    btn.disabled = true; btn.textContent = 'Escribiendo…';
+    try {
+      const res = await sample.json(promptEstaticos([e], true) + `\n\nLa versión anterior era: ${JSON.stringify(pz.copy)}. Escribe otra con un gancho diferente.`, { cache: false });
+      const n = (res?.piezas || [])[0];
+      if (!n?.copy) throw { code: 'invalid_json' };
+      Object.assign(pz, { copy: n.copy, idea: n.idea || pz.idea, visual: n.visual || pz.visual, look: n.look || pz.look }); guardarEst(); render();
+    } catch (err) { toast(sampleErr(err)); btn.disabled = false; btn.textContent = 'Otra versión'; }
+  }
+
+  async function ponerFoto(pz, btn, formatos) {
+    const e = byId('estructuras', pz.template), av = avatarEst();
+    btn.disabled = true;
+    const decir = (t) => { btn.textContent = t; };
+    try {
+      const pseudo = { avatar: av ? { nombre: av.nombre, rasgos: av.rasgos, casting_job: av.casting_job, look: pz.look } : {}, mercado: ES.mercado };
+      const r = await generarFotos(e, { copy: pz.copy, visual: pz.visual }, pseudo, formatos, decir);
+      decir('Guardando las fotos…');
+      pz.fotos = pz.fotos || {};
+      for (const [i, f] of formatos.entries()) {
+        const ids = [];
+        for (const b of r.blobs[i]) { const up = await assets.upload(new File([b], `foto-${pz.template}-${f.replace(/[:.]/g, '-')}.png`, { type: b.type || 'image/png' })); ids.push(up.id); }
+        pz.fotos[f] = ids;
+      }
+      pz.creditos = (pz.creditos || 0) + r.creditos; guardarEst(); toast('Foto lista'); render();
+    } catch (err) {
+      toast(err?.code === 'descarga' || !err?.code ? (err?.message || 'No se pudo poner la foto.') : errMcp(err, 'Higgsfield'));
+      btn.disabled = false; btn.textContent = 'Poner foto';
+    }
+  }
+
+  async function descargarPieza(pz, f, mercado) {
+    if (!downloads) { toast('Las descargas no están disponibles en esta vista.'); return; }
+    await cargarRecursos();
+    const e = byId('estructuras', pz.template);
+    const fotos = await Promise.all((pz.fotos?.[f] || []).map(bitmapDe));
+    const cv = dibujarPieza(e, { copy: pz.copy }, mercado, f, fotos.filter(Boolean), logoImg);
+    const blob = await new Promise((r) => cv.toBlob(r, 'image/png'));
+    try { await downloads.save({ filename: `${slug(e?.nombre || 'estatico')}-${f.replace(/[:.]/g, 'x')}.png`, data: blob }); }
+    catch (err) { if (err?.code !== 'declined') toast(err?.code === 'rate_limited' ? 'Ya hay una descarga abierta.' : 'No se pudo descargar.'); }
+  }
+
+  // Una tarjeta: las piezas dibujadas en cada formato + edición en el lugar.
+  function tarjetaPieza(pz, opts = {}) {
+    const e = byId('estructuras', pz.template);
+    const mercado = opts.mercado || ES.mercado, formatos = opts.formatos || ES.formatos;
+    const lienzos = h('div', { class: 'piezas' });
+    const pintar = async () => {
+      await cargarRecursos();
+      const figs = [];
+      for (const f of formatos) {
+        const fotos = (await Promise.all((pz.fotos?.[f] || []).map(bitmapDe))).filter(Boolean);
+        const cv = dibujarPieza(e, { copy: pz.copy }, mercado, f, fotos, logoImg); cv.className = 'pieza';
+        figs.push(h('figure', {}, cv, h('figcaption', {}, f, ' ', h('button', { class: 'add', onclick: () => descargarPieza(pz, f, mercado) }, 'Descargar'))));
+      }
+      lienzos.replaceChildren(...figs);
+    };
+    pintar();
+    let t;
+    const editor = h('div', { class: 'est-edit', hidden: true }, (e?.zonas || Object.keys(pz.copy || {})).map((z) => {
+      const v = pz.copy?.[z], lista = Array.isArray(v);
+      return h('label', { class: 'fgroup' }, h('span', { class: 'k2' }, z + (lista ? ' (una por línea)' : '')), h('textarea', { oninput: (ev) => {
+        pz.copy[z] = lista ? ev.target.value.split('\n').filter((x) => x.trim()) : ev.target.value;
+        clearTimeout(t); t = setTimeout(() => { pintar(); if (opts.onEdit) opts.onEdit(); else guardarEst(); }, 250);
+      } }, lista ? v.join('\n') : v || ''));
+    }));
+    const conFoto = necesitaFoto(e), faltaFoto = conFoto && formatos.some((f) => !(pz.fotos?.[f] || []).length);
+    const costo = conFoto ? fotosPorFormato(e) * formatos.filter((f) => !(pz.fotos?.[f] || []).length).length * COSTO_FOTO : 0;
+    const fotoBtn = conFoto && !opts.guardada ? h('button', { class: 'btn small lime', disabled: !mcp || !assets, title: !mcp ? 'Abra la página en claude.ai con el conector Higgsfield' : null, onclick: () => {
+      if (!fotoBtn.dataset.ok) { fotoBtn.dataset.ok = '1'; fotoBtn.textContent = `Confirmar · ~${costo} créditos`; return; }
+      ponerFoto(pz, fotoBtn, formatos.filter((f) => !(pz.fotos?.[f] || []).length));
+    } }, faltaFoto ? `Poner foto · ~${costo} créditos` : 'Foto lista ✓') : null;
+    if (fotoBtn && !faltaFoto) fotoBtn.disabled = true;
+    return h('article', { class: 'est-card' },
+      h('div', { class: 'ped-row' }, h('div', {}, h('strong', {}, e?.nombre || pz.template), ' ', e?.tier ? h('span', { class: tierClass(e) }, `Tier ${e.tier}`) : null),
+        opts.guardada ? h('span', { class: 'mono muted' }, fmtFecha(pz.creado)) : null),
+      pz.idea ? h('p', { class: 'muted', style: 'margin:4px 0 0;font-size:13.5px' }, pz.idea) : null,
+      lienzos,
+      editor,
+      h('div', { class: 'cmd' },
+        h('button', { class: 'btn small ghost', onclick: (ev) => { editor.hidden = !editor.hidden; ev.target.textContent = editor.hidden ? 'Editar texto' : 'Listo'; } }, 'Editar texto'),
+        opts.guardada ? null : h('button', { class: 'btn small ghost', disabled: !sample, onclick: (ev) => otraVersion(pz, ev.target) }, 'Otra versión'),
+        fotoBtn,
+        opts.guardada
+          ? h('button', { class: 'btn small danger', onclick: async (ev) => { if (!ev.target.dataset.ok) { ev.target.dataset.ok = 1; ev.target.textContent = '¿Borrar? Pulse otra vez'; return; } try { await db.doc('estaticos/' + pz.id).delete(); } catch (err) { toast(dbErr(err)); } } }, 'Borrar')
+          : h('button', { class: 'btn small', disabled: !db, onclick: async () => {
+              try { await db.collection('estaticos').add({ template: pz.template, nombre: e?.nombre || '', idea: pz.idea, copy: pz.copy, visual: pz.visual, look: pz.look, fotos: pz.fotos || {}, mercado: ES.mercado, formatos: ES.formatos, persona: ES.persona, angulo: ES.angulo, creditos: pz.creditos || 0, creado: new Date().toISOString() }); toast('Guardada en «Guardadas»'); }
+              catch (err) { toast(dbErr(err)); }
+            } }, 'Guardar'),
+        opts.guardada ? null : h('button', { class: 'add', onclick: () => { piezas = piezas.filter((x) => x !== pz); guardarEst(); render(); } }, 'Quitar')));
+  }
+
+  function renderEst() {
+    const root = document.getElementById('view-est');
+    root.replaceChildren();
+    const byOrden = (c) => [...lib[c]].sort((a, b) => (a.orden ?? 999) - (b.orden ?? 999));
+    const pickE = (k, id) => { ES[k] = ES[k] === id ? null : id; guardarEst(); render(); };
+    const persona = byId('personas', ES.persona), sugAng = new Set(persona?.angulos || []);
+    const av = avatarEst();
+    const tpls = elegirTemplates();
+    const listo = ES.persona && ES.angulo && tpls.length && ES.formatos.length;
+    const brief = h('div', { class: 'step' },
+      h('div', { class: 'step-head' }, h('span', { class: 'n' }, 'ESTÁTICOS'), h('h2', {}, 'Brief'), h('p', {}, 'Elija a quién le habla y con qué ángulo. Claude escribe el copy de varios templates a la vez y la página dibuja cada pieza.')),
+      h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Mercado'), h('div', {}, h('div', { class: 'seg' }, ...[['CO', 'Colombia · usted'], ['AR', 'Argentina · vos']].map(([k, l]) => h('button', { 'aria-pressed': String(ES.mercado === k), onclick: () => { ES.mercado = k; guardarEst(); render(); } }, l))))),
+      h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Rubro (opcional)'), h('div', { class: 'chips' }, byOrden('rubros').map((r) => chip(r.nombre, ES.rubro === r.id, () => pickE('rubro', r.id))))),
+      h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Buyer persona'), h('div', { class: 'chips' }, byOrden('personas').map((p) => chip(p.nombre, ES.persona === p.id, () => pickE('persona', p.id), { tag: p.eje })))),
+      h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Ángulo'), h('div', { class: 'chips' }, byOrden('angulos').filter((a) => !/aparcado/i.test(a.estado || '')).map((a) => chip(a.nombre, ES.angulo === a.id, () => pickE('angulo', a.id), { sug: sugAng.has(a.id), title: a.pregunta })))),
+      h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Avatar (fotos)'), h('div', {}, h('div', { class: 'chips' }, byOrden('avatares').map((a) => chip(a.nombre, av?.id === a.id, () => { ES.avatar = a.id; guardarEst(); render(); }, { tag: a.casting_job ? 'con cara' : '' }))),
+        h('div', { class: 'hint' }, 'Solo se usa en los templates con foto. Si el avatar tiene casting, la foto mantiene su cara.'))),
+      h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Templates'), h('div', {},
+        h('div', { class: 'seg' }, ...[['frio', 'Variedad · público frío'], ['retarget', 'Variedad · retargeting'], ['manual', 'Elegir yo']].map(([k, l]) => h('button', { 'aria-pressed': String(ES.modo === k), onclick: () => { ES.modo = k; guardarEst(); render(); } }, l))),
+        ES.modo === 'manual'
+          ? h('div', { class: 'chips', style: 'margin-top:10px' }, templatesImagen().map((e) => chip(e.nombre, ES.templates.includes(e.id), () => { ES.templates = ES.templates.includes(e.id) ? ES.templates.filter((x) => x !== e.id) : [...ES.templates, e.id]; guardarEst(); render(); }, { tag: e.tier, dim: !usable(e), title: usable(e) ? e.mejor_para : 'Necesita reseñas reales en Librería → Reseñas' })))
+          : h('div', { class: 'cmd', style: 'margin-top:10px' }, h('span', { class: 'k2' }, 'Cuántas'), h('div', { class: 'seg' }, ...[3, 6, 9].map((n) => h('button', { 'aria-pressed': String(ES.cantidad === n), onclick: () => { ES.cantidad = n; guardarEst(); render(); } }, String(n))))),
+        h('div', { class: 'hint' }, tpls.length ? ['Saldrán: ', h('b', {}, tpls.map((e) => e.nombre).join(' · '))] : 'Elija al menos un template.'))),
+      h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Formatos'), h('div', { class: 'chips' }, FORMATOS.map(([f, l]) => chip(f, ES.formatos.includes(f), () => { ES.formatos = ES.formatos.includes(f) ? ES.formatos.filter((x) => x !== f) : [...ES.formatos, f]; guardarEst(); render(); }, { tag: l })))),
+      h('div', { class: 'cmd', style: 'margin-top:14px' },
+        h('button', { class: 'btn lime', disabled: !listo || !sample || !!genEst, onclick: generarLote }, genEst ? 'Escribiendo…' : `Generar ${tpls.length || ''} piezas`),
+        genEst ? h('button', { class: 'btn ghost small', onclick: () => genEst?.abort() }, 'Detener') : null,
+        !sample ? h('span', { class: 'hint' }, 'Generar el copy necesita abrir la página en claude.ai.') : !listo ? h('span', { class: 'hint' }, 'Falta buyer persona, ángulo o formato.') : h('span', { class: 'hint' }, 'El texto es gratis; solo «Poner foto» gasta créditos.')));
+    const tabs = h('div', { class: 'seg', style: 'margin:4px 0 14px' }, ...[['lote', `Generadas (${piezas.length})`], ['guardadas', `Guardadas (${guardadas.length})`]].map(([k, l]) => h('button', { 'aria-pressed': String(vistaEst === k), onclick: () => { vistaEst = k; render(); } }, l)));
+    const lista = h('div', { class: 'est-grid' });
+    if (vistaEst === 'lote') {
+      if (genEst) lista.append(h('div', { class: 'thinking' }, h('span', { class: 'dot' }), h('span', {}, 'Escribiendo el copy de cada template… tarda entre 20 y 60 segundos.')));
+      if (errEst) lista.append(h('div', { class: 'claims' }, errEst));
+      if (!piezas.length && !genEst) lista.append(h('div', { class: 'empty' }, 'Todavía no hay piezas. Complete el brief y pulse «Generar».'));
+      piezas.forEach((pz) => lista.append(tarjetaPieza(pz)));
+    } else {
+      if (!guardadas.length) lista.append(h('div', { class: 'empty' }, 'Lo que guarde aparece aquí, con su texto y sus fotos, listo para descargar.'));
+      guardadas.forEach((pz) => lista.append(tarjetaPieza(pz, { guardada: true, mercado: pz.mercado, formatos: pz.formatos, onEdit: () => db.doc('estaticos/' + pz.id).update({ copy: pz.copy }).catch((err) => toast(dbErr(err))) })));
+    }
+    root.append(h('div', { class: 'est-wrap' }, brief, h('div', {}, tabs, lista)));
+  }
+
   function render() {
     document.getElementById('ped-count').textContent = pedidos.filter((p) => p.estado === 'en cola' || atencion(p)).length;
     if (view === 'crear') renderCrear();
     else if (view === 'lib') renderLib();
+    else if (view === 'est') renderEst();
     else renderPed();
   }
 
@@ -1794,6 +2003,10 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
         if (view === 'lib' && col === libCol && document.activeElement?.id === 'lib-search') renderLibItems(); else soon();
       }, onErr);
     }
+    db.collection('estaticos').orderBy('creado', 'desc').limit(100).onSnapshot((snap) => {
+      guardadas = snap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      if (view === 'est') soon();
+    }, onErr);
     let firstP = true;
     db.collection('pedidos').orderBy('creado', 'desc').limit(200).onSnapshot((snap) => {
       pedidos = snap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));

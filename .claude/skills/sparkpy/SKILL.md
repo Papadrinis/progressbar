@@ -29,7 +29,10 @@ estilos), generador de guiones y cola de pedidos. Su base de datos se lee y escr
 **Producción desde la página.** El usuario ya no copia el comando: en Pedidos pulsa «Producir ahora» y
 la página dispara la rutina `trig_01Fy4KcLPn2UReKhCEfWYs1k`, que despierta esta sesión con el texto
 «pedido <id>» (o «cambios <id>» para atender cambios pedidos). Trátalo igual que `/sparkpy pedido <id>`.
-Los pedidos **de imagen** los produce la propia página (Higgsfield hace la foto sin texto vía el conector
+Los **estáticos** ya no son pedidos: se hacen en la pestaña **Estáticos** del Estudio (brief corto →
+Claude escribe el copy de varios templates → la página dibuja cada pieza; «Poner foto» llama a Higgsfield).
+Lo que el usuario guarda queda en la colección `estaticos/` (template, copy, fotos como assets, formatos).
+Los pedidos de imagen antiguos los produce la propia página (Higgsfield hace la foto sin texto vía el conector
 del usuario y un canvas compone el copy exacto, en `sparkpy/index.html` → «ESTÁTICOS EN LA PÁGINA»);
 solo llegan aquí si el usuario lo pide.
 
