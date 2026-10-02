@@ -1,0 +1,18 @@
+{
+ "tipo": "imagen",
+ "nombre": "Lista de razones",
+ "descripcion": "«N razones por las que…» con un ícono por punto.",
+ "zonas": [
+  "titular",
+  "razones",
+  "cta"
+ ],
+ "layout": "Titular arriba, 3–5 filas numeradas con ícono y una línea cada una, CTA abajo.",
+ "produccion": "código (UI nativa)",
+ "formatos": "1:1, 4:5, 9:16",
+ "mejor_para": "Desgastado: mejor la infografía educativa.",
+ "nota": "Cada razón un ángulo distinto (dolor, resultado, prueba, diferencia, precio). No abras un lote con este formato.",
+ "tier": "E",
+ "rol": "desgastado",
+ "orden": 114
+}

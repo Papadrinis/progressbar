@@ -1,0 +1,18 @@
+{
+ "tipo": "imagen",
+ "nombre": "Callouts sobre la pantalla",
+ "descripcion": "La pantalla de PlanPy al centro con 3 a 5 etiquetas que señalan lo que la hace distinta.",
+ "zonas": [
+  "titular",
+  "etiquetas",
+  "cta"
+ ],
+ "layout": "Computador o celular al centro con la interfaz dibujada en código («Datos de ejemplo»); líneas guía a 3–5 etiquetas de 2–5 palabras alrededor. Titular arriba, CTA abajo.",
+ "produccion": "código (UI nativa)",
+ "formatos": "1:1, 4:5, 9:16",
+ "mejor_para": "Mid-funnel; barato de iterar y se lee rápido.",
+ "nota": "Etiquetas sobre lo que los dueños preguntan de verdad, no una lista de funciones. Computador = gestión; celular = consulta.",
+ "tier": "B",
+ "rol": "apoyo (mid-funnel)",
+ "orden": 106
+}

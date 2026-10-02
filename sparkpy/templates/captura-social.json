@@ -1,0 +1,19 @@
+{
+ "tipo": "imagen",
+ "nombre": "Captura de publicación",
+ "descripcion": "Una publicación real de un cliente con el aspecto de una captura de red social.",
+ "zonas": [
+  "post",
+  "autor",
+  "cta"
+ ],
+ "layout": "Tarjeta de publicación genérica (foto de perfil, nombre, hora, reacciones) sin logos de la red; logo de PlanPy y CTA al pie. Funciona bien como primer cuadro.",
+ "produccion": "código (UI nativa)",
+ "formatos": "1:1, 4:5, 9:16",
+ "mejor_para": "Apoyo; muy bueno como gancho.",
+ "nota": "Solo publicaciones reales de Librería → Reseñas (fuente: red social), textuales. Nunca inventar una captura.",
+ "tier": "B",
+ "rol": "apoyo (mid-funnel)",
+ "orden": 117,
+ "requiere": "reseña real"
+}

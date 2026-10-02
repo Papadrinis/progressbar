@@ -110,6 +110,13 @@ imagen y el código pone el texto**, para que el precio, las tildes y «PlanPy»
   aceptable es el estilo «Foto con texto integrado»: `gpt_image_2_5` con el copy exacto entre comillas y
   la `referencia` del template como `image_references`, revisando letra por letra (precio, tildes,
   «PlanPy»). Si una pieza falla, se regenera; nunca se entrega con un error de texto.
+- Los templates salen de `references/static-ad-templates.md` (adaptados a PlanPy en el Estudio, 18).
+  Cada uno trae `tier` (S–F) y `rol`: para público frío prioriza S/A (Grilla de módulos); para
+  retargeting, los B. Fuera por decisión del dueño: Founder Message, Origin Story, Press Mention y Mood Board.
+  Las comparaciones son siempre genéricas (cuaderno, Excel, «otros programas»), nunca contra una marca.
+- Si el template trae `requiere: "reseña real"` (Tarjeta de reseña, Tres testimonios, Captura de
+  publicación), el copy usa **solo** reseñas de la colección `resenas/` del Estudio, textuales, con su
+  autor y negocio. Sin reseñas cargadas no se produce; nunca se inventa una.
 - Muestra las piezas al usuario por formato antes de darlas por listas. Entrega en `out/estaticos/<id>/`.
 
 ```

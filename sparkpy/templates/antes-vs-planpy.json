@@ -1,0 +1,19 @@
+{
+ "tipo": "imagen",
+ "nombre": "La forma de siempre vs. PlanPy",
+ "descripcion": "Dos columnas: la forma de siempre en gris a la izquierda y PlanPy a todo color a la derecha, con 4 a 6 filas de ✗ y ✓.",
+ "zonas": [
+  "titular",
+  "antes",
+  "despues",
+  "cta"
+ ],
+ "layout": "Encabezados «Cuaderno / Excel» (gris, tachado suave) y «PlanPy» (verde de marca). 4–6 filas alineadas: ✗ a la izquierda, ✓ a la derecha. Titular arriba, CTA abajo. En 9:16 las filas se apilan con más aire.",
+ "produccion": "código (UI nativa)",
+ "formatos": "1:1, 4:5, 9:16",
+ "mejor_para": "Quien ya compara opciones (retargeting, mid-funnel).",
+ "nota": "Nunca una marca competidora: «la forma de siempre» es cuaderno, Excel, WhatsApp o memoria. El cuaderno se respeta: funcionó y llegó a su límite. Cada fila es una diferencia real, no relleno.",
+ "tier": "B",
+ "rol": "apoyo (mid-funnel)",
+ "orden": 102
+}

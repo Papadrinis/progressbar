@@ -1,0 +1,20 @@
+{
+ "tipo": "imagen",
+ "nombre": "Comparación directa",
+ "descripcion": "Una sola diferencia, dicha sin rodeos: la forma de siempre contra PlanPy en un eje claro.",
+ "zonas": [
+  "titular",
+  "eje",
+  "antes",
+  "con_planpy",
+  "cta"
+ ],
+ "layout": "Titular arriba; al centro el eje que cambia (p. ej. «Cerrar la caja») con dos valores grandes enfrentados: el de siempre en gris, el de PlanPy en verde. CTA abajo.",
+ "produccion": "código (UI nativa)",
+ "formatos": "1:1, 4:5, 9:16",
+ "mejor_para": "Quien ya conoce el problema y compara (mid-funnel).",
+ "nota": "Comparación genérica contra la categoría (cuaderno, Excel, «otros programas»), nunca contra una marca. Solo diferencias defendibles; la única cifra de tiempo aprobada es «unos 10 minutos» para el cierre.",
+ "tier": "B",
+ "rol": "apoyo (mid-funnel)",
+ "orden": 103
+}

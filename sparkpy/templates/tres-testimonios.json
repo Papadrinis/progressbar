@@ -1,0 +1,18 @@
+{
+ "tipo": "imagen",
+ "nombre": "Tres testimonios",
+ "descripcion": "Tres citas cortas apiladas, cada una con nombre y negocio.",
+ "zonas": [
+  "testimonios",
+  "cta"
+ ],
+ "layout": "Tres filas con nombre, negocio y una cita de una línea; logo y CTA al pie.",
+ "produccion": "código (UI nativa)",
+ "formatos": "1:1, 4:5, 9:16",
+ "mejor_para": "Desgastado: solo si las tres citas son reales y cubren objeciones distintas.",
+ "nota": "Solo reseñas reales de Librería → Reseñas, textuales, cada una sobre una objeción distinta.",
+ "tier": "E",
+ "rol": "desgastado",
+ "orden": 116,
+ "requiere": "reseña real"
+}

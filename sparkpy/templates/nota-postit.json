@@ -1,0 +1,17 @@
+{
+ "tipo": "imagen",
+ "nombre": "Nota a mano / post-it",
+ "descripcion": "Una nota escrita a mano sobre el mostrador o el cuaderno: se ve casera, urgente y nativa.",
+ "zonas": [
+  "nota",
+  "cta"
+ ],
+ "layout": "Foto del mostrador o del cuaderno (sin texto, generada con IA) y encima, compuesta en código, una nota adhesiva o un papel con letra manuscrita. CTA pequeño abajo.",
+ "produccion": "foto IA + UI en código",
+ "formatos": "1:1, 4:5, 9:16",
+ "mejor_para": "Apoyo para fechas y promos (lanzamientos, fin de mes); no como formato permanente.",
+ "nota": "Una frase directa, como se la diría un dueño a otro («Nota: dejar de sumar el cuaderno el domingo»).",
+ "tier": "B",
+ "rol": "apoyo (mid-funnel)",
+ "orden": 113
+}

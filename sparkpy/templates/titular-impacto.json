@@ -1,0 +1,17 @@
+{
+ "tipo": "imagen",
+ "nombre": "Titular contundente",
+ "descripcion": "Una sola frase grande que hace todo el trabajo, con el avatar en su local de fondo.",
+ "zonas": [
+  "titular",
+  "cta"
+ ],
+ "layout": "El titular ocupa el 60 % del peso visual (arriba o a la izquierda); la foto del avatar en su local, sin texto, ocupa el resto. Logo pequeño en una esquina, CTA en barra inferior. Admite 2 o 3 etiquetas tipo callout sobre la foto.",
+ "produccion": "foto IA + texto",
+ "formatos": "1:1, 4:5, 9:16",
+ "mejor_para": "Mid-funnel y retargeting; rinde solo con un mensaje muy específico.",
+ "nota": "Una afirmación del dolor o del beneficio tan concreta que frene el scroll, sin cifras inventadas. Combínalo con callouts para darle más peso.",
+ "tier": "B",
+ "rol": "apoyo (mid-funnel)",
+ "orden": 101
+}

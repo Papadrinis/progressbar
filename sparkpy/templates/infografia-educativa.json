@@ -1,0 +1,19 @@
+{
+ "tipo": "imagen",
+ "nombre": "Infografía educativa",
+ "descripcion": "Un cuadro que enseña algo cierto en tres pasos y se ve como contenido, no como anuncio.",
+ "zonas": [
+  "titular",
+  "pasos",
+  "cierre",
+  "cta"
+ ],
+ "layout": "Diagrama de 3 pasos con íconos y flechas (p. ej. vende → queda registrado → ve el cierre en el celular). Marca discreta hasta el pie, CTA abajo.",
+ "produccion": "código (UI nativa)",
+ "formatos": "1:1, 4:5, 9:16",
+ "mejor_para": "Mid-funnel; poco usado y gana atención.",
+ "nota": "Cada paso tiene que ser verificable con los datos confirmados del producto. Nada de mecanismos ni cifras inventadas.",
+ "tier": "B",
+ "rol": "apoyo (mid-funnel)",
+ "orden": 111
+}

@@ -409,10 +409,24 @@ details.prev > summary { cursor: pointer; font-weight: 600; font-size: 13.5px; c
       ['layout', 'Layout y jerarquía', 'textarea', null, 'Composición: dónde va cada zona, tamaños relativos, qué ocupa la foto o la interfaz, elementos gráficos (línea divisoria, burbujas, checks). Adaptable a 1:1, 4:5 y 9:16', 'imagen'],
       ['produccion', 'Cómo se produce', 'select', ['foto IA + texto', 'código (UI nativa)', 'foto IA + UI en código'], 'Código (UI nativa) si todo es interfaz (chat, comentario, notificación); foto IA + texto si hay persona o escena', 'imagen'],
       ['formatos', 'Formatos recomendados', 'text', null, 'Los que mejor le quedan, de: 1:1, 4:5, 9:16, 1.91:1', 'imagen'],
+      ['tier', 'Tier (S–F)', 'select', ['S', 'A', 'B', 'C', 'D', 'E', 'F'], 'Prioridad de alcance: S/A escalan en frío, B/C apoyan mid-funnel, D–F están desgastados', 'imagen'],
+      ['rol', 'Rol', 'select', ['escala en frío', 'apoyo (mid-funnel)', 'desgastado'], 'Para qué sirve en el funnel', 'imagen'],
+      ['requiere', 'Requiere', 'select', ['reseña real'], null, 'imagen'],
       ['pasos', 'Pasos (uno por línea)', 'list', null, 'Los pasos en orden, en inglés como se conocen', 'video'],
       ['mejor_para', 'Mejor para', 'text', null, 'Para qué objetivo o tipo de audiencia sirve'],
       ['duracion', 'Duración sugerida', 'text', null, 'Rango en segundos', 'video'],
       ['nota', 'Nota para PlanPy', 'textarea', null, 'Cómo aplicarlo a PlanPy respetando las reglas de marca (claims, cuaderno, precio)']] },
+    resenas: { label: 'Reseñas', one: 'reseña', fem: true, sub: ['negocio', 'fuente'], pill: 'permiso', text: 'texto', img: 'captura',
+      que: 'una reseña o publicación real de un cliente', fields: [
+      ['texto', 'Reseña (textual, sin corregir)', 'textarea', null, null],
+      ['nombre', 'Autor (como aparece)', 'text', null, null],
+      ['negocio', 'Negocio y ciudad', 'text', null, null],
+      ['rubro', 'Rubro', 'ref', 'rubros', null],
+      ['fuente', 'Fuente', 'select', ['Google', 'Facebook', 'Instagram', 'WhatsApp', 'X / Twitter', 'Reddit', 'TikTok', 'Encuesta', 'Otra'], null],
+      ['estrellas', 'Estrellas', 'select', ['5', '4', '3'], null],
+      ['fecha', 'Fecha', 'text', null, null],
+      ['captura', 'Captura original (opcional)', 'image', null, null],
+      ['permiso', 'Permiso para usarla', 'select', ['con permiso', 'sin confirmar'], null]] },
     estilos: { label: 'Estilos de ad', one: 'estilo', sub: ['tipo', 'costo'], pill: 'estado', text: 'descripcion', que: 'un estilo de producción de anuncios (video, imagen estática o ambos)', fields: [
       ['nombre', 'Nombre', 'text', null, 'Nombre del estilo'],
       ['tipo', 'Sirve para', 'select', ['video', 'imagen', 'ambos'], 'Si sirve para video, para imagen estática o para ambos'],
@@ -542,14 +556,21 @@ details.prev > summary { cursor: pointer; font-weight: 600; font-size: 13.5px; c
     if (a && /aparcado/i.test(a.estado)) out.push(`«${a.nombre}» está aparcado.`);
     if (a && /sin confirmar/i.test(a.estado)) out.push(`«${a.nombre}» depende de una función sin confirmar.`);
     for (const f of (guion?.features || []).map((id) => byId('features', id)).filter(Boolean)) if (/sin confirmar/i.test(f.estado)) out.push(`${f.nombre}: ${f.estado.split('·').slice(1).join('·').trim() || 'sin confirmar'}.`);
-    const p = byId('personas', sel.persona);
+    const e = byId('estructuras', sel.estructura);
+    if (esImagen() && pideResenas(e) && !resenasUsables().length) out.push(`«${e.nombre}» necesita reseñas reales: súbalas en Librería → Reseñas.`);
+    if (esImagen() && e && /[DEF]/.test(e.tier || '')) out.push(`«${e.nombre}» es tier ${e.tier} (desgastado): úselo solo con una razón concreta.`);
     return out;
   };
   const esImagen = () => sel.tipo === 'imagen';
+  const TIERS = 'SABCDEF';
+  const tierRank = (e) => (e?.tier ? TIERS.indexOf(e.tier) : 9) * 1000 + (e?.orden ?? 999);
+  const tierClass = (e) => (/[SA]/.test(e.tier) ? 'pill ok' : /[BC]/.test(e.tier) ? 'pill' : 'pill warn');
+  const pideResenas = (e) => /reseña/i.test(e?.requiere || '');
+  const resenasUsables = () => lib.resenas.filter((r) => (r.texto || '').trim() && (!sel.rubro || !r.rubro || r.rubro === sel.rubro));
   const tipoDe = (e) => e?.tipo || 'video';
   const estiloSirve = (st) => { const t = st?.tipo || 'video'; return t === 'ambos' || t === sel.tipo; };
   const FORMATOS = [['1:1', 'Feed cuadrado'], ['4:5', 'Feed vertical'], ['9:16', 'Stories y Reels'], ['1.91:1', 'Horizontal / link']];
-  const ready = () => sel.rubro && sel.persona && sel.angulo && sel.estructura && tipoDe(byId('estructuras', sel.estructura)) === sel.tipo && (!esImagen() || sel.formatos.length);
+  const ready = () => sel.rubro && sel.persona && sel.angulo && sel.estructura && tipoDe(byId('estructuras', sel.estructura)) === sel.tipo && (!esImagen() || sel.formatos.length) && !(esImagen() && pideResenas(byId('estructuras', sel.estructura)) && !resenasUsables().length);
 
   // Avatar propuesto: el actor que mejor encaja con el buyer persona (edad, mercado) y ya tiene cara aprobada.
   const rango = (txt) => { const n = String(txt || '').match(/\d+/g); return n ? [+n[0], +(n[1] || n[0])] : null; };
@@ -572,7 +593,7 @@ details.prev > summary { cursor: pointer; font-weight: 600; font-size: 13.5px; c
   const pick = (key, id) => { sel[key] = sel[key] === id ? null : id; save(); render(); };
   // Etiqueta de un campo del brief con botón para crear un elemento nuevo (queda elegido al guardar).
   const lblNew = (label, col, onNew, draft) => h('div', { class: 'lbl' }, h('span', {}, label),
-    db ? h('button', { class: 'add', onclick: () => openEditor(col, null, { draft: draft ? { ...draft, orden: lib[col].length } : undefined, onSaved: (id) => { onNew(id); save(); } }), title: `Nuevo ${COLS[col].one}` }, '+ Nuevo') : null);
+    db ? h('button', { class: 'add', onclick: () => openEditor(col, null, { draft: draft ? { ...draft, orden: lib[col].length } : undefined, onSaved: (id) => { onNew(id); save(); } }), title: `${COLS[col].fem ? 'Nueva' : 'Nuevo'} ${COLS[col].one}` }, '+ Nuevo') : null);
 
   function renderCrear() {
     const root = document.getElementById('view-crear');
@@ -629,10 +650,10 @@ details.prev > summary { cursor: pointer; font-weight: 600; font-size: 13.5px; c
         guion?.features?.length ? ['El guion elegido muestra: ', h('b', {}, guion.features.map((f) => name('features', f) || f).join(', ')), '.'] : 'No hace falta elegirlas: Claude escoge 1 o 2 según el rubro, el buyer persona y el ángulo, y las verá en cada guion.')),
       esImagen()
         ? h('div', { class: 'field' }, lblNew('Template', 'estructuras', (id) => (sel.estructura = id), { tipo: 'imagen' }), h('div', {},
-            h('div', { class: 'tpls' }, byOrden('estructuras').filter((e) => tipoDe(e) === 'imagen').map((e) => h('button', { class: 'tpl', 'aria-pressed': String(sel.estructura === e.id), onclick: () => pick('estructura', e.id) },
+            h('div', { class: 'tpls' }, byOrden('estructuras').filter((e) => tipoDe(e) === 'imagen').sort((a, b) => tierRank(a) - tierRank(b)).map((e) => h('button', { class: 'tpl', 'aria-pressed': String(sel.estructura === e.id), onclick: () => pick('estructura', e.id), title: e.rol || '' },
               e.referencia ? h('img', { src: imgSrc(e.referencia), alt: '', loading: 'lazy' }) : h('div', { class: 'ph' }, (e.zonas || []).slice(0, 3).map((z) => h('span', {}, z))),
-              h('strong', {}, e.nombre), h('span', { class: 'sub' }, e.produccion || '')))),
-            est && tipoDe(est) === 'imagen' ? h('div', { class: 'hint' }, h('b', {}, 'Zonas: ', (est.zonas || []).join(' · ')), ' — ', est.descripcion || '', est.nota ? h('div', {}, est.nota) : null) : null))
+              h('strong', {}, e.nombre), e.tier ? h('span', { class: tierClass(e) }, `Tier ${e.tier} · ${{ 'escala en frío': 'frío', 'apoyo (mid-funnel)': 'apoyo', desgastado: 'desgastado' }[e.rol] || e.rol || ''}`) : null, h('span', { class: 'sub' }, e.produccion || '')))),
+            est && tipoDe(est) === 'imagen' ? h('div', { class: 'hint' }, h('b', {}, 'Zonas: ', (est.zonas || []).join(' · ')), ' — ', est.descripcion || '', est.mejor_para ? h('div', {}, h('b', {}, 'Mejor para: '), est.mejor_para) : null, est.nota ? h('div', {}, est.nota) : null) : null))
         : h('div', { class: 'field' }, lblNew('Estructura', 'estructuras', (id) => (sel.estructura = id), { tipo: 'video' }), h('div', {},
             h('div', { class: 'chips' }, byOrden('estructuras').filter((e) => tipoDe(e) === 'video').map((e) => chip(e.nombre, sel.estructura === e.id, () => pick('estructura', e.id), { title: (e.pasos || []).join(' → ') }))),
             est && tipoDe(est) === 'video' ? h('div', { class: 'hint' }, h('b', {}, (est.pasos || []).join(' → ')), ' · ', est.mejor_para, est.duracion ? ` · ${est.duracion}` : '', est.nota ? h('div', {}, est.nota) : null) : null)),
@@ -858,19 +879,20 @@ Responde SOLO con JSON con esta forma:
       features_disponibles: [...lib.features].sort((a, b) => (a.orden ?? 999) - (b.orden ?? 999)).map((f) => ({ id: f.id, ...pickFields(f, ['nombre', 'dispositivo', 'claim', 'estado']), sugerida_para_el_rubro: (byId('rubros', sel.rubro)?.features || []).includes(f.id) || undefined })),
       avatar: pickFields(byId('avatares', avatarActual()), ['nombre', 'edad', 'genero', 'ciudad', 'rasgos', 'estilo']),
       template: pickFields(est, ['nombre', 'descripcion', 'zonas', 'layout', 'produccion', 'nota']),
+      ...(pideResenas(est) ? { resenas_reales: resenasUsables().map((r) => pickFields(r, ['texto', 'nombre', 'negocio', 'fuente', 'estrellas', 'fecha'])) } : {}),
     };
     return `Eres el copywriter de anuncios estáticos de PlanPy para Meta y TikTok. Escribe 3 propuestas distintas de copy para el template "${est?.nombre}", cada una con un gancho diferente.
 
 ${REGLAS}
 
-Reglas del anuncio estático: se lee en 2 segundos en el feed. Titular de máximo 8 palabras; ninguna zona de más de 20 palabras salvo que el template sea un chat o un comentario (ahí, mensajes cortos y naturales, como los escribiría la gente). Si hay zona de oferta o CTA, usa la oferta exacta del mercado. En pantalla se escribe "PlanPy" y "planpy.io". Nada de testimonios presentados como clientes reales: si el template es de opinión o comentario, la voz es la del buyer persona o una pregunta real del público, nunca una reseña inventada.
+Reglas del anuncio estático: se lee en 2 segundos en el feed. Titular de máximo 8 palabras; ninguna zona de más de 20 palabras salvo que el template sea un chat o un comentario (ahí, mensajes cortos y naturales, como los escribiría la gente). Si hay zona de oferta o CTA, usa la oferta exacta del mercado. En pantalla se escribe "PlanPy" y "planpy.io". Nada de testimonios inventados: solo se cita a un cliente real si viene en resenas_reales; si no, en un template de opinión o comentario la voz es la del buyer persona o una pregunta real del público, nunca una reseña inventada.
 
 Mercado y oferta: ${OFERTA[sel.mercado]}
 
 Brief (datos de la librería). El avatar es el actor recurrente que aparece en la imagen si el template lleva persona: define su look (vestuario y escenario del rubro).
 ${JSON.stringify(data, null, 1)}
 
-Llena exactamente las zonas del template (${(est?.zonas || []).join(', ')}). Una zona que sea una lista (mensajes de chat, filas de una tabla, puntos) va como array de strings. Elige 1 o 2 features (por id) de features_disponibles que resuelvan el dolor del ángulo; evita las «sin confirmar» o anótalas en claims_a_confirmar.
+${pideResenas(est) ? 'Este template usa reseñas reales: copia el texto de resenas_reales TEXTUAL (sin corregir ni resumir) y su autor y negocio tal cual. No inventes reseñas, nombres ni negocios; cada propuesta usa una reseña distinta si hay.\n\n' : ''}Llena exactamente las zonas del template (${(est?.zonas || []).join(', ')}). Una zona que sea una lista (mensajes de chat, filas de una tabla, puntos) va como array de strings. Elige 1 o 2 features (por id) de features_disponibles que resuelvan el dolor del ángulo; evita las «sin confirmar» o anótalas en claims_a_confirmar.
 
 Responde SOLO con JSON con esta forma:
 {"opciones":[{"titulo":"nombre corto","idea":"una frase","gancho_forma":"A|B|C|D","copy":{"<zona>":"texto o array"},"visual":"qué muestra la imagen: persona, acción, encuadre, escenario; sin texto y sin pantallas legibles","interfaz":"elementos de interfaz o UI nativa que se dibujan en código, o vacío","features":["id"],"look":{"vestuario":"...","escenario":"..."},"claims_a_confirmar":["..."]}]}`;
@@ -1126,8 +1148,8 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
     const cleanDraft = () => { delete draft.__idea; delete draft.__reescribir; };
     const saveBtn = h('button', { class: 'btn', disabled: !db, onclick: () => { cleanDraft(); onSave(); } }, 'Guardar');
     rootEl.replaceChildren(h('div', { class: 'editor', onclick: (e) => { if (e.target.classList.contains('editor') && !pensando) close(); } },
-      h('div', { class: 'panel', role: 'dialog', 'aria-modal': 'true', 'aria-label': orig ? orig.nombre : `Nuevo ${c.one}` },
-        h('div', { class: 'panel-head' }, h('h3', {}, orig ? orig.nombre : `Nuevo ${c.one}`), h('button', { class: 'btn ghost small', onclick: close }, 'Cerrar')),
+      h('div', { class: 'panel', role: 'dialog', 'aria-modal': 'true', 'aria-label': orig ? orig.nombre : `${c.fem ? 'Nueva' : 'Nuevo'} ${c.one}` },
+        h('div', { class: 'panel-head' }, h('h3', {}, orig ? orig.nombre : `${c.fem ? 'Nueva' : 'Nuevo'} ${c.one}`), h('button', { class: 'btn ghost small', onclick: close }, 'Cerrar')),
         aiBox,
         camposVisibles(col, draft).map(fieldEl),
         h('div', { class: 'panel-foot' }, saveBtn, orig ? delBtn : null))));

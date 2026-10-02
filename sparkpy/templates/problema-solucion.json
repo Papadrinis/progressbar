@@ -1,0 +1,18 @@
+{
+ "tipo": "imagen",
+ "nombre": "Problema / solución",
+ "descripcion": "Arriba el dolor en palabras del dueño; abajo PlanPy como respuesta, con una tarjeta de interfaz.",
+ "zonas": [
+  "problema",
+  "solucion",
+  "cta"
+ ],
+ "layout": "Dos zonas: arriba la tensión (foto del avatar con el cuaderno o el mostrador lleno, texto del problema), abajo el alivio (tarjeta de interfaz de PlanPy dibujada en código con «Datos de ejemplo» y la solución en una línea). CTA al pie.",
+ "produccion": "foto IA + UI en código",
+ "formatos": "1:1, 4:5, 9:16",
+ "mejor_para": "Mid-funnel; funciona rápido cuando el dolor está en las palabras exactas del cliente.",
+ "nota": "El problema tal como lo diría el dueño, la solución en una línea. La interfaz siempre en código.",
+ "tier": "B",
+ "rol": "apoyo (mid-funnel)",
+ "orden": 105
+}

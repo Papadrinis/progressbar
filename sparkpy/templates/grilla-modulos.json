@@ -1,0 +1,19 @@
+{
+ "tipo": "imagen",
+ "nombre": "Grilla de módulos",
+ "descripcion": "Una grilla limpia con los módulos de PlanPy como fichas, cada una con su ícono: se ve todo lo que trae de un vistazo.",
+ "zonas": [
+  "titular",
+  "modulos",
+  "precio",
+  "cta"
+ ],
+ "layout": "Fondo neutro; 4 a 9 fichas iguales en grilla (3×3 en 1:1, 2×4 en 9:16), cada una con ícono y nombre del módulo. Titular corto arriba, precio y CTA en una barra abajo, logo pequeño. En 9:16 la grilla ocupa el centro y deja aire arriba y abajo.",
+ "produccion": "código (UI nativa)",
+ "formatos": "1:1, 4:5, 9:16",
+ "mejor_para": "Público frío: deja que cada dueño encuentre el módulo que le duele.",
+ "nota": "Solo módulos confirmados: ventas, caja, inventario, clientes, proveedores, pedidos, reportes, agenda y reservas, programa de puntos, multiusuario, varias sedes. Nada de logos de terceros. Precio: el más barato del mercado.",
+ "tier": "A",
+ "rol": "escala en frío",
+ "orden": 100
+}

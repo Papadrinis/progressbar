@@ -1,0 +1,18 @@
+{
+ "tipo": "imagen",
+ "nombre": "Número protagonista",
+ "descripcion": "Un número enorme ocupa el 60 % de la pieza y una línea le da contexto.",
+ "zonas": [
+  "numero",
+  "contexto",
+  "cta"
+ ],
+ "layout": "El número gigante al centro, una línea de contexto debajo, logo y CTA al pie. Fondo de marca.",
+ "produccion": "código (UI nativa)",
+ "formatos": "1:1, 4:5, 9:16",
+ "mejor_para": "Situacional: úsalo cuando el número es la diferencia.",
+ "nota": "Solo cifras aprobadas: «Más de 1.000 comercios», «8 de cada 10 siguen después de la prueba», «unos 10 minutos» (cierre), «menos de 5 minutos» (listo para usar), «15 días gratis» y el precio.",
+ "tier": "C",
+ "rol": "apoyo (mid-funnel)",
+ "orden": 112
+}

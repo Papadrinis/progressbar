@@ -1,0 +1,18 @@
+{
+ "tipo": "imagen",
+ "nombre": "Pregunta frecuente",
+ "descripcion": "Una objeción tal como la dicen los dueños, respondida de frente.",
+ "zonas": [
+  "pregunta",
+  "respuesta",
+  "cta"
+ ],
+ "layout": "La pregunta grande arriba (como burbuja o tarjeta), la respuesta corta debajo, logo y CTA al pie. Fondo de marca o foto desenfocada.",
+ "produccion": "código (UI nativa)",
+ "formatos": "1:1, 4:5, 9:16",
+ "mejor_para": "Mid-funnel; de los formatos que funcionan más rápido.",
+ "nota": "Objeciones reales y respuestas solo con datos confirmados: «¿Tengo que instalar algo?» → «No: funciona en el navegador, en computador y celular». «¿Cuánto cuesta?» → el precio más barato del mercado.",
+ "tier": "B",
+ "rol": "apoyo (mid-funnel)",
+ "orden": 109
+}

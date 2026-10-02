@@ -1,0 +1,17 @@
+{
+ "tipo": "imagen",
+ "nombre": "Foto de vida",
+ "descripcion": "Una foto real del avatar en un momento cotidiano hace el trabajo; casi sin texto.",
+ "zonas": [
+  "frase",
+  "cta"
+ ],
+ "layout": "Una sola foto documental (cerrando el local, en la casa mirando el celular, atendiendo tranquilo). Frase de 5–8 palabras en una esquina con aire, logo pequeño, CTA discreto.",
+ "produccion": "foto IA + texto",
+ "formatos": "1:1, 4:5, 9:16",
+ "mejor_para": "Apoyo nativo; acompaña bien a los formatos de escala.",
+ "nota": "Frase de identidad, no de venta («Las noches vuelven a ser suyas»). Pantallas sin leerse.",
+ "tier": "B",
+ "rol": "apoyo (mid-funnel)",
+ "orden": 108
+}

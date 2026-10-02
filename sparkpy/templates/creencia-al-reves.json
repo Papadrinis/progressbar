@@ -1,0 +1,18 @@
+{
+ "tipo": "imagen",
+ "nombre": "Rompe la creencia",
+ "descripcion": "Arriba, una creencia que frena al dueño; abajo, el giro que la desarma.",
+ "zonas": [
+  "creencia",
+  "giro",
+  "cta"
+ ],
+ "layout": "La creencia en grande arriba (contraste fuerte, puede ir tachada); el giro debajo en verde de marca; foto del avatar o tarjeta de interfaz como prueba. CTA al pie.",
+ "produccion": "foto IA + texto",
+ "formatos": "1:1, 4:5, 9:16",
+ "mejor_para": "Mid-funnel; pide conocer bien la objeción del buyer persona.",
+ "nota": "La creencia en palabras del dueño («Yo no soy de computadores»), nunca culparlo: le fallaron las herramientas.",
+ "tier": "B",
+ "rol": "apoyo (mid-funnel)",
+ "orden": 110
+}

@@ -1,0 +1,20 @@
+{
+ "tipo": "imagen",
+ "nombre": "Tarjeta de reseña",
+ "descripcion": "Una reseña real con estrellas, con el estilo de una tarjeta de reseñas.",
+ "zonas": [
+  "resena",
+  "autor",
+  "negocio",
+  "cta"
+ ],
+ "layout": "Tarjeta tipo reseña (estrellas, nombre, negocio, fecha) sobre fondo de marca o foto desenfocada; logo y CTA al pie. Sin logos de Google ni de redes.",
+ "produccion": "código (UI nativa)",
+ "formatos": "1:1, 4:5, 9:16",
+ "mejor_para": "Desgastado: solo con una reseña real muy específica y sorprendente.",
+ "nota": "Solo reseñas reales de Librería → Reseñas, copiadas textual. Sin reseñas cargadas no se genera.",
+ "tier": "E",
+ "rol": "desgastado",
+ "orden": 115,
+ "requiere": "reseña real"
+}

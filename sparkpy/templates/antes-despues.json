@@ -1,0 +1,19 @@
+{
+ "tipo": "imagen",
+ "nombre": "Antes / después",
+ "descripcion": "Imagen partida con flecha: la misma persona antes (noche, cuaderno) y después (tranquila, celular).",
+ "zonas": [
+  "titular",
+  "antes",
+  "despues",
+  "cta"
+ ],
+ "layout": "Dos paneles (lado a lado en 1:1 y 1.91:1, arriba/abajo en 4:5 y 9:16) con una flecha o divisor. Etiqueta corta en cada panel con las palabras del cliente. Titular arriba, CTA abajo. Mismo avatar y mismo encuadre en ambos paneles.",
+ "produccion": "foto IA + texto",
+ "formatos": "1:1, 4:5, 9:16",
+ "mejor_para": "Público que ya siente el problema (mid-funnel).",
+ "nota": "Las etiquetas en palabras del dueño («Domingo sumando el cuaderno» → «El cierre listo en el celular»). Sin exagerar el antes: humilde pero cuidado.",
+ "tier": "B",
+ "rol": "apoyo (mid-funnel)",
+ "orden": 104
+}
