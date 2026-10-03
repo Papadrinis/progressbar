@@ -1,0 +1,278 @@
+{
+  "id": "PLANPY_CO_ESCALA_TIENDA_V13_A",
+  "titulo": "V13-A · El número que no tiene (tienda de barrio, Pixar 3D)",
+  "bloques": [
+    {
+      "id": "b1",
+      "voz": "voz/v13/b1.mp3",
+      "locucion": "Don Hernán no sabe cuánto gastó este mes en proveedores. Nadie se lo pregunta, hasta que la plata no alcanza.",
+      "toma": "v13/shot1.mp4",
+      "lineas": [
+        "Don Hernán no sabe cuánto",
+        "gastó este mes en proveedores.",
+        "Nadie se lo pregunta, hasta",
+        "que la plata no alcanza."
+      ],
+      "claves": [
+        "gastó",
+        "alcanza"
+      ],
+      "cola": 8,
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": "30%",
+          "texto": "¿Cuánto gastó? 🤔",
+          "x": 740,
+          "y": 1520,
+          "giro": 6,
+          "tamano": 64,
+          "fondo": "#ffd400",
+          "sfx": "boing",
+          "volumenSfx": 0.4
+        }
+      ],
+      "duracion": 6.687
+    },
+    {
+      "id": "b2",
+      "voz": "voz/v13/b2.mp3",
+      "locucion": "Pide por intuición, paga por intuición, y a fin de mes la cuenta no le cuadra.",
+      "toma": "v13/shot2.mp4",
+      "lineas": [
+        "Pide por intuición,",
+        "paga por intuición,",
+        "y a fin de mes la cuenta",
+        "no le cuadra."
+      ],
+      "claves": [
+        "intuición",
+        "cuadra"
+      ],
+      "cola": 8,
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": "20%",
+          "texto": "A ojo 👀",
+          "x": 300,
+          "y": 1500,
+          "giro": -5,
+          "tamano": 66,
+          "fondo": "#ffffff"
+        },
+        {
+          "tipo": "sticker",
+          "en": "80%",
+          "texto": "$ ❌",
+          "x": 780,
+          "y": 1300,
+          "giro": 6,
+          "tamano": 70,
+          "fondo": "#ff4d4d",
+          "color": "#fff",
+          "sfx": "boing",
+          "volumenSfx": 0.35
+        }
+      ],
+      "duracion": 4.989
+    },
+    {
+      "id": "a",
+      "voz": "voz/v13/a.mp3",
+      "locucion": "Con Planpi, tiene el inventario, los proveedores y los pedidos, todo en el computador.",
+      "toma": "v13/shot3.mp4",
+      "lineas": [
+        "Con PlanPy, tiene el inventario,",
+        "los proveedores y los pedidos,",
+        "todo en el computador."
+      ],
+      "claves": [
+        "proveedores",
+        "pedidos"
+      ],
+      "extras": [
+        {
+          "tipo": "tarjeta",
+          "en": 18,
+          "formato": "computador",
+          "titulo": "Compras a proveedores",
+          "seccion": "Proveedores",
+          "menu": [
+            "Ventas",
+            "Inventario",
+            "Proveedores",
+            "Pedidos",
+            "Reportes"
+          ],
+          "filas": [
+            [
+              "Distribuidora El Sol",
+              "$1.250.000"
+            ],
+            [
+              "Lácteos La Vaquita",
+              "$480.000"
+            ],
+            [
+              "Granos y Abarrotes",
+              "$935.000"
+            ],
+            [
+              "Total del mes",
+              "$2.665.000"
+            ]
+          ],
+          "resaltar": 3
+        }
+      ],
+      "duracion": 5.486
+    },
+    {
+      "id": "br1",
+      "voz": "voz/v13/br1.mp3",
+      "locucion": "Y cuando quiere saber cómo le fue, no suma a mano: lo ve en el celular.",
+      "toma": "v13/shot4.mp4",
+      "lineas": [
+        "Y cuando quiere saber",
+        "cómo le fue, no suma a mano:",
+        "lo ve en el celular."
+      ],
+      "claves": [
+        "celular"
+      ],
+      "cola": 8,
+      "extras": [
+        {
+          "tipo": "tarjeta",
+          "en": 8,
+          "formato": "celular",
+          "titulo": "Así le fue este mes",
+          "seccion": "Reportes",
+          "filas": [
+            [
+              "Ventas",
+              "$9.840.000"
+            ],
+            [
+              "Compras",
+              "$2.665.000"
+            ],
+            [
+              "Diferencia",
+              "$7.175.000"
+            ]
+          ],
+          "resaltar": 2
+        }
+      ],
+      "duracion": 4.284
+    },
+    {
+      "id": "br2",
+      "voz": "voz/v13/br2.mp3",
+      "locucion": "Ya no le falta el número. Ahora sabe para dónde va su plata.",
+      "toma": "v13/shot5.mp4",
+      "lineas": [
+        "Ya no le falta el número.",
+        "Ahora sabe para dónde",
+        "va su plata."
+      ],
+      "claves": [
+        "número",
+        "plata"
+      ],
+      "cola": 14,
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": "60%",
+          "texto": "✔ Ya sabe",
+          "x": 760,
+          "y": 1400,
+          "giro": -4,
+          "tamano": 66,
+          "fondo": "#3DB55C",
+          "color": "#fff",
+          "sfx": "ding",
+          "volumenSfx": 0.35
+        }
+      ],
+      "duracion": 3.788
+    }
+  ],
+  "cierre": {
+    "voz": "voz/cta.mp3",
+    "cola": 50,
+    "locucion": "Pruébelo quince días gratis, en planpi punto io.",
+    "pantalla": {
+      "titulo": "15 días gratis",
+      "oferta": "¡Y sin tarjeta!",
+      "nota": "",
+      "pie": "La herramienta para todas las PYME."
+    },
+    "duracion": 3.474
+  },
+  "fuentes": [
+    {
+      "ruta": "voz/v13/b1.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261002_235242_3f9619ed-f785-4a96-8579-a21c07f334d5.mp3",
+      "job": "3f9619ed-f785-4a96-8579-a21c07f334d5",
+      "nota": "Xavier"
+    },
+    {
+      "ruta": "voz/v13/b2.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261002_235242_e81902fd-5921-43d2-b3be-ff0519bbd4d0.mp3",
+      "job": "e81902fd-5921-43d2-b3be-ff0519bbd4d0",
+      "nota": "Xavier"
+    },
+    {
+      "ruta": "voz/v13/a.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261002_235242_00cefb4e-e95e-4f67-8642-e06c8a53e339.mp3",
+      "job": "00cefb4e-e95e-4f67-8642-e06c8a53e339",
+      "nota": "Xavier"
+    },
+    {
+      "ruta": "voz/v13/br1.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261002_235242_7e9f30da-0946-4f15-ba1e-4c31f8b54d8a.mp3",
+      "job": "7e9f30da-0946-4f15-ba1e-4c31f8b54d8a",
+      "nota": "Xavier"
+    },
+    {
+      "ruta": "voz/v13/br2.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261002_235242_afb55cc5-a0d0-48d8-b1ad-6b8abce3826d.mp3",
+      "job": "afb55cc5-a0d0-48d8-b1ad-6b8abce3826d",
+      "nota": "Xavier"
+    },
+    {
+      "ruta": "v13/shot1.mp4",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261002_235843_e20886bd-125c-48c1-aae7-a7a7a953f0b3.mp4",
+      "job": "e20886bd-125c-48c1-aae7-a7a7a953f0b3",
+      "nota": "Seedance 2.5 · toma de prueba"
+    }
+  ],
+  "receta": {
+    "pedido": "wnmlai2oi31jnqy9tyiv (SparkPy Estudio)",
+    "mercado": "CO (usted)",
+    "eje": "ESCALA",
+    "estructura": "BAB",
+    "estilo": "Animación estilo Pixar 3D",
+    "voz": "text2speech_v2 · elevenlabs · Xavier 43173c95-3ec8-446a-a162-6504332c578b (narrador elegido en el pedido)",
+    "personaje": "gpt_image_2_5 high 2k 9:16 · opción 1 job 8cc31421-3f38-4e59-b02f-f907d818f9cf",
+    "fotogramas": [
+      "97301f83-6494-42d6-a1a1-ada7abc7351e",
+      "0efbfc9b-747d-476c-90b3-8afab7ba828e",
+      "6348cc27-3678-4437-ab29-e4d16d6b7ec3",
+      "9a13e613-a13f-453a-a531-aeba15f4ecf6",
+      "9ef34236-04ff-4eb6-8ad6-86e98f0621ca"
+    ],
+    "tomas": [
+      "e20886bd-125c-48c1-aae7-a7a7a953f0b3",
+      "7b48adf6-68cd-4fe8-90ca-0e89f8c05ef7",
+      "170d380e-3885-4a75-997a-51f3454b8d71",
+      "d21673a0-3225-4ce4-a321-da6476851d74",
+      "26b6862c-8059-43db-a3a7-a0288c78a58f"
+    ],
+    "cta": "Editado por el dueño en el Estudio (cta_editado): sin precio, «sin tarjeta» y «PYME» aprobados como excepción"
+  }
+}
