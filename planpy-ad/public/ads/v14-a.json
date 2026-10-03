@@ -193,7 +193,7 @@
   ],
   "cierre": {
     "voz": "voz/cta.mp3",
-    "cola": 40,
+    "cola": 20,
     "locucion": "Pruébelo quince días gratis, en planpi punto io.",
     "pantalla": {
       "titulo": "15 días gratis",
@@ -203,6 +203,36 @@
     "duracion": 3.474
   },
   "fuentes": [
+    {
+      "ruta": "v14/shot1.mp4",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261003_153802_f416e754-6e0b-4cca-a7b0-b9204afe1bb2.mp4",
+      "job": "f416e754-6e0b-4cca-a7b0-b9204afe1bb2",
+      "nota": "Seedance 2.5 · relanzada sin image_references"
+    },
+    {
+      "ruta": "v14/shot2.mp4",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261003_145310_111d1552-af82-406f-9b97-e9307e1c187f.mp4",
+      "job": "111d1552-af82-406f-9b97-e9307e1c187f",
+      "nota": "Seedance 2.5"
+    },
+    {
+      "ruta": "v14/shot3.mp4",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261003_145310_25d9d2ef-f1e8-451f-9161-e54f479a29eb.mp4",
+      "job": "25d9d2ef-f1e8-451f-9161-e54f479a29eb",
+      "nota": "Seedance 2.5"
+    },
+    {
+      "ruta": "v14/shot4.mp4",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261003_153802_4ebdc668-36e0-41cc-8cbb-7243476c7f19.mp4",
+      "job": "4ebdc668-36e0-41cc-8cbb-7243476c7f19",
+      "nota": "Seedance 2.5 · relanzada sin image_references"
+    },
+    {
+      "ruta": "v14/shot5.mp4",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261003_153802_764003de-7e6b-4f4c-8d34-0b3490f7c8d9.mp4",
+      "job": "764003de-7e6b-4f4c-8d34-0b3490f7c8d9",
+      "nota": "Seedance 2.5 · relanzada sin image_references"
+    },
     {
       "ruta": "voz/v14/h.mp3",
       "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261003_144812_dcbdaf09-45f8-41a2-94f4-cc2308e65009.mp3",
@@ -250,11 +280,11 @@
       "04845bdb-282e-4045-828f-1cc68bb53200"
     ],
     "tomas": [
-      "c6ded937-4a6d-4501-ac43-dd6c239597aa",
+      "f416e754-6e0b-4cca-a7b0-b9204afe1bb2",
       "111d1552-af82-406f-9b97-e9307e1c187f",
       "25d9d2ef-f1e8-451f-9161-e54f479a29eb",
-      "bf433a48-daca-4223-9d9c-4b68f073a772",
-      "d2ce1d43-bb72-4d36-8a77-4ae4ec4d6770"
+      "4ebdc668-36e0-41cc-8cbb-7243476c7f19",
+      "764003de-7e6b-4f4c-8d34-0b3490f7c8d9"
     ],
     "cta": "Editado por el dueño (cta_editado): solo «15 días gratis», sin precio"
   }
