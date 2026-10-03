@@ -1,0 +1,203 @@
+{
+  "id": "PLANPY_CO_ESCALA_PELUQUERIA_V15_A",
+  "titulo": "V15-A · Domingo cuadrando agenda (Valentina a cámara, UGC, voz nativa Veo)",
+  "velocidadVoz": 1,
+  "musica": null,
+  "bloques": [
+    {
+      "id": "h",
+      "voz": "voz/v15/h.wav",
+      "locucion": "Son las nueve de la noche, domingo, y todavía estoy cuadrando la agenda de la semana.",
+      "entrada": 0,
+      "toma": "v15/shot1.mp4",
+      "lineas": [
+        "Son las nueve de la noche, domingo,",
+        "y todavía estoy cuadrando",
+        "la agenda de la semana."
+      ],
+      "claves": [
+        "domingo",
+        "agenda"
+      ],
+      "cola": 2,
+      "texto": {
+        "tamano": 60
+      },
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": "8%",
+          "texto": "Domingo · 9:00 p.m. 🌙",
+          "x": 540,
+          "y": 1560,
+          "giro": -4,
+          "tamano": 56,
+          "fondo": "#ffffff"
+        }
+      ]
+    },
+    {
+      "id": "n1",
+      "voz": "voz/v15/n1.wav",
+      "locucion": "Dos clientas agendaron por WhatsApp, pero en el cuaderno no quedaron escritas.",
+      "entrada": 0,
+      "toma": "v15/shot2.mp4",
+      "lineas": [
+        "Dos clientas agendaron por WhatsApp,",
+        "pero en el cuaderno",
+        "no quedaron escritas."
+      ],
+      "claves": [
+        "WhatsApp",
+        "cuaderno"
+      ],
+      "cola": 2,
+      "texto": {
+        "tamano": 60
+      },
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": "55%",
+          "texto": "📒 ≠ 💬",
+          "x": 760,
+          "y": 1500,
+          "giro": 6,
+          "tamano": 66,
+          "fondo": "#ff4d4d",
+          "color": "#fff",
+          "sfx": "boing",
+          "volumenSfx": 0.3
+        }
+      ]
+    },
+    {
+      "id": "n2",
+      "voz": "voz/v15/n2.wav",
+      "locucion": "Yo quiero abrir una segunda sede, pero así no me alcanza ni para la que tengo.",
+      "entrada": 0,
+      "toma": "v15/shot3.mp4",
+      "lineas": [
+        "Yo quiero abrir una segunda sede,",
+        "pero así no me alcanza",
+        "ni para la que tengo."
+      ],
+      "claves": [
+        "segunda sede"
+      ],
+      "cola": 2,
+      "texto": {
+        "tamano": 60
+      },
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": "30%",
+          "texto": "¿Y la segunda sede? 🤔",
+          "x": 540,
+          "y": 1560,
+          "giro": -3,
+          "tamano": 56,
+          "fondo": "#ffd400"
+        }
+      ]
+    },
+    {
+      "id": "o1",
+      "voz": "voz/v15/o1.wav",
+      "locucion": "Con Planpi la agenda se llena sola, a cualquier hora, y el recordatorio le sale solo a la clienta.",
+      "entrada": 0,
+      "toma": "v15/shot4.mp4",
+      "lineas": [
+        "Con PlanPy la agenda se llena sola,",
+        "a cualquier hora,",
+        "y el recordatorio",
+        "le sale solo a la clienta."
+      ],
+      "claves": [
+        "sola",
+        "recordatorio"
+      ],
+      "cola": 2,
+      "texto": {
+        "tamano": 58
+      },
+      "extras": [
+        {
+          "tipo": "tarjeta",
+          "en": "20%",
+          "formato": "celular",
+          "titulo": "Agenda de hoy",
+          "seccion": "Agenda",
+          "filas": [
+            [
+              "10:00 · Laura",
+              "Corte"
+            ],
+            [
+              "11:30 · Camila",
+              "Tinte"
+            ],
+            [
+              "15:00 · Nueva cita",
+              "Confirmada"
+            ]
+          ],
+          "resaltar": 2,
+          "listo": "Recordatorio enviado"
+        }
+      ]
+    },
+    {
+      "id": "cta",
+      "voz": "voz/v15/cta.wav",
+      "locucion": "Pruébelo quince días gratis, en planpi punto io.",
+      "entrada": 0,
+      "toma": "v15/shot5.mp4",
+      "lineas": [
+        "Pruébelo 15 días gratis,",
+        "en planpy.io"
+      ],
+      "claves": [
+        "gratis"
+      ],
+      "cola": 4,
+      "extras": []
+    }
+  ],
+  "cierre": {
+    "voz": "voz/v15/silencio.wav",
+    "locucion": "",
+    "cola": 40,
+    "pantalla": {
+      "titulo": "15 días gratis",
+      "oferta": "",
+      "nota": ""
+    }
+  },
+  "fuentes": [],
+  "receta": {
+    "pedido": "jgs6fayxnl8s5ytijf85",
+    "mercado": "CO (usted)",
+    "eje": "ESCALA",
+    "estructura": "Hook–Story–Offer",
+    "estilo": "Personas reales · hablando a cámara (Veo 3.1 ultra con voz nativa de Bogotá)",
+    "avatar": "Valentina · referencia media 7aef0783-efb0-418e-9f75-c4f0954ce987",
+    "fotogramas": [
+      "cf0570f0-cac2-4e1a-8283-5e64b5d30170",
+      "2ce17ee0-3bd9-4903-949c-df75df07f1d9",
+      "bc5ea785-e007-4f99-8329-b6c24e220826",
+      "16d1a454-5e4a-46a3-a611-f5f851125898",
+      "b900b87d-8c7f-4d0f-9aa9-1bda5354c82f"
+    ],
+    "tomas": [
+      "a7dba553-7a07-40a9-bd5b-61c51ccdb427",
+      "89014f39-b9e0-4db7-9424-199503043b81",
+      "afcc1b31-dd06-416d-b02a-c93dba759887",
+      "cedec13c-a46c-4ddc-ae8b-e9ac3a018698",
+      "551960b4-5c1e-4d89-beb9-61ec39284514"
+    ],
+    "voz": "Audio propio de cada toma de Veo, extraído y recortado al final de la frase (entrada 0, velocidad 1)",
+    "cta": "Editado por el dueño (cta_editado): solo «15 días gratis», sin precio"
+  }
+}
