@@ -1,0 +1,261 @@
+{
+  "id": "PLANPY_CO_ESCALA_ROPA_V14_A",
+  "titulo": "V14-A · Dígalo, usted lo sabe (tienda de ropa, Pixar 3D, Valentina)",
+  "bloques": [
+    {
+      "id": "h",
+      "voz": "voz/v14/h.mp3",
+      "locucion": "La primera tienda funciona porque usted está ahí. Dígalo, usted lo sabe.",
+      "toma": "v14/shot1.mp4",
+      "lineas": [
+        "La primera tienda funciona",
+        "porque usted está ahí.",
+        "Dígalo, usted lo sabe."
+      ],
+      "claves": [
+        "ahí",
+        "sabe"
+      ],
+      "cola": 5,
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": "75%",
+          "texto": "😏 Usted lo sabe",
+          "x": 700,
+          "y": 1500,
+          "giro": -5,
+          "tamano": 62,
+          "fondo": "#ffd400",
+          "sfx": "boing",
+          "volumenSfx": 0.4
+        }
+      ],
+      "duracion": 4.598
+    },
+    {
+      "id": "n1",
+      "voz": "voz/v14/n1.mp3",
+      "locucion": "Pero en la segunda no hay nadie que haga lo que usted hace. No hay un sistema que copiar, solo está usted, repartido.",
+      "toma": "v14/shot2.mp4",
+      "lineas": [
+        "Pero en la segunda no hay nadie",
+        "que haga lo que usted hace.",
+        "No hay un sistema que copiar,",
+        "solo está usted, repartido."
+      ],
+      "claves": [
+        "segunda",
+        "repartido"
+      ],
+      "cola": 5,
+      "texto": {
+        "tamano": 58
+      },
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": "10%",
+          "texto": "Local 2 📍",
+          "x": 300,
+          "y": 1560,
+          "giro": -4,
+          "tamano": 60,
+          "fondo": "#ffffff"
+        }
+      ],
+      "duracion": 6.844
+    },
+    {
+      "id": "n2",
+      "voz": "voz/v14/n2.mp3",
+      "locucion": "El cuaderno guarda todo lo que pasa, pero no le enseña a nadie a manejar la tienda.",
+      "toma": "v14/shot3.mp4",
+      "lineas": [
+        "El cuaderno guarda todo",
+        "lo que pasa, pero no le enseña",
+        "a nadie a manejar la tienda."
+      ],
+      "claves": [
+        "enseña"
+      ],
+      "cola": 5,
+      "texto": {
+        "tamano": 62
+      },
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": "55%",
+          "texto": "📒 … ❌",
+          "x": 760,
+          "y": 1300,
+          "giro": 6,
+          "tamano": 66,
+          "fondo": "#ff4d4d",
+          "color": "#fff",
+          "sfx": "boing",
+          "volumenSfx": 0.35
+        }
+      ],
+      "duracion": 4.754
+    },
+    {
+      "id": "o1",
+      "voz": "voz/v14/o1.mp3",
+      "locucion": "Con Planpi, cada empleado entra con su propio acceso, y usted ve todo desde su cuenta, estén donde estén.",
+      "toma": "v14/shot4.mp4",
+      "lineas": [
+        "Con PlanPy, cada empleado",
+        "entra con su propio acceso,",
+        "y usted ve todo desde su cuenta,",
+        "estén donde estén."
+      ],
+      "claves": [
+        "acceso",
+        "todo"
+      ],
+      "texto": {
+        "tamano": 58
+      },
+      "extras": [
+        {
+          "tipo": "tarjeta",
+          "en": 18,
+          "formato": "computador",
+          "titulo": "Usuarios y permisos",
+          "seccion": "Usuarios",
+          "menu": [
+            "Ventas",
+            "Inventario",
+            "Usuarios",
+            "Sedes",
+            "Reportes"
+          ],
+          "filas": [
+            [
+              "Laura · Local 1",
+              "Ventas"
+            ],
+            [
+              "Camila · Local 2",
+              "Ventas"
+            ],
+            [
+              "Valentina",
+              "Dueña · todo"
+            ]
+          ],
+          "resaltar": 2
+        }
+      ],
+      "duracion": 6.922
+    },
+    {
+      "id": "o2",
+      "voz": "voz/v14/o2.mp3",
+      "locucion": "Así el sistema funciona, aunque usted no esté.",
+      "toma": "v14/shot5.mp4",
+      "lineas": [
+        "Así el sistema funciona,",
+        "aunque usted no esté."
+      ],
+      "claves": [
+        "funciona"
+      ],
+      "cola": 14,
+      "extras": [
+        {
+          "tipo": "tarjeta",
+          "en": 8,
+          "formato": "celular",
+          "titulo": "Hoy en sus locales",
+          "seccion": "Ventas",
+          "filas": [
+            [
+              "Local 1",
+              "$1.240.000"
+            ],
+            [
+              "Local 2",
+              "$980.000"
+            ],
+            [
+              "Total del día",
+              "$2.220.000"
+            ]
+          ],
+          "resaltar": 2
+        }
+      ],
+      "duracion": 2.769
+    }
+  ],
+  "cierre": {
+    "voz": "voz/cta.mp3",
+    "cola": 40,
+    "locucion": "Pruébelo quince días gratis, en planpi punto io.",
+    "pantalla": {
+      "titulo": "15 días gratis",
+      "oferta": "",
+      "nota": ""
+    },
+    "duracion": 3.474
+  },
+  "fuentes": [
+    {
+      "ruta": "voz/v14/h.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261003_144812_dcbdaf09-45f8-41a2-94f4-cc2308e65009.mp3",
+      "job": "dcbdaf09-45f8-41a2-94f4-cc2308e65009",
+      "nota": "Xavier"
+    },
+    {
+      "ruta": "voz/v14/n1.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261003_144813_2d732ca5-0965-408f-99fa-b9825888278f.mp3",
+      "job": "2d732ca5-0965-408f-99fa-b9825888278f",
+      "nota": "Xavier"
+    },
+    {
+      "ruta": "voz/v14/n2.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261003_144812_52be2305-42fe-47c2-8469-4121b11a3f13.mp3",
+      "job": "52be2305-42fe-47c2-8469-4121b11a3f13",
+      "nota": "Xavier"
+    },
+    {
+      "ruta": "voz/v14/o1.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261003_145147_7e2e092e-a7a9-4229-89b3-9ab344aadce8.mp3",
+      "job": "7e2e092e-a7a9-4229-89b3-9ab344aadce8",
+      "nota": "Xavier · «ve todo desde su cuenta» (aprobado)"
+    },
+    {
+      "ruta": "voz/v14/o2.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261003_144812_e5060b6e-11bd-4e17-8a04-366239a95665.mp3",
+      "job": "e5060b6e-11bd-4e17-8a04-366239a95665",
+      "nota": "Xavier"
+    }
+  ],
+  "receta": {
+    "pedido": "jcpxk6y79cy722oyhamv",
+    "mercado": "CO (usted)",
+    "eje": "ESCALA",
+    "estructura": "Hook–Story–Offer",
+    "estilo": "Pixar 3D",
+    "avatar": "Valentina · referencia media 7aef0783-efb0-418e-9f75-c4f0954ce987",
+    "personaje": "opción 2 · job c31fa663-fe3c-43a0-9bc4-80420dd4775b",
+    "fotogramas": [
+      "79074041-213f-4cd7-87b9-71b8e8a3bbdd",
+      "e8a6c00b-19e9-491f-8bdb-94d425d4e8c4",
+      "e2d06a1c-4903-4574-9fc6-fc1f3e44fd5d",
+      "041d084f-49b1-4eef-9c09-6e45eabaf618",
+      "04845bdb-282e-4045-828f-1cc68bb53200"
+    ],
+    "tomas": [
+      "c6ded937-4a6d-4501-ac43-dd6c239597aa",
+      "111d1552-af82-406f-9b97-e9307e1c187f",
+      "25d9d2ef-f1e8-451f-9161-e54f479a29eb",
+      "bf433a48-daca-4223-9d9c-4b68f073a772",
+      "d2ce1d43-bb72-4d36-8a77-4ae4ec4d6770"
+    ],
+    "cta": "Editado por el dueño (cta_editado): solo «15 días gratis», sin precio"
+  }
+}
