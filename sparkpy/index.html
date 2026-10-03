@@ -507,7 +507,7 @@ canvas.pieza { width: 180px; max-width: 100%; height: auto; border-radius: 8px; 
   };
 
   const sel = Object.assign({ tipo: 'video', formatos: ['4:5'], mercado: 'CO', rubro: null, persona: null, angulo: null, features: [], avatar: null, estructura: null, duracion: 25 }, store.get('sel', {}));
-  let opciones = [], elegido = null, guion = null, estilo = store.get('estilo', null), pedidoCreado = null, generando = null, errorGen = null, rawGen = '';
+  let opciones = [], genEstilo = null, elegido = null, guion = null, estilo = store.get('estilo', null), pedidoCreado = null, generando = null, errorGen = null, rawGen = '';
   let view = store.get('view', 'crear'), libCol = store.get('libCol', 'rubros'), libQ = '';
 
   // ---------- utilidades ----------
@@ -594,7 +594,7 @@ canvas.pieza { width: 180px; max-width: 100%; height: auto; border-radius: 8px; 
   const tipoDe = (e) => e?.tipo || 'video';
   const estiloSirve = (st) => { const t = st?.tipo || 'video'; return t === 'ambos' || t === sel.tipo; };
   const FORMATOS = [['1:1', 'Feed cuadrado'], ['4:5', 'Feed vertical'], ['9:16', 'Stories y Reels'], ['1.91:1', 'Horizontal / link']];
-  const ready = () => sel.rubro && sel.persona && sel.angulo && sel.estructura && tipoDe(byId('estructuras', sel.estructura)) === sel.tipo && (!esImagen() || sel.formatos.length) && !(esImagen() && pideResenas(byId('estructuras', sel.estructura)) && !resenasUsables().length);
+  const ready = () => sel.rubro && sel.persona && sel.angulo && sel.estructura && (esImagen() || estilo) && tipoDe(byId('estructuras', sel.estructura)) === sel.tipo && (!esImagen() || sel.formatos.length) && !(esImagen() && pideResenas(byId('estructuras', sel.estructura)) && !resenasUsables().length);
 
   // Avatar propuesto: el actor que mejor encaja con el buyer persona (edad, mercado) y ya tiene cara aprobada.
   const rango = (txt) => { const n = String(txt || '').match(/\d+/g); return n ? [+n[0], +(n[1] || n[0])] : null; };
@@ -687,16 +687,17 @@ canvas.pieza { width: 180px; max-width: 100%; height: auto; border-radius: 8px; 
 
     // paso 2
     const s2 = h('div', { class: 'step' },
-      h('div', { class: 'step-head' }, h('span', { class: 'n' }, 'PASO 2'), h('h2', {}, esImagen() ? 'Copy' : 'Guiones'), h('p', {}, esImagen() ? 'Tres propuestas de copy para las zonas del template, con el visual de cada una. Elija una y edítela.' : 'Tres opciones de storyboard con la estructura elegida. Elija una y edítela.')));
+      h('div', { class: 'step-head' }, h('span', { class: 'n' }, 'PASO 3'), h('h2', {}, esImagen() ? 'Copy' : 'Guiones'), h('p', {}, esImagen() ? 'Tres propuestas de copy para las zonas del template, con el visual de cada una. Elija una y edítela.' : 'Tres opciones de guion y storyboard pensadas para el estilo elegido. Elija una y edítela.')));
     if (!sample) s2.append(h('div', { class: 'empty' }, 'Generar con Claude necesita abrir esta página en claude.ai y permitir que use Claude.'));
     else if (generando) s2.append(h('div', { class: 'thinking' }, h('span', { class: 'dot' }), h('span', {}, rawGen ? `Escribiendo… ${rawGen.length} caracteres` : (esImagen() ? 'Pensando el copy…' : 'Pensando los guiones…') + ' tarda entre 20 y 60 segundos.'), h('button', { class: 'btn ghost small', onclick: () => generando?.abort() }, 'Detener')));
     else if (errorGen) s2.append(h('div', { class: 'claims' }, errorGen), rawGen ? h('pre', { class: 'raw' }, rawGen) : null);
-    if (!generando && !opciones.length && sample && !errorGen) s2.append(h('div', { class: 'empty' }, ready() ? `Todo listo: pulse «${esImagen() ? 'Generar 3 copys' : 'Generar 3 guiones'}».` : `Complete rubro, buyer persona, ángulo, ${esImagen() ? 'template y formato' : 'estructura'}.`));
+    if (!generando && !opciones.length && sample && !errorGen) s2.append(h('div', { class: 'empty' }, ready() ? `Todo listo: pulse «${esImagen() ? 'Generar 3 copys' : 'Generar 3 guiones'}».` : `Complete rubro, buyer persona, ángulo, ${esImagen() ? 'template y formato' : 'estructura y estilo de ad'}.`));
+    if (opciones.length && !esImagen() && genEstilo !== estilo) s2.append(h('div', { class: 'claims' }, 'Estos guiones se escribieron para otro estilo. Pulse «Generar otras 3» para tenerlos pensados para ', h('b', {}, name('estilos', estilo) || 'el estilo elegido'), '.'));
     if (opciones.length) s2.append(h('div', { class: 'options' }, opciones.map((o, i) => (o.copy ? renderOptionImg(o, i) : renderOption(o, i)))));
 
     // paso 3
     const s3 = h('div', { class: 'step' },
-      h('div', { class: 'step-head' }, h('span', { class: 'n' }, 'PASO 3'), h('h2', {}, 'Estilo de ad'), h('p', {}, esImagen() ? 'Cómo se va a producir la imagen. El costo es en créditos de Higgsfield.' : 'Cómo se va a producir. El costo es en créditos de Higgsfield.')),
+      h('div', { class: 'step-head' }, h('span', { class: 'n' }, 'PASO 2'), h('h2', {}, 'Estilo de ad'), h('p', {}, esImagen() ? 'Cómo se va a producir la imagen. El costo es en créditos de Higgsfield.' : 'Cómo se va a producir. Elíjalo antes del guion: el guion y el storyboard se escriben para este formato. El costo es en créditos de Higgsfield.')),
       h('div', { class: 'styles' }, byOrden('estilos').filter(estiloSirve).map((s) => h('button', { class: 'style', 'aria-pressed': String(estilo === s.id), onclick: () => { estilo = estilo === s.id ? null : s.id; save(); render(); } },
         h('strong', {}, s.nombre), h('p', {}, s.descripcion),
         h('div', { class: 'meta' }, h('span', { class: pillClass(s.estado) }, s.estado), h('span', { class: 'cost' }, s.costo))))),
@@ -756,7 +757,7 @@ canvas.pieza { width: 180px; max-width: 100%; height: auto; border-radius: 8px; 
         h('button', { class: 'btn block lime', disabled: !ready() || !sample || !!generando, onclick: generar }, opciones.length ? 'Generar otras 3' : esImagen() ? 'Generar 3 copys' : 'Generar 3 guiones'),
         h('button', { class: 'btn block ghost small', onclick: () => { Object.assign(sel, { rubro: null, persona: null, angulo: null, avatar: null, avatarManual: false, estructura: null }); opciones = []; elegido = null; guion = null; errorGen = null; save(); render(); } }, 'Limpiar selección')));
 
-    root.append(h('div', { class: 'create' }, h('div', {}, s1, s2, s3, s4), aside));
+    root.append(h('div', { class: 'create' }, h('div', {}, s1, s3, s2, s4), aside));
   }
 
   function renderOptionImg(o, i) {
@@ -889,6 +890,7 @@ Escribe primero la situación de cada guion (quién, dónde, cuándo, qué pasa 
       features_disponibles: [...lib.features].sort((a, b) => (a.orden ?? 999) - (b.orden ?? 999)).map((f) => ({ id: f.id, ...pickFields(f, ['nombre', 'dispositivo', 'claim', 'estado']), sugerida_para_el_rubro: (byId('rubros', sel.rubro)?.features || []).includes(f.id) || undefined })),
       avatar: pickFields(byId('avatares', avatarActual()), ['nombre', 'edad', 'genero', 'ciudad', 'rasgos', 'estilo']),
       estructura: pickFields(est, ['nombre', 'pasos', 'nota']),
+      estilo_de_ad: pickFields(byId('estilos', estilo), ['nombre', 'descripcion', 'pipeline', 'riesgos']),
     };
     return `Eres el guionista de anuncios en video de PlanPy (vertical 9:16, Meta/TikTok). Escribe 3 guiones distintos (storyboards) para este brief. Cada uno con un gancho diferente.
 
@@ -902,6 +904,7 @@ ${JSON.stringify(data, null, 1)}
 Elige tú las features: 1 o 2 de features_disponibles (por id) que resuelvan el dolor del ángulo para este rubro. Prefiere las sugeridas para el rubro y evita las que están «sin confirmar»; si una es imprescindible, anótala en claims_a_confirmar. Cada guion puede elegir distinto.
 
 ${LIBERTAD}
+Formato: escribe el guion y el storyboard para el estilo_de_ad elegido, no para un video genérico. Las "toma" tienen que poder producirse con su pipeline y verse como ese formato (p. ej. animación 3D: personajes y escenas animadas; voz en off: nadie habla a cámara y la voz es narración sobre lo que se ve; meme o UGC: plano de celular, ritmo nativo de TikTok). La "voz" también se escribe para ese formato: narración, diálogo a cámara o pensamiento en primera persona, según corresponda.
 ${aCamara(byId('estilos', estilo)) ? `\nEste anuncio es orgánico, con ${byId('avatares', avatarActual())?.nombre || 'el avatar'} hablando a cámara: la "voz" de cada bloque es lo que dice a cámara, como lo diría un dueño real ${sel.mercado === 'AR' ? 'argentino (vos)' : 'colombiano (usted)'} grabándose con el celular, frases cortas y naturales, máximo 18 palabras por bloque (cada bloque es una toma de 8 s). La "toma" dice dónde está, qué hace mientras habla y qué se oye de fondo.\n` : ''}
 Usa los pasos de la estructura "${est?.nombre}" en orden (${(est?.pasos || []).join(' → ')}); puedes repartir un paso en dos bloques o juntar dos pasos cortos si la duración lo pide. El CTA va aparte, al final. La suma de "seg" de los bloques más el CTA debe acercarse a ${sel.duracion} s.
 
@@ -951,7 +954,7 @@ Responde SOLO con JSON con esta forma:
       const res = await sample.json(esImagen() ? buildPromptImg() : buildPrompt(), { signal: ctl.signal, cache: false, onText: ({ text }) => { rawGen = text; const el = document.querySelector('.thinking span:nth-child(2)'); if (el) el.textContent = `Escribiendo… ${text.length} caracteres`; } });
       const ops = Array.isArray(res?.opciones) ? res.opciones.filter((o) => (esImagen() ? o?.copy && typeof o.copy === 'object' : Array.isArray(o?.bloques))) : [];
       if (!ops.length) throw { code: 'invalid_json', text: JSON.stringify(res) };
-      opciones = ops; elegido = null; guion = null; rawGen = '';
+      opciones = ops; genEstilo = estilo; elegido = null; guion = null; rawGen = '';
     } catch (e) {
       const m = {
         cancelled: null, not_granted: 'Esta página no tiene permiso para usar Claude. Recárguela y permítalo.', sampling_disabled: 'Claude no está disponible en esta cuenta.',
