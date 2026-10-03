@@ -11,9 +11,10 @@
       "entrada": 0,
       "toma": "v15/shot1.mp4",
       "lineas": [
-        "Son las nueve de la noche, domingo,",
-        "y todavía estoy cuadrando",
-        "la agenda de la semana."
+        "Son las nueve de la noche,",
+        "domingo, y todavía estoy",
+        "cuadrando la agenda",
+        "de la semana."
       ],
       "claves": [
         "domingo",
@@ -21,7 +22,8 @@
       ],
       "cola": 2,
       "texto": {
-        "tamano": 60
+        "tamano": 60,
+        "top": 95
       },
       "extras": [
         {
@@ -34,7 +36,8 @@
           "tamano": 56,
           "fondo": "#ffffff"
         }
-      ]
+      ],
+      "duracion": 5
     },
     {
       "id": "n1",
@@ -43,9 +46,10 @@
       "entrada": 0,
       "toma": "v15/shot2.mp4",
       "lineas": [
-        "Dos clientas agendaron por WhatsApp,",
-        "pero en el cuaderno",
-        "no quedaron escritas."
+        "Dos clientas agendaron",
+        "por WhatsApp, pero en el",
+        "cuaderno no quedaron",
+        "escritas."
       ],
       "claves": [
         "WhatsApp",
@@ -53,7 +57,8 @@
       ],
       "cola": 2,
       "texto": {
-        "tamano": 60
+        "tamano": 60,
+        "top": 95
       },
       "extras": [
         {
@@ -69,7 +74,8 @@
           "sfx": "boing",
           "volumenSfx": 0.3
         }
-      ]
+      ],
+      "duracion": 5.2
     },
     {
       "id": "n2",
@@ -78,8 +84,9 @@
       "entrada": 0,
       "toma": "v15/shot3.mp4",
       "lineas": [
-        "Yo quiero abrir una segunda sede,",
-        "pero así no me alcanza",
+        "Yo quiero abrir",
+        "una segunda sede, pero así",
+        "no me alcanza",
         "ni para la que tengo."
       ],
       "claves": [
@@ -87,7 +94,8 @@
       ],
       "cola": 2,
       "texto": {
-        "tamano": 60
+        "tamano": 60,
+        "top": 95
       },
       "extras": [
         {
@@ -100,7 +108,8 @@
           "tamano": 56,
           "fondo": "#ffd400"
         }
-      ]
+      ],
+      "duracion": 4.3
     },
     {
       "id": "o1",
@@ -109,10 +118,10 @@
       "entrada": 0,
       "toma": "v15/shot4.mp4",
       "lineas": [
-        "Con PlanPy la agenda se llena sola,",
-        "a cualquier hora,",
-        "y el recordatorio",
-        "le sale solo a la clienta."
+        "Con PlanPy la agenda",
+        "se llena sola, a cualquier hora,",
+        "y el recordatorio le sale",
+        "solo a la clienta."
       ],
       "claves": [
         "sola",
@@ -120,7 +129,8 @@
       ],
       "cola": 2,
       "texto": {
-        "tamano": 58
+        "tamano": 58,
+        "top": 95
       },
       "extras": [
         {
@@ -146,7 +156,8 @@
           "resaltar": 2,
           "listo": "Recordatorio enviado"
         }
-      ]
+      ],
+      "duracion": 6.3
     },
     {
       "id": "cta",
@@ -162,7 +173,8 @@
         "gratis"
       ],
       "cola": 4,
-      "extras": []
+      "extras": [],
+      "duracion": 4
     }
   ],
   "cierre": {
@@ -173,9 +185,41 @@
       "titulo": "15 días gratis",
       "oferta": "",
       "nota": ""
-    }
+    },
+    "duracion": 0.4
   },
-  "fuentes": [],
+  "fuentes": [
+    {
+      "ruta": "v15/shot1.mp4",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261003_164825_a7dba553-7a07-40a9-bd5b-61c51ccdb427.mp4",
+      "job": "a7dba553-7a07-40a9-bd5b-61c51ccdb427",
+      "nota": "Veo 3.1 ultra con audio · bajada a 1080p; la voz del bloque es su audio recortado"
+    },
+    {
+      "ruta": "v15/shot2.mp4",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261003_165825_89014f39-b9e0-4db7-9424-199503043b81.mp4",
+      "job": "89014f39-b9e0-4db7-9424-199503043b81",
+      "nota": "Veo 3.1 ultra con audio · bajada a 1080p; la voz del bloque es su audio recortado"
+    },
+    {
+      "ruta": "v15/shot3.mp4",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261003_165825_afcc1b31-dd06-416d-b02a-c93dba759887.mp4",
+      "job": "afcc1b31-dd06-416d-b02a-c93dba759887",
+      "nota": "Veo 3.1 ultra con audio · bajada a 1080p; la voz del bloque es su audio recortado"
+    },
+    {
+      "ruta": "v15/shot4.mp4",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261003_165826_cedec13c-a46c-4ddc-ae8b-e9ac3a018698.mp4",
+      "job": "cedec13c-a46c-4ddc-ae8b-e9ac3a018698",
+      "nota": "Veo 3.1 ultra con audio · bajada a 1080p; la voz del bloque es su audio recortado"
+    },
+    {
+      "ruta": "v15/shot5.mp4",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261003_165827_551960b4-5c1e-4d89-beb9-61ec39284514.mp4",
+      "job": "551960b4-5c1e-4d89-beb9-61ec39284514",
+      "nota": "Veo 3.1 ultra con audio · bajada a 1080p; la voz del bloque es su audio recortado"
+    }
+  ],
   "receta": {
     "pedido": "jgs6fayxnl8s5ytijf85",
     "mercado": "CO (usted)",
