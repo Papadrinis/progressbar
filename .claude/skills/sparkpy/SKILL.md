@@ -57,9 +57,13 @@ Cuando llegue `/sparkpy pedido <id>`:
    actor recurrente con nombre propio (Andrés, Carolina, Don Hernán…): su cara y `rasgos` son fijos y
    sirve para cualquier rubro; lo que cambia por anuncio es el **look** (`avatar.look`: vestuario y
    escenario), que viene en el pedido. Las **features** no las elige el usuario: vienen en
-   `guion.features` (1–2, elegidas por Claude). Cada **ángulo** (`angulos/`) es un one-pager: `sobre`,
-   `por_que`, ganchos por mercado y `visual` (escena de apertura; puede traer `visual_media`, un asset
-   del artifact en `/_blob/<id>`, útil como referencia de fotograma).
+   `guion.features` (1–2, elegidas por Claude). Cada **ángulo** (`angulos/`) es **solo el dolor** que se
+   comunica (`sobre`, `por_que`, `pregunta`). Sus ganchos y su `visual` de ejemplo son referencia para el
+   usuario, **no** la escena del anuncio: no los copies. La escena sale del guion aprobado:
+   `guion.situacion` (quién, dónde, cuándo, qué pasa) y `guion.bloques[].toma`. Casting, look,
+   fotogramas y tomas se construyen desde esa situación, con continuidad entre bloques. Un mismo ángulo
+   debe verse distinto en cada anuncio; antes de producir, compara con `public/ads/` y no repitas
+   escenas ya usadas con ese ángulo.
 2. Márcalo `update` → `{"estado": "en producción"}` (con `if_version`).
 3. El guion ya está aprobado: salta la etapa 1. Pásalo a `guiones/<rubro>-v<N>.md` y revisa claims
    contra `references/reglas.md` y `planpy-copy` antes de gastar créditos; si algo choca, dilo.

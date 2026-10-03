@@ -382,13 +382,13 @@ canvas.pieza { width: 180px; max-width: 100%; height: auto; border-radius: 8px; 
     angulos: { label: 'Ángulos', one: 'ángulo', sub: ['eje'], pill: 'estado', text: 'sobre', ficha: true, que: 'un ángulo creativo (concepto) para anuncios de PlanPy, en formato one-pager', fields: [
       ['nombre', 'Nombre del ángulo', 'text', null, 'Nombre corto y memorable, p. ej. «El cierre», «La agenda en la cabeza»'],
       ['eje', 'Eje', 'select', ['VIDA', 'ESCALA', 'Transversal'], 'A qué eje sirve'],
-      ['sobre', 'About (qué es)', 'textarea', null, 'Describe el ángulo en 2–3 frases: la situación concreta y la tensión que dispara'],
+      ['sobre', 'El dolor (qué es)', 'textarea', null, 'El dolor en 2–3 frases: qué le pasa al dueño y por qué le pesa. Sin escena: la escena la inventa cada guion'],
       ['por_que', 'Por qué va a funcionar', 'textarea', null, '3 razones, una por línea: qué lo hace atractivo, pertinente para el dueño y fuerte frente a otros ángulos'],
       ['pregunta', 'Pregunta central', 'text', null, 'La pregunta que el dueño no puede responder, p. ej. «¿Ganó hoy?»'],
-      ['gancho_co', 'Hook copy · Colombia (usted)', 'textarea', null, '2 o 3 ganchos para Colombia, uno por línea, con usted; forma A (escena), B (pregunta), C (acuerdo incómodo) o D (número que no tiene)'],
-      ['gancho_ar', 'Hook copy · Argentina (vos)', 'textarea', null, '2 o 3 ganchos para Argentina, uno por línea, con voseo'],
-      ['visual', 'Visual (acción / situación)', 'textarea', null, 'La escena específica que se ve en los primeros segundos: quién, dónde, qué hace, a qué hora, encuadre. Sin pantallas legibles'],
-      ['visual_media', 'Visual de ejemplo (imagen, GIF o video)', 'media', null, null],
+      ['gancho_co', 'Hooks de ejemplo · Colombia (solo referencia)', 'textarea', null, 'Opcional. Ejemplos sueltos para usted; no se mandan al guionista, para no repetir siempre el mismo'],
+      ['gancho_ar', 'Hooks de ejemplo · Argentina (solo referencia)', 'textarea', null, 'Opcional. Ejemplos con voseo; no se mandan al guionista'],
+      ['visual', 'Situación de ejemplo (solo referencia)', 'textarea', null, 'Opcional. Una de las muchas formas de mostrar el dolor; no se manda al guionista, cada guion inventa la suya'],
+      ['visual_media', 'Referencia visual (imagen, GIF o video, opcional)', 'media', null, null],
       ['mejor_para', 'Mejor para', 'text', null, 'Tráfico frío, retargeting, mercado o rubro donde rinde más'],
       ['estado', 'Estado', 'text', null, '«activo», o «activo · …» si depende de algo sin confirmar']] },
     features: { label: 'Features', one: 'feature', sub: ['plan'], pill: 'estado', text: 'claim', que: 'una función de PlanPy que se muestra en anuncios', fields: [
@@ -771,7 +771,7 @@ canvas.pieza { width: 180px; max-width: 100%; height: auto; border-radius: 8px; 
     const ratio = { '1:1': '1 / 1', '4:5': '4 / 5', '9:16': '9 / 16', '1.91:1': '1.91 / 1' };
     return h('article', { class: 'opt', 'aria-current': String(isSel) },
       h('div', { class: 'opt-head' },
-        h('div', {}, h('h3', {}, `${String.fromCharCode(65 + i)} · ${o.titulo || 'Opción'}`), h('p', { class: 'idea' }, o.idea || '')),
+        h('div', {}, h('h3', {}, `${String.fromCharCode(65 + i)} · ${o.titulo || 'Opción'}`), h('p', { class: 'idea' }, o.idea || ''), o.situacion ? h('p', { class: 'idea muted' }, h('b', {}, 'Situación: '), o.situacion) : null),
         isSel ? h('span', { class: 'pill ok' }, 'Elegido · editable') : h('button', { class: 'btn small', onclick: () => { elegido = i; guion = JSON.parse(JSON.stringify(o)); guion.copy = guion.copy || {}; render(); } }, 'Elegir este copy')),
       h('div', { class: 'frames', 'aria-hidden': 'true' }, sel.formatos.map((f) => h('div', { class: 'frame', style: `aspect-ratio:${ratio[f] || '4 / 5'}` }, h('span', { class: 'fr-tag' }, f), h('span', { class: 'fr-txt' }, principal.split('\n')[0])))),
       h('div', { class: 'opt-meta' },
@@ -824,7 +824,7 @@ canvas.pieza { width: 180px; max-width: 100%; height: auto; border-radius: 8px; 
     }
     return h('article', { class: 'opt', 'aria-current': String(isSel) },
       h('div', { class: 'opt-head' },
-        h('div', {}, h('h3', {}, `${String.fromCharCode(65 + i)} · ${o.titulo || 'Opción'}`), h('p', { class: 'idea' }, o.idea || '')),
+        h('div', {}, h('h3', {}, `${String.fromCharCode(65 + i)} · ${o.titulo || 'Opción'}`), h('p', { class: 'idea' }, o.idea || ''), o.situacion ? h('p', { class: 'idea muted' }, h('b', {}, 'Situación: '), o.situacion) : null),
         isSel ? h('span', { class: 'pill ok' }, 'Elegido · editable') : h('button', { class: 'btn small', onclick: () => { elegido = i; guion = JSON.parse(JSON.stringify(o)); render(); } }, 'Elegir este guion')),
       h('div', { class: 'tl', 'aria-hidden': 'true' }, bloques.map((b) => h('div', { style: `flex:${Math.max(+b.seg || 1, 1)}` }, b.paso)), h('div', { class: 'cta', style: `flex:${+g.cta?.seg || 4}` }, 'CTA')),
       h('div', { class: 'tc mono muted' }, `≈ ${Math.round(total)} s · gancho forma ${o.gancho_forma || '—'}`),
@@ -868,6 +868,14 @@ canvas.pieza { width: 180px; max-width: 100%; height: auto; border-radius: 8px; 
   };
   const pickFields = (d, keys) => d ?Object.fromEntries(keys.filter((k) => d[k]).map((k) => [k, d[k]])) : null;
 
+  // Situaciones de guiones anteriores con el mismo ángulo, para no repetir la misma escena.
+  function situacionesUsadas(angId) {
+    return pedidos.filter((p) => p.angulo?.id === angId || p.angulo === angId).map((p) => p.guion?.situacion || p.guion?.idea).filter(Boolean).slice(0, 8);
+  }
+
+  const LIBERTAD = `Cómo usar el ángulo: el ángulo es SOLO el dolor que comunicamos (qué le pasa al dueño y por qué le pesa). No trae escena, gancho ni visual obligatorios: eso lo inventas tú en cada guion. Un mismo dolor se puede contar de muchas formas: otro lugar, otro momento del día, otra persona que lo sufre o lo provoca, en el local o fuera de él (en la casa, en la calle, de vacaciones, con un cliente, con la familia), en presente o como recuerdo, en humor o en serio, a cámara o en voz en off. El escenario del rubro es contexto, no la escena obligada.
+Escribe primero la situación de cada guion (quién, dónde, cuándo, qué pasa que hace visible el dolor) y saca de ella el storyboard bloque a bloque: cada "toma" sigue esa misma historia, con continuidad, no una lista de planos genéricos del local. Las 3 opciones deben tener situaciones claramente distintas entre sí (no la misma escena con otro texto) y no repetir ninguna de situaciones_ya_usadas.`;
+
   function buildPrompt() {
     const est = byId('estructuras', sel.estructura);
     const data = {
@@ -876,7 +884,8 @@ canvas.pieza { width: 180px; max-width: 100%; height: auto; border-radius: 8px; 
       eje: derivedEje().eje,
       rubro: pickFields(byId('rubros', sel.rubro), ['nombre', 'tipo', 'escenario', 'dolor']),
       buyer_persona: pickFields(byId('personas', sel.persona), ['nombre', 'resumen', 'eje', 'edad', 'negocio', 'intencion', 'identidad', 'tension', 'deseo', 'disparador', 'cita', 'no_decir']),
-      angulo: pickFields(byId('angulos', sel.angulo), ['nombre', 'sobre', 'por_que', 'pregunta', sel.mercado === 'AR' ? 'gancho_ar' : 'gancho_co', 'visual', 'estado']),
+      angulo: pickFields(byId('angulos', sel.angulo), ['nombre', 'sobre', 'por_que', 'pregunta', 'estado']),
+      situaciones_ya_usadas: situacionesUsadas(sel.angulo),
       features_disponibles: [...lib.features].sort((a, b) => (a.orden ?? 999) - (b.orden ?? 999)).map((f) => ({ id: f.id, ...pickFields(f, ['nombre', 'dispositivo', 'claim', 'estado']), sugerida_para_el_rubro: (byId('rubros', sel.rubro)?.features || []).includes(f.id) || undefined })),
       avatar: pickFields(byId('avatares', avatarActual()), ['nombre', 'edad', 'genero', 'ciudad', 'rasgos', 'estilo']),
       estructura: pickFields(est, ['nombre', 'pasos', 'nota']),
@@ -892,10 +901,12 @@ ${JSON.stringify(data, null, 1)}
 
 Elige tú las features: 1 o 2 de features_disponibles (por id) que resuelvan el dolor del ángulo para este rubro. Prefiere las sugeridas para el rubro y evita las que están «sin confirmar»; si una es imprescindible, anótala en claims_a_confirmar. Cada guion puede elegir distinto.
 
+${LIBERTAD}
+
 Usa los pasos de la estructura "${est?.nombre}" en orden (${(est?.pasos || []).join(' → ')}); puedes repartir un paso en dos bloques o juntar dos pasos cortos si la duración lo pide. El CTA va aparte, al final. La suma de "seg" de los bloques más el CTA debe acercarse a ${sel.duracion} s.
 
 Responde SOLO con JSON con esta forma:
-{"opciones":[{"titulo":"nombre corto","idea":"una frase","gancho_forma":"A|B|C|D","bloques":[{"paso":"nombre del paso","voz":"locución con Planpi","pantalla":["línea 1","línea 2"],"claves":["palabra"],"toma":"qué se ve (persona, acción, encuadre; sin pantallas legibles)","interfaz":"tarjeta o sticker que pone Remotion, o vacío","seg":4}],"cta":{"voz":"...","pantalla":"...","seg":4},"features":["id"],"look":{"vestuario":"ropa del avatar en este anuncio","escenario":"el local y la luz"},"claims_a_confirmar":["..."]}]}`;
+{"opciones":[{"titulo":"nombre corto","idea":"una frase","situacion":"la escena de este guion en 1–2 frases: quién, dónde, cuándo, qué pasa","gancho_forma":"A|B|C|D","bloques":[{"paso":"nombre del paso","voz":"locución con Planpi","pantalla":["línea 1","línea 2"],"claves":["palabra"],"toma":"qué se ve en este momento de la situación (persona, acción, lugar, encuadre; sin pantallas legibles)","interfaz":"tarjeta o sticker que pone Remotion, o vacío","seg":4}],"cta":{"voz":"...","pantalla":"...","seg":4},"features":["id"],"look":{"vestuario":"ropa del avatar en este anuncio","escenario":"el local y la luz"},"claims_a_confirmar":["..."]}]}`;
   }
 
   function buildPromptImg() {
@@ -906,7 +917,8 @@ Responde SOLO con JSON con esta forma:
       eje: derivedEje().eje,
       rubro: pickFields(byId('rubros', sel.rubro), ['nombre', 'tipo', 'escenario', 'dolor']),
       buyer_persona: pickFields(byId('personas', sel.persona), ['nombre', 'resumen', 'eje', 'edad', 'negocio', 'intencion', 'identidad', 'tension', 'deseo', 'disparador', 'cita', 'no_decir']),
-      angulo: pickFields(byId('angulos', sel.angulo), ['nombre', 'sobre', 'por_que', 'pregunta', sel.mercado === 'AR' ? 'gancho_ar' : 'gancho_co', 'visual', 'estado']),
+      angulo: pickFields(byId('angulos', sel.angulo), ['nombre', 'sobre', 'por_que', 'pregunta', 'estado']),
+      situaciones_ya_usadas: situacionesUsadas(sel.angulo),
       features_disponibles: [...lib.features].sort((a, b) => (a.orden ?? 999) - (b.orden ?? 999)).map((f) => ({ id: f.id, ...pickFields(f, ['nombre', 'dispositivo', 'claim', 'estado']), sugerida_para_el_rubro: (byId('rubros', sel.rubro)?.features || []).includes(f.id) || undefined })),
       avatar: pickFields(byId('avatares', avatarActual()), ['nombre', 'edad', 'genero', 'ciudad', 'rasgos', 'estilo']),
       template: pickFields(est, ['nombre', 'descripcion', 'zonas', 'layout', 'produccion', 'nota']),
@@ -922,6 +934,8 @@ Mercado y oferta: ${OFERTA[sel.mercado]}
 
 Brief (datos de la librería). El avatar es el actor recurrente que aparece en la imagen si el template lleva persona: define su look (vestuario y escenario del rubro).
 ${JSON.stringify(data, null, 1)}
+
+El ángulo es solo el dolor: la situación y el visual de cada propuesta los inventas tú, distintos entre las 3 y distintos de situaciones_ya_usadas.
 
 ${pideResenas(est) ? 'Este template usa reseñas reales: copia el texto de resenas_reales TEXTUAL (sin corregir ni resumir) y su autor y negocio tal cual. No inventes reseñas, nombres ni negocios; cada propuesta usa una reseña distinta si hay.\n\n' : ''}Llena exactamente las zonas del template (${(est?.zonas || []).join(', ')}). Una zona que sea una lista (mensajes de chat, filas de una tabla, puntos) va como array de strings. Elige 1 o 2 features (por id) de features_disponibles que resuelvan el dolor del ángulo; evita las «sin confirmar» o anótalas en claims_a_confirmar.
 
@@ -1208,11 +1222,11 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
         h('h2', { class: 'op-title' }, `${d.nombre} — One pager`),
         h('div', { class: 'op-grid' },
           h('div', { class: 'op-col' },
-            h('section', {}, h('h4', {}, 'About (qué es)'), h('p', {}, d.sobre || '—')),
+            h('section', {}, h('h4', {}, 'El dolor'), h('p', {}, d.sobre || '—')),
             h('section', {}, h('h4', {}, 'Por qué va a funcionar'), lines(d.por_que).length ? h('ul', {}, lines(d.por_que).map((x) => h('li', {}, x))) : h('p', {}, '—')),
-            h('section', {}, h('h4', {}, 'Hook copy'), hooks.length ? h('ul', { class: 'hooks' }, hooks.map(([m, x]) => h('li', {}, h('span', { class: 'pill' }, m), ' ', x))) : h('p', {}, '—'))),
+            h('section', {}, h('h4', {}, 'Hooks de ejemplo (solo referencia)'), hooks.length ? h('ul', { class: 'hooks' }, hooks.map(([m, x]) => h('li', {}, h('span', { class: 'pill' }, m), ' ', x))) : h('p', {}, '—'))),
           h('div', { class: 'op-col' },
-            h('section', {}, h('h4', {}, 'Visual'),
+            h('section', {}, h('h4', {}, 'Situación de ejemplo (solo referencia)'),
               d.visual_media ? h('div', { class: 'op-media' }, mediaEl(d.visual_media, d.visual_media_tipo)) : null,
               h('p', {}, d.visual || 'Describa la acción o situación, o suba una imagen, GIF o video desde «Editar».')),
             h('dl', { class: 'op-meta' }, [['Eje', d.eje], ['Pregunta', d.pregunta], ['Mejor para', d.mejor_para], ['Estado', d.estado]].filter(([, v]) => v).flatMap(([k, v]) => [h('dt', {}, k), h('dd', {}, v)])))));
@@ -1802,7 +1816,7 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
       mercado: ES.mercado,
       rubro: pickFields(byId('rubros', ES.rubro), ['nombre', 'tipo', 'escenario', 'dolor']),
       buyer_persona: pickFields(byId('personas', ES.persona), ['nombre', 'resumen', 'eje', 'edad', 'negocio', 'identidad', 'tension', 'deseo', 'disparador', 'cita', 'no_decir']),
-      angulo: pickFields(byId('angulos', ES.angulo), ['nombre', 'sobre', 'por_que', 'pregunta', ES.mercado === 'AR' ? 'gancho_ar' : 'gancho_co', 'visual']),
+      angulo: pickFields(byId('angulos', ES.angulo), ['nombre', 'sobre', 'por_que', 'pregunta']),
       avatar: pickFields(avatarEst(), ['nombre', 'edad', 'genero', 'ciudad', 'rasgos']),
       features: lib.features.map((f) => pickFields(f, ['nombre', 'claim', 'estado'])),
       templates: tpls.map((e) => ({ id: e.id, ...pickFields(e, ['nombre', 'descripcion', 'zonas', 'layout', 'nota']) })),
@@ -1821,7 +1835,7 @@ ${HECHOS}
 Brief:
 ${JSON.stringify(data, null, 1)}
 
-Llena exactamente las zonas de cada template; una zona que sea lista (filas, módulos, pasos, razones, testimonios "Nombre · negocio: cita") va como array de strings. "visual" describe la foto si el template la usa (persona, acción, encuadre; sin texto ni pantallas legibles). "look" es la ropa y el escenario del avatar.
+Llena exactamente las zonas de cada template; una zona que sea lista (filas, módulos, pasos, razones, testimonios "Nombre · negocio: cita") va como array de strings. El ángulo es solo el dolor: cada pieza lo muestra con su propia situación (otro lugar, momento o persona), sin repetir la misma escena entre templates. "visual" describe la foto si el template la usa (persona, acción, encuadre; sin texto ni pantallas legibles). "look" es la ropa y el escenario del avatar.
 Responde SOLO con JSON: {"piezas":[{"template":"<id>","idea":"una frase","copy":{"<zona>":"texto o array"},"visual":"...","look":{"vestuario":"...","escenario":"..."}}]}`;
   }
 
