@@ -708,7 +708,7 @@ canvas.pieza { width: 180px; max-width: 100%; height: auto; border-radius: 8px; 
             h('button', { 'aria-pressed': String(!usaXavier), onclick: () => { sel.vozAnuncio = 'avatar'; save(); render(); } }, va ? `${av.nombre} · ${va.nombre}` : 'La del avatar'),
             h('button', { 'aria-pressed': String(usaXavier), disabled: camara, title: camara ? 'Con alguien hablando a cámara la voz es la del avatar' : null, onclick: () => { sel.vozAnuncio = 'xavier'; save(); render(); } }, 'Xavier · narrador')),
           h('div', { class: 'cmd', style: 'margin-top:8px' }, playBtn(muestraDe(va), `Escuchar ${va?.nombre || 'avatar'}`), camara ? null : playBtn(XAVIER.muestra, 'Escuchar Xavier')),
-          h('div', { class: 'hint' }, camara ? 'Este estilo tiene a alguien hablando a cámara: todo el anuncio va con la voz del avatar.' : usaXavier ? 'Xavier narra todo el anuncio en off (bloques y CTA).' : 'La voz del avatar narra todo el anuncio (bloques y CTA). Xavier es opción porque nadie habla a cámara.')));
+          h('div', { class: 'hint' }, camara ? `Este estilo tiene a alguien hablando a cámara: la voz la genera el video (Veo 3.1) con acento ${sel.mercado === 'AR' ? 'argentino' : 'colombiano'} nativo, ${av?.genero || 'según el avatar'}, micrófono inalámbrico y el ambiente del lugar. La muestra de arriba es solo para partes en off.` : usaXavier ? 'Xavier narra todo el anuncio en off (bloques y CTA).' : 'La voz del avatar narra todo el anuncio (bloques y CTA). Xavier es opción porque nadie habla a cámara.')));
       })());
 
     // paso 4
@@ -902,7 +902,7 @@ ${JSON.stringify(data, null, 1)}
 Elige tú las features: 1 o 2 de features_disponibles (por id) que resuelvan el dolor del ángulo para este rubro. Prefiere las sugeridas para el rubro y evita las que están «sin confirmar»; si una es imprescindible, anótala en claims_a_confirmar. Cada guion puede elegir distinto.
 
 ${LIBERTAD}
-
+${aCamara(byId('estilos', estilo)) ? `\nEste anuncio es orgánico, con ${byId('avatares', avatarActual())?.nombre || 'el avatar'} hablando a cámara: la "voz" de cada bloque es lo que dice a cámara, como lo diría un dueño real ${sel.mercado === 'AR' ? 'argentino (vos)' : 'colombiano (usted)'} grabándose con el celular, frases cortas y naturales, máximo 18 palabras por bloque (cada bloque es una toma de 8 s). La "toma" dice dónde está, qué hace mientras habla y qué se oye de fondo.\n` : ''}
 Usa los pasos de la estructura "${est?.nombre}" en orden (${(est?.pasos || []).join(' → ')}); puedes repartir un paso en dos bloques o juntar dos pasos cortos si la duración lo pide. El CTA va aparte, al final. La suma de "seg" de los bloques más el CTA debe acercarse a ${sel.duracion} s.
 
 Responde SOLO con JSON con esta forma:

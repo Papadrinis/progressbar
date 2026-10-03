@@ -120,29 +120,89 @@ lee". Para una toma de noche en casa, mismo personaje, sala sencilla y cálida.
 | V7 barbería | `760e6f4c-05b4-4fa1-965b-1979bc0b0d16` | 6 tomas, ~377 créditos |
 | V8 mascotas | `315180e5-7ca1-4c3b-bbfc-e9e4f3ec165e` | toma 4 con fotograma (deriva de cara) |
 
-## Hablando a cámara (sincronía de labios)
+## Hablando a cámara (personas reales, orgánico / UGC)
 
-**Receta que funciona (V11, 2026-09-28):** dos pasos por toma.
+**Receta actual (2026-10-03, pedida por el usuario): Veo 3.1 con su propio audio.** La voz, los labios y
+el ambiente salen juntos de Veo, con acento nativo. Ya **no** se usa ElevenLabs + Sync para las tomas a
+cámara: esas voces sonaban robóticas y con acento extranjero («un inglés intentando hablar
+colombiano»), que es justo lo que no puede pasar.
 
-1. `veo3_1` · `variant: "veo-3-1-preview"` · `quality: "high"` · `duration` 4–8 · `aspect_ratio: "9:16"`,
-   fotograma aprobado como `start_image`, `declined_preset_id` del preset «IN THE DARK». Prompt: la frase
-   exacta entre comillas en español colombiano, **«calm confidence, slight friendly smile, natural relaxed
-   face, subtle expressions, no frowning, no exaggerated gestures»**. **40 créditos** (4 s).
-2. `sync_so` (Sync Lipsync 3) · `sync_mode: "silence"` · `medias`: el job de Veo como `input_video` y el
-   job de la voz aprobada como `input_audio`. **14,4 créditos** (4 s). Deja la voz aprobada en el video.
+```json
+{
+  "model": "veo3_1",
+  "variant": "veo-3-1-preview",
+  "quality": "ultra",
+  "duration": 8,
+  "aspect_ratio": "9:16",
+  "declined_preset_id": "24bae836-2c4a-48e0-89b6-49fcc0b21612",
+  "medias": [{ "value": "<job del fotograma aprobado>", "role": "start_image" }],
+  "prompt": "<VIDEO + AUDIO, ver plantilla>"
+}
+```
 
-Total ≈ **54 créditos por toma a cámara** (6 s: Veo ~60 + Sync ~22). Primero una sola toma de prueba y aprobación.
+- **120 créditos por toma de 8 s** en `ultra` (`high`: 80). Usa `ultra`: es el formato donde más se nota
+  la calidad. 6 s si la frase es corta. Una toma por frase; máximo ~18 palabras en 8 s.
+- Primero **una toma de prueba** (el gancho) y aprobación del usuario; luego el resto en lote.
 
-**Ojo con la sincronía en el montaje:** Sync entrega la voz **retrasada entre 160 y 450 ms** (distinto en
-cada toma) y los labios siguen a esa voz retrasada. No uses el mp3 original: extrae el audio de cada toma
-de Sync, recórtalo al final de la frase, aplícale el tratamiento que toque y úsalo como `voz` del bloque
-con `entrada: 0` y `velocidadVoz: 1`. Verifica con la envolvente del audio que el desfase final quede
-< 45 ms (V11 quedó en 40 ms).
+**Plantilla de prompt.** Dos partes, siempre en inglés salvo el diálogo, que va en español y entre comillas:
 
-**Estilo UGC que funciona:** Julián sostiene un mini micrófono inalámbrico cerca de la barbilla (se pide en
-el fotograma y en el prompt de Veo: «the microphone stays near his chin»). La voz lleva tratamiento de
-micrófono real: pasa-altos 110 Hz, pasa-bajos 9,5 kHz, compresión 3:1, sala corta y ambiente muy bajo
-(ver `receta` de `public/ads/v11-julian.json`). V11 completo: ~283 créditos.
+```
+VIDEO — <persona del fotograma> <acción natural según la situación del guion>, looking into the
+camera, holding a small wireless lavalier mic near the chin. Natural relaxed face, subtle expressions,
+no frowning, no exaggerated gestures. Handheld phone camera, slight natural movement, no cuts.
+AUDIO — <Male|Female> voice speaking in <ACENTO> with <TONO>; exact dialogue: "<frase exacta>".
+Native speaker accent, not a foreign or English accent, not neutral dubbing Spanish. Primary sounds
+are the clear voice recorded by the wireless mic, subtle <AMBIENTE> sounds, no additional music or
+technical effects.
+```
+
+Ejemplo del usuario (el tono que buscamos):
+
+> AUDIO — Male voice speaking in Colombian Spanish with calm confidence and slight friendly smile tone;
+> exact dialogue: "Yo no compré esta tienda para manejarla como me la dejaron." Primary sounds are the
+> clear voice recorded by the wireless mic, subtle ambient outdoor retail environment sounds, no
+> additional music or technical effects.
+
+| Mercado | `<ACENTO>` | Diálogo |
+|---|---|---|
+| CO | `Colombian Spanish from Bogotá (native, natural everyday speech)`; para paisas, `Colombian Spanish with a Medellín paisa accent` | usted |
+| AR | `Argentinian Rioplatense Spanish from Buenos Aires (native, voseo, natural everyday speech)` | vos |
+| ES | `Castilian Spanish from Spain (native, natural everyday speech)` | tú |
+| MX | `Mexican Spanish from Mexico City (native, natural everyday speech)` | usted / tú |
+
+- **Género** según el avatar (`avatar.genero`): `Male voice` / `Female voice`, más la edad aproximada
+  («male voice in his 40s»). Usa **la misma descripción de voz** (género, edad, timbre, acento) en
+  todas las tomas del anuncio para que suene como la misma persona; si una toma suena a otra persona,
+  se regenera solo esa.
+- **`<TONO>`** sale de la situación y del paso del guion: gancho → `calm confidence and slight friendly
+  smile tone`; dolor → `honest, slightly tired, conversational tone`; solución / CTA → `relaxed, warm,
+  convinced tone`. Nunca «energetic» ni de locutor: tiene que sonar a dueño real hablándole al celular.
+- **`<AMBIENTE>`** sale del lugar de la situación: `ambient indoor clothing store`, `ambient outdoor
+  street retail`, `quiet small shop with distant customers`, `home kitchen in the evening`… Nada de
+  música: la pone Remotion si hace falta.
+- La marca en el diálogo se escribe **"Planpi"** y la web «planpi punto io»; números en palabras.
+- El CTA lo dice el avatar a cámara en su última toma (mismo prompt); el cierre de marca de Remotion
+  va sin voz en off encima.
+
+**Montaje:** el audio de Veo ya está en sincronía. En el JSON, el bloque usa la toma como video y su
+propio audio como `voz` (extráelo con `npx remotion ffmpeg -i shotN.mp4 -vn -c:a aac voz/<ad>/N.m4a`),
+con `entrada: 0` y `velocidadVoz: 1` (no acelerar: cambia los labios). Recorta silencios del final si
+sobran. Subtítulos con las palabras exactas que dijo (escúchalo: a veces cambia una palabra; si cambia
+el sentido o un claim, regenera).
+
+**Si Veo cambia la frase o el acento sale mal:** regenera esa toma una vez con el diálogo más corto. Si
+vuelve a fallar, el plan B es la receta vieja (Veo sin voz + `sync_so` con la voz del avatar), avisando
+al usuario de que sonará menos natural.
+
+<details><summary>Receta anterior (V11, plan B): Veo + Sync con voz de ElevenLabs</summary>
+
+1. `veo3_1` preview high 4 s con el fotograma como `start_image` (40 créditos).
+2. `sync_so` · `sync_mode: "silence"` · `input_video` = job de Veo, `input_audio` = job de la voz (14,4
+   créditos / 4 s). Sync retrasa la voz 160–450 ms: extrae el audio de cada toma de Sync y úsalo como
+   `voz` con `entrada: 0`; verifica desfase < 45 ms. Micrófono: pasa-altos 110 Hz, pasa-bajos 9,5 kHz,
+   compresión 3:1 (ver `receta` de `public/ads/v11-julian.json`).
+
+</details>
 
 **No usar `wan2_7` para hablar a cámara:** con `audio_references` exagera gestos (ceño fruncido, boca muy
 abierta). Descartado por el usuario («horrible»). Tampoco pedir «energía» en el prompt de video: la
@@ -152,8 +212,9 @@ Precios consultados con `get_cost`:
 
 | Modelo | Uso | Créditos |
 |---|---|---|
-| veo3_1 preview high, 4 s | Video base natural | 40 |
-| sync_so, 4 s | Labios a un audio dado | 14,4 |
+| veo3_1 preview ultra, 8 s (con audio) | **A cámara con voz nativa** | 120 |
+| veo3_1 preview high, 8 s / 4 s | Igual, menos calidad | 80 / 40 |
+| sync_so, 4 s | Plan B: labios a un audio dado | 14,4 |
 | seedance_2_5 omni 1080p, 4 s / 5 s | Movimiento general | 48 / 60 |
 | wan3_0_prime 1080p, 4 s | Alternativa sin probar | 24 |
 | wan2_7 1080p, 4 s | **Descartado para labios** | 10 |
