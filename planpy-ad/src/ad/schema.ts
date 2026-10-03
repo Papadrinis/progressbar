@@ -72,6 +72,8 @@ export const bloque = z.object({
   toma: z.string(),
   lineas: z.array(z.string()).min(1).max(4),
   claves: z.array(z.string()).default([]),
+  // Subtítulo: tamaño de letra y altura (px desde arriba) si el texto largo tapa la cara.
+  texto: z.object({tamano: z.number().positive().optional(), top: z.number().min(0).optional()}).optional(),
   cola: z.number().int().min(0).optional(),
   // Frames antes de que arranque la voz (3 por defecto). 0 en tomas con labios sincronizados.
   entrada: z.number().int().min(0).optional(),

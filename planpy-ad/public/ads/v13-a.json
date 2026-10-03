@@ -17,14 +17,14 @@
         "gastó",
         "alcanza"
       ],
-      "cola": 8,
+      "cola": 5,
       "extras": [
         {
           "tipo": "sticker",
           "en": "30%",
           "texto": "¿Cuánto gastó? 🤔",
-          "x": 740,
-          "y": 1520,
+          "x": 760,
+          "y": 1080,
           "giro": 6,
           "tamano": 64,
           "fondo": "#ffd400",
@@ -32,7 +32,11 @@
           "volumenSfx": 0.4
         }
       ],
-      "duracion": 6.687
+      "duracion": 6.687,
+      "texto": {
+        "tamano": 58,
+        "top": 1240
+      }
     },
     {
       "id": "b2",
@@ -49,7 +53,7 @@
         "intuición",
         "cuadra"
       ],
-      "cola": 8,
+      "cola": 5,
       "extras": [
         {
           "tipo": "sticker",
@@ -126,7 +130,10 @@
           "resaltar": 3
         }
       ],
-      "duracion": 5.486
+      "duracion": 5.486,
+      "texto": {
+        "tamano": 58
+      }
     },
     {
       "id": "br1",
@@ -141,7 +148,7 @@
       "claves": [
         "celular"
       ],
-      "cola": 8,
+      "cola": 5,
       "extras": [
         {
           "tipo": "tarjeta",
@@ -182,7 +189,7 @@
         "número",
         "plata"
       ],
-      "cola": 14,
+      "cola": 10,
       "extras": [
         {
           "tipo": "sticker",
@@ -203,7 +210,7 @@
   ],
   "cierre": {
     "voz": "voz/cta.mp3",
-    "cola": 50,
+    "cola": 40,
     "locucion": "Pruébelo quince días gratis, en planpi punto io.",
     "pantalla": {
       "titulo": "15 días gratis",
@@ -249,6 +256,30 @@
       "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261002_235843_e20886bd-125c-48c1-aae7-a7a7a953f0b3.mp4",
       "job": "e20886bd-125c-48c1-aae7-a7a7a953f0b3",
       "nota": "Seedance 2.5 · toma de prueba"
+    },
+    {
+      "ruta": "v13/shot2.mp4",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261003_000855_7b48adf6-68cd-4fe8-90ca-0e89f8c05ef7.mp4",
+      "job": "7b48adf6-68cd-4fe8-90ca-0e89f8c05ef7",
+      "nota": "Seedance 2.5"
+    },
+    {
+      "ruta": "v13/shot3.mp4",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261003_000855_170d380e-3885-4a75-997a-51f3454b8d71.mp4",
+      "job": "170d380e-3885-4a75-997a-51f3454b8d71",
+      "nota": "Seedance 2.5"
+    },
+    {
+      "ruta": "v13/shot4.mp4",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261003_000855_d21673a0-3225-4ce4-a321-da6476851d74.mp4",
+      "job": "d21673a0-3225-4ce4-a321-da6476851d74",
+      "nota": "Seedance 2.5"
+    },
+    {
+      "ruta": "v13/shot5.mp4",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261003_000855_26b6862c-8059-43db-a3a7-a0288c78a58f.mp4",
+      "job": "26b6862c-8059-43db-a3a7-a0288c78a58f",
+      "nota": "Seedance 2.5"
     }
   ],
   "receta": {

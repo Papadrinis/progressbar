@@ -132,7 +132,7 @@ export const SparkPy: React.FC<SparkPyProps> = ({datos, duraciones}) => {
             {b.extras.map((x, k) => (
               <ExtraEl key={k} x={x} lead={t.lead} vf={t.vf} />
             ))}
-            <WordPop lines={b.lineas} keys={b.claves.map((k) => k.toLowerCase())} start={t.lead} voFrames={t.vf} size={i === 0 ? 76 : 70} top={i === 0 ? 120 : 140} />
+            <WordPop lines={b.lineas} keys={b.claves.map((k) => k.toLowerCase())} start={t.lead} voFrames={t.vf} size={b.texto?.tamano ?? (i === 0 ? 76 : 70)} top={b.texto?.top ?? (i === 0 ? 120 : 140)} />
             <Sfx at={0} name={i === 0 ? 'impact' : 'whoosh'} volume={i === 0 ? 0.6 : 0.35} />
             <Sequence from={t.lead} layout="none">
               <Audio src={staticFile(b.voz)} playbackRate={datos.velocidadVoz} volume={b.volumenVoz ?? 1} />

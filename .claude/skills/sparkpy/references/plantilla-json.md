@@ -40,6 +40,7 @@ termina con un fade de 24 frames. Pistas disponibles: `music/cama-112bpm.wav` (s
   "lineas": ["Una clienta pregunta si le", "queda la blusa en talla M…"],  // subtítulo, máx. 4 líneas
   "claves": ["talla", "cuaderno"],         // palabras en píldora verde (coincidencia por inclusión)
   "cola": 8,                               // frames tras la voz (6 por defecto); 12–16 en el último bloque
+  "texto": {"tamano": 58, "top": 1240},     // opcional: subtítulo más chico o más abajo si tapa la cara
   "volumenVoz": 1,                         // opcional (p. ej. 0.85 para una voz al teléfono)
   "extras": [ /* stickers, tarjetas, efectos */ ]
 }
