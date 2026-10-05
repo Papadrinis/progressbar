@@ -82,7 +82,7 @@ const tramos = (a) => {
   });
 };
 
-const archivos = (a) => [...a.bloques.flatMap((b) => [b.voz, b.toma]), (a.cierre ?? {voz: 'voz/cta.mp3'}).voz, a.musica === null ? null : (a.musica?.src ?? 'music/cama-112bpm.wav')].filter(Boolean);
+const archivos = (a) => [...a.bloques.flatMap((b) => [b.voz, b.toma.startsWith('escena:') ? null : b.toma]), (a.cierre ?? {voz: 'voz/cta.mp3'}).voz, a.musica === null ? null : (a.musica?.src ?? 'music/cama-112bpm.wav')].filter(Boolean);
 
 const comandos = {
   lista() {

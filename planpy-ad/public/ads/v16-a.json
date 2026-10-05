@@ -1,0 +1,169 @@
+{
+  "id": "PLANPY_CO_ESCALA_PELUQUERIA_V16_A",
+  "titulo": "V16-A · La pregunta que no supo responder (Valentina, ilustración 2D en código)",
+  "bloques": [
+    {
+      "id": "b1",
+      "voz": "voz/v16/b1.mp3",
+      "locucion": "El asesor le preguntó cuántos clientes repiten cada mes.",
+      "toma": "escena:banco",
+      "lineas": [
+        "El asesor le preguntó",
+        "cuántos clientes",
+        "repiten cada mes."
+      ],
+      "claves": [
+        "repiten"
+      ],
+      "cola": 6,
+      "extras": [],
+      "duracion": 3.474
+    },
+    {
+      "id": "b2",
+      "voz": "voz/v16/b2.mp3",
+      "locucion": "Ella tiene el cuaderno lleno de nombres. Pero no tiene el número.",
+      "toma": "escena:cuaderno",
+      "lineas": [
+        "Ella tiene el cuaderno",
+        "lleno de nombres.",
+        "Pero no tiene el número."
+      ],
+      "claves": [
+        "número"
+      ],
+      "cola": 8,
+      "extras": [
+        {
+          "tipo": "sfx",
+          "en": "70%",
+          "nombre": "boing",
+          "volumen": 0.3
+        }
+      ],
+      "duracion": 4.598
+    },
+    {
+      "id": "a",
+      "voz": "voz/v16/a.mp3",
+      "locucion": "Con Planpi, cada cliente queda registrado, y usted ve quién vuelve y cuánto le compra.",
+      "toma": "escena:salon-celular",
+      "lineas": [
+        "Con PlanPy, cada cliente",
+        "queda registrado,",
+        "y usted ve quién vuelve",
+        "y cuánto le compra."
+      ],
+      "claves": [
+        "registrado",
+        "vuelve"
+      ],
+      "cola": 8,
+      "texto": {
+        "tamano": 60
+      },
+      "extras": [
+        {
+          "tipo": "tarjeta",
+          "en": "45%",
+          "formato": "celular",
+          "titulo": "Clientes frecuentes",
+          "seccion": "Clientes",
+          "filas": [
+            [
+              "Laura M. · 4 visitas",
+              "$320.000"
+            ],
+            [
+              "Camila R. · 3 visitas",
+              "$255.000"
+            ],
+            [
+              "Rosa P. · 3 visitas",
+              "$210.000"
+            ]
+          ],
+          "resaltar": 0
+        }
+      ],
+      "duracion": 5.068
+    },
+    {
+      "id": "br",
+      "voz": "voz/v16/br.mp3",
+      "locucion": "Los números que la hacen crecer, ya los tiene.",
+      "toma": "escena:firma",
+      "lineas": [
+        "Los números que la",
+        "hacen crecer,",
+        "ya los tiene."
+      ],
+      "claves": [
+        "crecer"
+      ],
+      "cola": 10,
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": "55%",
+          "texto": "✅ 📄",
+          "x": 760,
+          "y": 1150,
+          "giro": 6,
+          "tamano": 80,
+          "fondo": "#9fe870",
+          "sfx": "boing",
+          "volumenSfx": 0.3
+        }
+      ],
+      "duracion": 2.769
+    }
+  ],
+  "cierre": {
+    "voz": "voz/cta.mp3",
+    "locucion": "Pruébelo quince días gratis, en planpi punto io.",
+    "cola": 40,
+    "pantalla": {
+      "titulo": "15 días gratis",
+      "oferta": "",
+      "nota": ""
+    },
+    "duracion": 3.474
+  },
+  "fuentes": [
+    {
+      "ruta": "voz/v16/b1.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261005_234123_7ef89ff3-f9e0-4d41-bf78-06d24e6750ef.mp3",
+      "job": "7ef89ff3-f9e0-4d41-bf78-06d24e6750ef",
+      "nota": "Xavier"
+    },
+    {
+      "ruta": "voz/v16/b2.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261005_234123_65475117-57fd-46b6-9527-a8fa83f8788a.mp3",
+      "job": "65475117-57fd-46b6-9527-a8fa83f8788a",
+      "nota": "Xavier"
+    },
+    {
+      "ruta": "voz/v16/a.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261005_234123_bcc9edad-b13f-4e0e-8cc2-7bdcb26fef39.mp3",
+      "job": "bcc9edad-b13f-4e0e-8cc2-7bdcb26fef39",
+      "nota": "Xavier"
+    },
+    {
+      "ruta": "voz/v16/br.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261005_234123_d49eaf9a-795f-4a0e-b2da-cd8ae974b305.mp3",
+      "job": "d49eaf9a-795f-4a0e-b2da-cd8ae974b305",
+      "nota": "Xavier"
+    }
+  ],
+  "receta": {
+    "pedido": "jgk8m8pnuhl3o7ggnrap",
+    "mercado": "CO (usted)",
+    "eje": "ESCALA",
+    "estructura": "BAB",
+    "estilo": "Ilustración 2D animada en código (src/ad/Escenas.tsx)",
+    "avatar": "Valentina dibujada en SVG",
+    "voz": "Xavier (narrador)",
+    "cta": "Editado por el dueño (cta_editado): solo «15 días gratis», sin precio"
+  }
+}

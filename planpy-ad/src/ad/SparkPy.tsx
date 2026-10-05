@@ -4,6 +4,7 @@ import {Texture} from '../components/Texture';
 import {Emoji, Sticker, Whip, WordPop} from '../v6/kit';
 import {CierreDesde} from '../v6/screens';
 import {anuncio, Anuncio, Extra, Momento} from './schema';
+import {ESCENAS} from './Escenas';
 import {Llamada, Tarjeta} from './Tarjetas';
 
 // SparkPy — una sola composición que monta cualquier anuncio a partir de public/ads/<ad>.json.
@@ -51,9 +52,12 @@ const esFoto = (src: string) => /\.(png|jpe?g|webp)$/i.test(src);
 
 const Toma: React.FC<{src: string}> = ({src}) => {
   const frame = useCurrentFrame();
+  const Escena = src.startsWith('escena:') ? ESCENAS[src.slice(7)] : null;
   return (
     <AbsoluteFill>
-      {esFoto(src) ? (
+      {Escena ? (
+        <Escena />
+      ) : esFoto(src) ? (
         <Img src={staticFile(src)} style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${interpolate(frame, [0, 150], [1.02, 1.1])})`}} />
       ) : (
         <OffthreadVideo src={staticFile(src)} muted style={{width: '100%', height: '100%', objectFit: 'cover'}} />
