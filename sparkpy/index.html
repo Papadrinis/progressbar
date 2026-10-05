@@ -305,6 +305,28 @@ pre.raw { white-space: pre-wrap; font-family: var(--mono); font-size: 12px; back
 .rev-actions textarea, .ped-box > textarea { border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 8px 10px; min-height: 56px; resize: vertical; width: 100%; }
 .cambios { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
 .order.attn { border-color: var(--warn); }
+.order.frenado { border-color: var(--bad); }
+.prog { display: flex; flex-direction: column; gap: 5px; margin-top: 10px; max-width: 560px; }
+.prog-top { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; font-size: 13.5px; }
+.prog-top b { font-weight: 700; }
+.prog-pct { margin-left: auto; font-family: var(--mono); font-size: 12.5px; color: var(--muted); }
+.bar { height: 8px; border-radius: 999px; background: var(--surface-2); overflow: hidden; border: 1px solid var(--line); }
+.bar > i { display: block; height: 100%; border-radius: 999px; background: var(--brand); transition: width .6s ease; }
+.prog.t-run .bar > i { background-image: linear-gradient(90deg, transparent 0 40%, rgba(255,255,255,.35) 50%, transparent 60% 100%); background-size: 200% 100%; animation: barra 1.6s linear infinite; }
+.prog.t-wait .bar > i { background: var(--warn); }
+.prog.t-bad .bar > i { background: var(--bad); }
+.prog.t-idle .bar > i { background: var(--muted); }
+.prog-det { font-size: 13px; color: var(--muted); }
+.prog-acc { font-size: 13px; font-weight: 700; }
+.prog.t-bad .prog-top b, .prog.t-bad .prog-acc { color: var(--bad); }
+.prog.t-wait .prog-top b, .prog.t-wait .prog-acc { color: var(--warn); }
+.prog.t-ok .prog-top b { color: var(--brand-ink); }
+.resumen { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+.resumen span { border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; font-size: 13px; font-weight: 600; background: var(--surface); }
+.resumen .r-bad { border-color: var(--bad); color: var(--bad); }
+.resumen .r-wait { border-color: var(--warn); color: var(--warn); }
+@keyframes barra { to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .prog.t-run .bar > i { animation: none; } }
 .attn-note { color: var(--warn); font-weight: 700; font-size: 13px; margin-top: 2px; }
 .ok-note { color: var(--brand-ink); font-weight: 700; font-size: 13px; margin-top: 2px; }
 details.prev > summary { cursor: pointer; font-weight: 600; font-size: 13.5px; color: var(--muted); padding: 4px 0; }
@@ -1628,6 +1650,9 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
   //   revisiones: [{id, titulo, nota, items: [{asset, tipo: 'image'|'video', etiqueta}]}]
   //   entregas: [{asset, tipo, nombre, formato, version, fecha}]
   //   creditos: {estimado, gastado}
+  //   actualizado: ISO de la última escritura de Claude (para detectar «sin novedades»)
+  //   bloqueo: {motivo, accion, desde} cuando algo está frenado (se borra al destrabarse)
+  //   cada paso puede traer hechos/total (p. ej. tomas 3 de 5), desde (ISO) y eta_min (minutos normales)
   // La página escribe las respuestas en `respuestas.<revisionId>` y los cambios en `cambios.<id>`
   // (mapas, para que cada escritura se mezcle sin pisar las demás).
   const ESTADOS = ['en cola', 'en producción', 'esperando aprobación', 'cambios pedidos', 'listo', 'descartado'];
@@ -1669,12 +1694,97 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
     } catch (e) { toast(dbErr(e)); return false; }
   }
 
+  // ---------- PROGRESO Y BLOQUEOS ----------
+  // Lee lo que escribe la sesión de Claude Code en `produccion` (pasos con hechos/total, desde, eta_min;
+  // `actualizado`; `bloqueo`) y lo que hace el usuario (respuestas, cambios, disparado) para decir en
+  // una línea cómo va el pedido y si algo está frenado. Se recalcula cada 30 s.
+  const minDesde = (iso) => (iso ? Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60000)) : null);
+  const fmtMin = (m) => (m < 1 ? 'menos de 1 min' : m < 60 ? `${m} min` : `${Math.floor(m / 60)} h ${m % 60} min`);
+  const PESO = { hecho: 1, 'en revisión': 0.85, 'esperando aprobación': 0.85, 'en curso': 0.4, pendiente: 0 };
+  const cambiosAbiertos = (p) => Object.values(p.cambios || {}).filter((c) => c.estado !== 'atendido');
+  function progreso(p) {
+    const pr = p.produccion || {}, pasos = pr.pasos || [];
+    if (p.estado === 'descartado') return null;
+    const abiertosC = cambiosAbiertos(p);
+    if (p.estado === 'listo' && !abiertosC.length) return { pct: 100, tono: 'ok', titulo: 'Listo', detalle: (pr.entregas || []).length ? 'El anuncio está terminado: véalo y descárguelo abajo.' : 'Terminado.' };
+    let pct = pasos.length ? pasos.reduce((acc, x) => {
+      const e = x.estado || 'pendiente';
+      let w = PESO[e] ?? 0;
+      if (e === 'en curso' && x.total) w = 0.1 + 0.85 * Math.min(1, (x.hechos || 0) / x.total);
+      return acc + w;
+    }, 0) / pasos.length * 100 : 0;
+    pct = Math.min(97, Math.round(pct));
+    const actual = pasos.find((x) => x.estado === 'en curso') || pasos.find((x) => /revisi|aprobaci/.test(x.estado || '')) || pasos.find((x) => (x.estado || 'pendiente') === 'pendiente');
+    const sinResp = (pr.revisiones || []).filter((r) => !p.respuestas?.[r.id]);
+    const act = pr.actualizado;
+    if (pr.bloqueo?.motivo) return { pct, tono: 'bad', titulo: 'Frenado', detalle: pr.bloqueo.motivo + (pr.bloqueo.desde ? ` · desde hace ${fmtMin(minDesde(pr.bloqueo.desde))}` : ''), accion: pr.bloqueo.accion };
+    if (!p.produccion) {
+      if (p.disparado) {
+        const m = minDesde(p.disparado.fecha);
+        return m >= 4
+          ? { pct: 2, tono: 'bad', titulo: 'Frenado: Claude no lo ha tomado', detalle: `Lo envió hace ${fmtMin(m)} y la producción no ha empezado. El botón no siempre despierta la sesión.`, accion: 'Escriba «arranca» en el chat de Claude Code.' }
+          : { pct: 2, tono: 'run', titulo: 'Enviado a producción', detalle: 'Esperando que Claude lo tome (1–2 min).' };
+      }
+      return { pct: 0, tono: 'idle', titulo: 'Sin empezar', detalle: 'Todavía no se envió a producción.', accion: p.tipo === 'imagen' ? 'Use «Generar piezas».' : 'Pulse «Producir ahora».' };
+    }
+    if (sinResp.length) return { pct, tono: 'wait', titulo: 'Espera su aprobación', detalle: sinResp.map((r) => r.titulo || 'Revisión').join(' · '), accion: 'Revise y apruebe abajo: la producción sigue cuando usted responda.' };
+    const fechas = [...Object.values(p.respuestas || {}).map((r) => r.fecha), ...abiertosC.map((c) => c.fecha)].filter(Boolean).sort();
+    const ult = fechas[fechas.length - 1];
+    if (ult && (!act || ult > act)) {
+      const m = minDesde(ult);
+      if (m >= 6) return { pct, tono: 'bad', titulo: 'Frenado: esperando a Claude', detalle: `Usted ${abiertosC.length ? 'pidió cambios' : 'respondió'} hace ${fmtMin(m)} y Claude todavía no siguió.`, accion: 'Escriba «sigue» en el chat de Claude Code.' };
+      return { pct, tono: 'run', titulo: abiertosC.length ? 'Cambios recibidos' : 'Respuesta recibida', detalle: 'Claude la toma en unos minutos.' };
+    }
+    const mAct = minDesde(act);
+    if (actual?.estado === 'en curso') {
+      let det = actual.nombre + (actual.total ? ` · ${actual.hechos || 0} de ${actual.total}` : '') + (actual.nota ? ` · ${actual.nota}` : '');
+      const lleva = minDesde(actual.desde), eta = +actual.eta_min || 0;
+      if (eta && lleva != null) {
+        if (lleva > eta * 2 + 2) return { pct, tono: 'bad', titulo: 'Tardando más de lo normal', detalle: `${det} · lleva ${fmtMin(lleva)} (lo normal son ~${eta} min).`, accion: 'Claude lo vigila; si en un rato sigue igual, escríbale en el chat.' };
+        det += lleva < eta ? ` · faltan ~${fmtMin(eta - lleva)}` : ' · debería terminar en breve';
+      }
+      if (mAct != null && mAct > Math.max(20, eta * 2)) return { pct, tono: 'bad', titulo: 'Sin novedades', detalle: `${det} · última actualización hace ${fmtMin(mAct)}.`, accion: 'Escriba «status» en el chat de Claude Code.' };
+      return { pct, tono: 'run', titulo: 'En curso', detalle: det };
+    }
+    if (mAct != null && mAct > 20 && p.estado !== 'listo') return { pct, tono: 'bad', titulo: 'Sin novedades', detalle: `Última actualización hace ${fmtMin(mAct)}${actual ? ` · siguiente: ${actual.nombre}` : ''}.`, accion: 'Escriba «status» en el chat de Claude Code.' };
+    return { pct, tono: 'run', titulo: actual ? `Siguiente: ${actual.nombre}` : 'En producción', detalle: actual?.nota || '' };
+  }
+  function progresoEl(p) {
+    const g = progreso(p);
+    if (!g) return null;
+    const act = minDesde(p.produccion?.actualizado);
+    return h('div', { class: `prog t-${g.tono}`, 'data-pid': p.id, role: 'status' },
+      h('div', { class: 'prog-top' }, h('b', {}, g.titulo), h('span', { class: 'prog-pct' }, `${g.pct}%`)),
+      h('div', { class: 'bar', role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': '100', 'aria-valuenow': String(g.pct), 'aria-label': 'Avance del pedido' }, h('i', { style: `width:${Math.max(g.pct, 2)}%` })),
+      g.detalle ? h('div', { class: 'prog-det' }, g.detalle, act != null && g.tono !== 'ok' ? ` · actualizado hace ${fmtMin(act)}` : '') : null,
+      g.accion ? h('div', { class: 'prog-acc' }, g.accion) : null);
+  }
+  // Recalcula barras y avisos cada 30 s sin repintar la página (no pisa lo que el usuario escribe).
+  setInterval(() => {
+    document.querySelectorAll('.prog[data-pid]').forEach((el) => {
+      const p = pedidos.find((x) => x.id === el.dataset.pid);
+      const n = p && progresoEl(p);
+      if (n) el.replaceWith(n);
+    });
+    const r = document.getElementById('ped-resumen');
+    if (r) r.replaceWith(resumenEl());
+    const c = document.getElementById('ped-count');
+    if (c) c.textContent = cuentaPed();
+  }, 30000);
+  const cuentaPed = () => pedidos.filter((p) => p.estado === 'en cola' || atencion(p) || progreso(p)?.tono === 'bad').length;
+  function resumenEl() {
+    const g = pedidos.map(progreso).filter(Boolean);
+    const n = (t) => g.filter((x) => x.tono === t).length;
+    const items = [[n('run'), 'en producción', ''], [n('wait'), 'esperan su aprobación', 'r-wait'], [n('bad'), 'frenados', 'r-bad']].filter(([k]) => k);
+    return h('div', { class: 'resumen', id: 'ped-resumen', 'aria-live': 'polite' }, items.length ? items.map(([k, t, c]) => h('span', { class: c }, `${k} ${t}`)) : h('span', {}, 'Nada en producción ahora'));
+  }
+
   function renderPed() {
     const root = document.getElementById('view-ped');
     root.replaceChildren();
     root.append(h('div', { class: 'ped-intro' },
       h('strong', {}, 'Cómo funciona'),
-      h('span', {}, 'Cada pedido se produce en Claude Code con su comando. Mientras avanza, aquí ve cada etapa, aprueba o pide cambios en las piezas (casting, fotogramas, tomas), y al final ve y descarga el anuncio.')));
+      h('span', {}, 'Cada pedido se produce en Claude Code con su comando. Mientras avanza, aquí ve cada etapa, aprueba o pide cambios en las piezas (casting, fotogramas, tomas), y al final ve y descarga el anuncio.')), resumenEl());
     const list = h('div', { class: 'orders' });
     if (!pedidos.length) list.append(h('div', { class: 'empty' }, loaded ? 'Todavía no hay pedidos. Créelos desde «Crear».' : 'Cargando pedidos…'));
     for (const p of pedidos) list.append(renderPedido(p));
@@ -1709,7 +1819,7 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
       }
       if (p.estado === 'listo' && !(p.cambios && Object.values(p.cambios).some((c) => c.estado !== 'atendido'))) return null;
       const cambiosPend = p.estado === 'cambios pedidos';
-      if (p.estado === 'en producción' && p.disparado) return h('div', { class: 'ped-box wait' }, h('strong', {}, 'Claude lo está produciendo'), h('p', { class: 'muted' }, `Arrancó ${fmtFecha(p.disparado.fecha)}. Aquí verá cada etapa y las piezas para aprobar.`));
+      if (p.estado === 'en producción' && p.disparado) return null;
       if (p.produccion && !cambiosPend && p.estado !== 'en cola') return null;
       return h('div', { class: 'ped-box' }, h('div', { class: 'ped-row' }, h('strong', {}, cambiosPend ? 'Hay cambios por hacer' : 'Listo para producir'),
         h('button', { class: 'btn small', disabled: !mcp, onclick: (e) => { e.target.disabled = true; producirVideo(p, cambiosPend ? 'cambios' : 'pedido'); } }, cambiosPend ? 'Enviar cambios a producción' : 'Producir ahora')),
@@ -1726,7 +1836,7 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
       : h('div', { class: 'ped-box' },
           h('div', { class: 'ped-row' }, h('strong', {}, 'Producción'),
             pr.creditos ? h('span', { class: 'mono muted' }, `Créditos: ${pr.creditos.gastado ?? 0} de ~${pr.creditos.estimado ?? '?'}`) : null),
-          h('ol', { class: 'pasos' }, (pr.pasos || []).map((s) => h('li', { class: 'st-' + slug(s.estado || 'pendiente') }, h('span', { class: 'dotst' }), h('span', {}, h('b', {}, s.nombre), s.nota ? h('span', { class: 'muted' }, ' · ' + s.nota) : null), h('span', { class: 'mono muted' }, s.estado || 'pendiente')))));
+          h('ol', { class: 'pasos' }, (pr.pasos || []).map((s) => h('li', { class: 'st-' + slug(s.estado || 'pendiente') }, h('span', { class: 'dotst' }), h('span', {}, h('b', {}, s.nombre), s.total ? h('span', { class: 'mono muted' }, ` ${s.hechos || 0}/${s.total}`) : null, s.nota ? h('span', { class: 'muted' }, ' · ' + s.nota) : null), h('span', { class: 'mono muted' }, s.estado || 'pendiente')))));
 
     // 2. Revisiones: piezas para aprobar
     const revs = (pr.revisiones || []).map((r) => {
@@ -1766,11 +1876,12 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
       h('textarea', { id: cambioId, placeholder: entregas.length ? 'Ej.: el titular más corto; cambiar la toma 3; versión en 1:1' : 'Ej.: que Julián hable a cámara en el gancho' }),
       h('div', {}, h('button', { class: 'btn small', onclick: async () => { const el = document.getElementById(cambioId); if (await pedirCambio(p, el?.value || '')) el.value = ''; } }, entregas.length ? 'Pedir cambios' : 'Enviar indicación')));
 
-    const det = h('details', { class: 'order' + (atencion(p) ? ' attn' : ''), ontoggle: (e) => { if (e.target.open) abiertos.add(p.id); else abiertos.delete(p.id); } },
+    const gp = progreso(p);
+    const det = h('details', { class: 'order' + (gp?.tono === 'bad' ? ' frenado' : atencion(p) ? ' attn' : ''), ontoggle: (e) => { if (e.target.open) abiertos.add(p.id); else abiertos.delete(p.id); } },
       h('summary', {},
         h('div', {}, h('strong', {}, p.titulo || 'Anuncio'),
           h('div', { class: 'meta' }, [fmtFecha(p.creado), p.tipo === 'imagen' ? `Imagen ${(p.formatos || []).join(' · ')}` : 'Video', p.persona?.nombre, p.estructura?.nombre, p.estilo?.nombre].filter(Boolean).join(' · ')),
-          atencion(p) ? h('div', { class: 'attn-note' }, 'Hay piezas esperando su aprobación') : entregas.length ? h('div', { class: 'ok-note' }, 'Listo para ver y descargar') : null),
+          progresoEl(p)),
         estadoSel),
       h('div', { class: 'body' },
         accion, entregaEls, revs, avance, cambiosEl,
@@ -1992,7 +2103,7 @@ Responde SOLO con JSON: {"piezas":[{"template":"<id>","idea":"una frase","copy":
   }
 
   function render() {
-    document.getElementById('ped-count').textContent = pedidos.filter((p) => p.estado === 'en cola' || atencion(p)).length;
+    document.getElementById('ped-count').textContent = cuentaPed();
     if (view === 'crear') renderCrear();
     else if (view === 'lib') renderLib();
     else if (view === 'est') renderEst();
@@ -2038,7 +2149,7 @@ Responde SOLO con JSON: {"piezas":[{"template":"<id>","idea":"una frase","copy":
     db.collection('pedidos').orderBy('creado', 'desc').limit(200).onSnapshot((snap) => {
       pedidos = snap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       if (firstP) { firstP = false; doneOne(); }
-      if (view === 'ped' && document.activeElement?.tagName === 'SELECT') { document.getElementById('ped-count').textContent = pedidos.filter((p) => p.estado === 'en cola' || atencion(p)).length; return; }
+      if (view === 'ped' && document.activeElement?.tagName === 'SELECT') { document.getElementById('ped-count').textContent = cuentaPed(); return; }
       soon();
     }, onErr);
     render();

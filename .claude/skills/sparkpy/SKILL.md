@@ -95,6 +95,21 @@ le muestra para aprobar o se entrega se publica también ahí:
 - **Avance**: `ArtifactData update` del pedido con `produccion.pasos` (array completo: `{nombre, estado:
   "hecho"|"en curso"|"esperando aprobación"|"pendiente", nota}`) y `produccion.creditos: {estimado, gastado}`.
   Actualiza al empezar y al cerrar cada etapa.
+- **Barra de progreso (obligatorio)**: la página dibuja una barra por pedido y avisa si algo está frenado,
+  así el usuario no tiene que preguntar en el chat. Para que sea fiel, en **cada** escritura del pedido:
+  - `produccion.actualizado`: hora actual (ISO). Si pasan >20 min sin escribir, la página muestra «Sin
+    novedades»: en esperas largas (tomas, render) reescríbelo en cada check-in aunque no haya cambios.
+  - En el paso `en curso`: `desde` (ISO de cuándo empezó), `eta_min` (lo normal: fotogramas ~2, toma
+    Seedance ~8, toma Veo ~5, render ~5) y, si son varias piezas, `hechos`/`total` (p. ej. tomas 3 de 5).
+    Actualiza `hechos` cada vez que llega una pieza.
+  - `produccion.bloqueo: {motivo, accion, desde}` en cuanto algo se frene por algo que no depende de ti
+    (Higgsfield sin créditos o con límite diario, un job atascado que hay que relanzar, una herramienta
+    desconectada, un claim que el usuario debe confirmar). `accion` dice qué tiene que hacer el usuario o
+    qué estás haciendo tú. Bórralo (`{"__delete__": true}`) al destrabarse.
+  La página detecta sola: «Producir ahora» que nadie tomó (>4 min), aprobaciones pendientes, respuestas o
+  cambios del usuario sin atender (>6 min), pasos que tardan más del doble de `eta_min` y pedidos sin
+  novedades. Al tomar un pedido o leer una respuesta, escribe `actualizado` enseguida para que el aviso
+  desaparezca.
 - **Piezas para aprobar** (castings, fotogramas, tomas, piezas estáticas): sube cada archivo como asset
   del artifact (`Artifact` publish con `url`, `asset: true`, `file_paths`; solo imagen o video: png, jpg,
   webp, mp4) y agrega a `produccion.revisiones` `{id, titulo, nota, items: [{asset, tipo: "image"|"video",
