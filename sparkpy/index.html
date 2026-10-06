@@ -1636,12 +1636,21 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
     }
   }
 
+  // Despierta la sesión de Claude Code con la rutina. Solo cuenta como enviado si la respuesta trae
+  // la corrida (session_id o last_run); si no, guarda el error exacto en el pedido para verlo y diagnosticarlo.
   async function producirVideo(p, orden) {
+    const fecha = new Date().toISOString();
     try {
-      await llamar('Claude Code Remote', 'fire_trigger', { trigger_id: TRIGGER_PRODUCIR, text: `${orden} ${p.id}` });
-      await db.doc('pedidos/' + p.id).update({ estado: 'en producción', disparado: { orden, fecha: new Date().toISOString() } });
-      toast('Claude empezó a producirlo. Verá el avance aquí.');
-    } catch (e) { toast(errMcp(e, 'Claude Code Remote')); }
+      const r = await llamar('Claude Code Remote', 'fire_trigger', { trigger_id: TRIGGER_PRODUCIR, text: `${orden} ${p.id}` });
+      const ok = r && typeof r === 'object' && (r.session_id || r.trigger?.last_run || r.run);
+      if (!ok) throw { code: 'respuesta_rara', message: (typeof r === 'string' ? r : JSON.stringify(r) || 'sin respuesta').slice(0, 400) };
+      await db.doc('pedidos/' + p.id).update({ estado: 'en producción', disparado: { orden, fecha, sesion: String(r.session_id || '') }, disparoError: null });
+      toast('Aviso enviado a Claude. La barra cambia en 1–2 minutos.');
+    } catch (e) {
+      const mensaje = e?.code === 'respuesta_rara' ? `Respuesta inesperada: ${e.message}` : `${errMcp(e, 'Claude Code Remote')}${e?.message ? ` (${e.code || 'error'}: ${String(e.message).slice(0, 300)})` : ''}`;
+      try { await db.doc('pedidos/' + p.id).update({ disparoError: { mensaje, fecha, orden } }); } catch {}
+      toast('No se pudo avisar a Claude. Escriba «arranca» en el chat de Claude Code.');
+    }
   }
 
   // ---------- PEDIDOS ----------
@@ -1717,6 +1726,7 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
     const actual = pasos.find((x) => x.estado === 'en curso') || pasos.find((x) => /revisi|aprobaci/.test(x.estado || '')) || pasos.find((x) => (x.estado || 'pendiente') === 'pendiente');
     const sinResp = (pr.revisiones || []).filter((r) => !p.respuestas?.[r.id]);
     const act = pr.actualizado;
+    if (p.disparoError && (!p.disparado || p.disparoError.fecha > p.disparado.fecha) && (!act || p.disparoError.fecha > act)) return { pct, tono: 'bad', titulo: 'No se pudo avisar a Claude', detalle: p.disparoError.mensaje || 'El botón falló.', accion: 'Escriba «arranca» en el chat de Claude Code (o pulse el botón otra vez).' };
     if (pr.bloqueo?.motivo) return { pct, tono: 'bad', titulo: 'Frenado', detalle: pr.bloqueo.motivo + (pr.bloqueo.desde ? ` · desde hace ${fmtMin(minDesde(pr.bloqueo.desde))}` : ''), accion: pr.bloqueo.accion };
     if (!p.produccion) {
       if (p.disparado) {
