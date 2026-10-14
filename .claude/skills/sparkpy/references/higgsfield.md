@@ -122,6 +122,14 @@ lee". Para una toma de noche en casa, mismo personaje, sala sencilla y cálida.
 
 ## Hablando a cámara (personas reales, orgánico / UGC)
 
+> **Regla del usuario (2026-10-14): en UGC / hablando a cámara se usa siempre el mejor modelo disponible,
+> aunque cueste más.** Aquí no se ahorra créditos: ni calidad «high» en vez de la máxima, ni 720p, ni
+> recetas baratas. El ahorro de créditos aplica solo a tomas de apoyo sin labios.
+> Veo 3.1 ultra quedó «bastante mal» para UGC según el usuario (V17, gancho `cfec4165`). Comparativa
+> en curso con el mismo gancho y fotograma: Kling 3.0 `mode: "4k"`, `sound: "on"` (48 cr / 8 s) y
+> Seedance 2.5 `omni_reference` 1080p `bitrate_mode: "high"`, `generate_audio: true`, con el casting
+> como `image_references` (128 cr / 8 s). Usar el que el usuario elija; anotar aquí el ganador.
+
 **Receta actual (2026-10-03, pedida por el usuario): Veo 3.1 con su propio audio.** La voz, los labios y
 el ambiente salen juntos de Veo, con acento nativo. Ya **no** se usa ElevenLabs + Sync para las tomas a
 cámara: esas voces sonaban robóticas y con acento extranjero («un inglés intentando hablar
