@@ -21,17 +21,13 @@
         "¿Cuántas"
       ],
       "cola": 2,
-      "texto": {
-        "tamano": 60,
-        "top": 95
-      },
       "extras": [
         {
           "tipo": "sticker",
           "en": "5%",
           "texto": "7:00 a. m. ⏰",
-          "x": 540,
-          "y": 1560,
+          "x": 300,
+          "y": 380,
           "giro": -4,
           "tamano": 56,
           "fondo": "#ffffff"
@@ -56,17 +52,13 @@
         "WhatsApp"
       ],
       "cola": 2,
-      "texto": {
-        "tamano": 60,
-        "top": 95
-      },
       "extras": [
         {
           "tipo": "sticker",
           "en": "40%",
           "texto": "📒 + 💬 = 😵",
           "x": 760,
-          "y": 1500,
+          "y": 400,
           "giro": 6,
           "tamano": 62,
           "fondo": "#ff4d4d",
@@ -94,10 +86,6 @@
         "duermo"
       ],
       "cola": 2,
-      "texto": {
-        "tamano": 58,
-        "top": 95
-      },
       "extras": [
         {
           "tipo": "tarjeta",
@@ -142,17 +130,13 @@
         "crecer"
       ],
       "cola": 2,
-      "texto": {
-        "tamano": 60,
-        "top": 95
-      },
       "extras": [
         {
           "tipo": "sticker",
           "en": "15%",
           "texto": "Sin instalar nada ✅",
           "x": 540,
-          "y": 1560,
+          "y": 380,
           "giro": -3,
           "tamano": 56,
           "fondo": "#ffd400"

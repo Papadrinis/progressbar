@@ -5,7 +5,7 @@
 //   npm run sparkpy -- descargar <ad>        baja las "fuentes" que falten (voces y tomas por URL de Higgsfield)
 //   npm run sparkpy -- medir <ad>            escribe en el JSON la "duracion" de cada voz (ffprobe)
 //   npm run sparkpy -- revisar <ad>          archivos, legibilidad de cada tarjeta y reglas de marca
-//   npm run sparkpy -- muestras <ad>         un fotograma por bloque en out/<ad>/ para aprobar sin renderizar
+//   npm run sparkpy -- muestras <ad>         un fotograma por bloque en out/<ad>/, con las zonas seguras de Meta en rojo
 //   npm run sparkpy -- render <ad>           exporta out/<ID>.mp4 (crf 23, avisa si pasa de 30 MB)
 import {execFileSync, spawnSync} from 'node:child_process';
 import {createWriteStream, existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync} from 'node:fs';
@@ -18,6 +18,8 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const PUB = join(ROOT, 'public');
 const FPS = 30;
 const MAX_MB = 30;
+// Zona segura de Meta (Reels/Stories 9:16). Mismos números que src/ad/zonas.ts.
+const ZONA = {arriba: 285, abajo: 1248, izq: 65, der: 1015};
 const BROWSER = ['/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell'].find(existsSync);
 
 const [cmd, ad, ...rest] = process.argv.slice(2);
@@ -70,7 +72,7 @@ const duracion = (ruta) => {
 const tramos = (a) => {
   const rate = a.velocidadVoz ?? 1.08;
   const cierre = a.cierre ?? {voz: 'voz/cta.mp3', cola: 50};
-  const pasos = [...a.bloques.map((b) => ({id: b.id, voz: b.voz, d: b.duracion, cola: b.cola ?? 6, lead: b.entrada ?? 3, lineas: b.lineas, locucion: b.locucion, extras: b.extras ?? []})), {id: 'cierre', voz: cierre.voz, d: cierre.duracion, cola: cierre.cola ?? 50, lead: 8, lineas: [], extras: []}];
+  const pasos = [...a.bloques.map((b) => ({id: b.id, voz: b.voz, d: b.duracion, cola: b.cola ?? 6, lead: b.entrada ?? 3, lineas: b.lineas, locucion: b.locucion, extras: b.extras ?? [], texto: b.texto})), {id: 'cierre', voz: cierre.voz, d: cierre.duracion, cola: cierre.cola ?? 50, lead: 8, lineas: [], extras: []}];
   let from = 0;
   return pasos.map((p) => {
     const d = p.d ?? duracion(p.voz);
@@ -145,7 +147,11 @@ const comandos = {
       if (t.lineas.some((l) => /planpi/i.test(l))) problemas.push(`${t.id}: en pantalla se escribe "PlanPy", no "Planpi"`);
       if (t.locucion && /planpy/i.test(t.locucion)) problemas.push(`${t.id}: en la locución se escribe "Planpi" (así lo pronuncia la voz)`);
       if (t.id !== 'cierre' && t.d / (a.velocidadVoz ?? 1.08) > 7) avisos.push(`${t.id}: la voz dura más de 7 s y las tomas de Seedance son de 5 s; parta el bloque o use un fotograma`);
+      if (t.texto?.top !== undefined && t.texto.top < ZONA.arriba) avisos.push(`${t.id}: subtítulo con "top" ${t.texto.top} queda bajo la interfaz de Meta; se baja a ${ZONA.arriba}. Mejor quite "top" (van abajo, sobre la zona reservada)`);
       for (const x of t.extras) {
+        if ((x.tipo === 'sticker' || x.tipo === 'emoji') && (x.y < ZONA.arriba + 40 || x.y > ZONA.abajo - 40 || x.x < ZONA.izq + 80 || x.x > ZONA.der - 80)) {
+          avisos.push(`${t.id}: ${x.tipo} «${x.texto}» en (${x.x}, ${x.y}) cae fuera de la zona segura de Meta (y ${ZONA.arriba}–${ZONA.abajo}); se mueve al borde. Ubíquelo en la franja alta (y ~360) o a media altura`);
+        }
         if (x.tipo !== 'tarjeta') continue;
         const en = typeof x.en === 'number' ? x.en : t.lead + (t.vf * parseFloat(x.en)) / 100;
         const visible = (t.len - en) / FPS;
@@ -173,7 +179,8 @@ const comandos = {
     for (const t of ts) {
       // Casi al final de la voz: el subtítulo ya está completo y los extras ya entraron.
       const frame = t.from + t.lead + Math.round(t.vf * 0.9);
-      remotion(['still', 'src/index.ts', 'SPARKPY', join(dir, `${t.id}.png`), `--frame=${frame}`, `--props=${JSON.stringify({ad})}`, '--log=error']);
+      // Con guías: lo que cae en rojo queda tapado por la interfaz de Reels/Stories.
+      remotion(['still', 'src/index.ts', 'SPARKPY', join(dir, `${t.id}.png`), `--frame=${frame}`, `--props=${JSON.stringify({ad, guias: true})}`, '--log=error']);
       console.log(`ok  out/${ad}/${t.id}.png  (frame ${frame})`);
     }
   },

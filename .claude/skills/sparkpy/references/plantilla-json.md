@@ -40,7 +40,7 @@ termina con un fade de 24 frames. Pistas disponibles: `music/cama-112bpm.wav` (s
   "lineas": ["Una clienta pregunta si le", "queda la blusa en talla M…"],  // subtítulo, máx. 4 líneas
   "claves": ["talla", "cuaderno"],         // palabras en píldora verde (coincidencia por inclusión)
   "cola": 8,                               // frames tras la voz (6 por defecto); 12–16 en el último bloque
-  "texto": {"tamano": 58, "top": 1240},     // opcional: subtítulo más chico o más abajo si tapa la cara
+  "texto": {"tamano": 58},                 // opcional: letra más chica si son 4 líneas largas (por defecto 62)
   "volumenVoz": 1,                         // opcional (p. ej. 0.85 para una voz al teléfono)
   "extras": [ /* stickers, tarjetas, efectos */ ]
 }
@@ -62,7 +62,7 @@ la zona útil para extras es y = 1000–1700.
 
 ### `sticker`
 ```json
-{"tipo": "sticker", "en": "35%", "texto": "¿Talla M? 🤔", "x": 760, "y": 1500, "giro": 6, "tamano": 66,
+{"tipo": "sticker", "en": "35%", "texto": "¿Talla M? 🤔", "x": 760, "y": 380, "giro": 6, "tamano": 66,
  "fondo": "#ffd400", "color": "#141414", "sfx": "boing", "volumenSfx": 0.4}
 ```
 Colores habituales: amarillo `#ffd400` (duda), rojo `#ff4d4d` con texto `#fff` (problema), blanco
@@ -88,7 +88,7 @@ Entra en el frame 4 y vibra 4 veces (`"vibrar": false` para silenciarla).
 
 ### `emoji`
 ```json
-{"tipo": "emoji", "en": "50%", "texto": "💸", "x": 540, "y": 1300, "tamano": 140, "giro": 0}
+{"tipo": "emoji", "en": "50%", "texto": "💸", "x": 820, "y": 640, "tamano": 140, "giro": 0}
 ```
 
 ### `sfx`
@@ -112,3 +112,23 @@ Con fuentes completas, el anuncio se puede reconstruir en un checkout limpio.
 1. Nuevo objeto en `extra` (discriminated union) en `src/ad/schema.ts`.
 2. Nuevo `case` en `ExtraEl` de `src/ad/SparkPy.tsx` (componentes reutilizables en `src/v6/kit.tsx`).
 3. `npm run typecheck`, documentarlo aquí.
+
+
+## Zonas seguras de Meta (obligatorio)
+
+Reels y Stories tapan el 14 % de arriba, el 35 % de abajo y el 6 % de cada lado (perfil, caption, botón,
+íconos); el Feed recorta el 9:16 a 4:5. En el lienzo de 1080×1920 todo lo importante va dentro de
+**x 65–1015, y 285–1248** (`src/ad/zonas.ts`, la única fuente de estos números).
+
+| Elemento | Dónde va | Cómo |
+|---|---|---|
+| Subtítulos | franja baja de la zona, ~980–1240 | automático: anclados a y 1240; no use `texto.top` |
+| Stickers cortos | franja alta, y ~360–420 | `"y": 380`; a media altura (y ~600–800) a un costado si tapan la cara |
+| Emojis | a un costado, y 400–900 | |
+| Tarjeta celular | arriba a la derecha, y 300–910 | automático (escala 0,78) |
+| Tarjeta computador | centrada, y 420–~900 | automático (escala 0,8) |
+| Llamada entrante | arriba, como notificación | automático |
+| Cierre | centrado | ya cumple |
+
+Lo que se ubica a mano (stickers, emojis) se mueve solo al borde de la zona si queda afuera, y
+`revisar` lo avisa. `muestras` dibuja las zonas tapadas en rojo: nada importante puede caer ahí.

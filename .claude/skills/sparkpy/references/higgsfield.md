@@ -81,7 +81,10 @@ Mismos parámetros, `count: 1`, uno por toma con `generate_image_batch`, y el ca
 ```
 
 Prompt: la misma persona + acción concreta del bloque + encuadre (plano medio / detalle de manos /
-de espaldas al monitor). Siempre: "el monitor se ve de espaldas" o "la pantalla del celular no se
+de espaldas al monitor). En 9:16, encuadre para las zonas seguras de Meta: cara en y ~300–950 (entre el 15 %
+y el 50 % del alto), aire arriba de la cabeza, y abajo pecho, manos o mesa (ahí van los subtítulos).
+En inglés en el prompt: «framed for vertical social video: face in the upper-middle third, clear space
+below the chest». Siempre: "el monitor se ve de espaldas" o "la pantalla del celular no se
 lee". Para una toma de noche en casa, mismo personaje, sala sencilla y cálida.
 
 ## Tomas — seedance_2_5

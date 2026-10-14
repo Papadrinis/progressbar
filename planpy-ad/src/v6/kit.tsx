@@ -80,13 +80,15 @@ export const FlyAway: React.FC<{at: number; emoji: string; count?: number; x?: n
 
 // Subtítulo dinámico: cada palabra aparece rebotando cuando se dice; las palabras clave
 // van en píldora verde de marca, ligeramente inclinada.
-export const WordPop: React.FC<{lines: string[]; keys?: string[]; start: number; voFrames: number; size?: number; top?: number}> = ({
+export const WordPop: React.FC<{lines: string[]; keys?: string[]; start: number; voFrames: number; size?: number; top?: number; bottom?: number; side?: number}> = ({
   lines,
   keys = [],
   start,
   voFrames,
   size = 74,
   top = 170,
+  bottom,
+  side = 40,
 }) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
@@ -101,7 +103,7 @@ export const WordPop: React.FC<{lines: string[]; keys?: string[]; start: number;
   });
   const isKey = (w: string) => keys.some((k) => w.toLowerCase().replace(/[¿?¡!,.:]/g, '').includes(k));
   return (
-    <div style={{position: 'absolute', top, left: 40, right: 40, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, fontFamily: `${SANS}, ${EMOJI}`, fontWeight: 800, fontSize: size, lineHeight: 1.1, letterSpacing: -1.5}}>
+    <div style={{position: 'absolute', ...(bottom === undefined ? {top} : {bottom: 1920 - bottom}), left: side, right: side, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, fontFamily: `${SANS}, ${EMOJI}`, fontWeight: 800, fontSize: size, lineHeight: 1.1, letterSpacing: -1.5}}>
       {lines.map((_, li) => (
         <div key={li} style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: `0 ${size * 0.22}px`}}>
           {words.map((wd, i) => {

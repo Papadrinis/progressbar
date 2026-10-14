@@ -1,3 +1,4 @@
+import {TARJETA, ZONA} from './zonas';
 import {interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {SANS, UI_LIME} from '../brand';
 import {EMOJI} from '../v6/kit';
@@ -55,7 +56,7 @@ export const Tarjeta: React.FC<{
   });
   if (phone) {
     return (
-      <div style={{position: 'absolute', left: 250, top: 1000, width: 580, height: 780, borderRadius: 60, background: '#111', padding: 12, transform: `translateY(${(1 - s) * 500}px) rotate(${-4 + (1 - s) * 8}deg)`, boxShadow: '0 30px 70px rgba(0,0,0,0.6)'}}>
+      <div style={{position: 'absolute', left: TARJETA.celular.x, top: TARJETA.celular.y, width: 580, height: 780, borderRadius: 60, background: '#111', padding: 12, transformOrigin: 'top left', transform: `scale(${TARJETA.celular.escala}) translateY(${(1 - s) * 500}px) rotate(${-4 + (1 - s) * 8}deg)`, boxShadow: '0 30px 70px rgba(0,0,0,0.6)'}}>
         <div style={{width: '100%', height: '100%', borderRadius: 50, background: '#faf8f4', fontFamily: `${SANS}, ${EMOJI}`, padding: '60px 24px', boxSizing: 'border-box', color: '#141414'}}>
           <div style={{fontSize: 22, color: '#8a857c', fontWeight: 600}}>{seccion}</div>
           <div style={{fontSize: 36, fontWeight: 800, marginBottom: 18}}>{titulo}</div>
@@ -67,7 +68,7 @@ export const Tarjeta: React.FC<{
     );
   }
   return (
-    <div style={{position: 'absolute', left: 60, top: 1080, width: 960, transform: `scale(${0.96 * s}) rotate(${(1 - s) * -5}deg)`, borderRadius: 22, overflow: 'hidden', boxShadow: '0 40px 80px rgba(0,0,0,0.55)', border: '10px solid #1d1f22', background: '#faf8f4', fontFamily: SANS, color: '#141414'}}>
+    <div style={{position: 'absolute', left: TARJETA.computador.x, top: TARJETA.computador.y, width: 960, transformOrigin: 'top left', transform: `scale(${TARJETA.computador.escala * s}) rotate(${(1 - s) * -5}deg)`, borderRadius: 22, overflow: 'hidden', boxShadow: '0 40px 80px rgba(0,0,0,0.55)', border: '10px solid #1d1f22', background: '#faf8f4', fontFamily: SANS, color: '#141414'}}>
       <div style={{height: 34, background: '#e8e3da', display: 'flex', alignItems: 'center', gap: 8, padding: '0 14px'}}>
         {['#e06c5a', '#e5b54a', '#68b36b'].map((c) => (
           <div key={c} style={{width: 11, height: 11, borderRadius: 6, background: c}} />
@@ -101,7 +102,7 @@ export const Llamada: React.FC<{nombre: string; hora?: string; icono?: string; a
   if (frame < at) return null;
   const pulse = 1 + 0.06 * Math.sin((frame - at) / 3);
   return (
-    <div style={{position: 'absolute', left: 60, right: 60, top: 1260, padding: '26px 28px', borderRadius: 40, background: 'rgba(20,20,22,0.92)', color: '#fff', fontFamily: `${SANS}, ${EMOJI}`, display: 'flex', alignItems: 'center', gap: 22, transform: `translateY(${(1 - s) * 200}px)`, opacity: s, boxShadow: '0 20px 50px rgba(0,0,0,0.5)'}}>
+    <div style={{position: 'absolute', left: ZONA.izq, right: 1080 - ZONA.der, top: ZONA.arriba + 10, padding: '26px 28px', borderRadius: 40, background: 'rgba(20,20,22,0.92)', color: '#fff', fontFamily: `${SANS}, ${EMOJI}`, display: 'flex', alignItems: 'center', gap: 22, transform: `translateY(${(1 - s) * -200}px)`, opacity: s, boxShadow: '0 20px 50px rgba(0,0,0,0.5)'}}>
       <div style={{width: 84, height: 84, borderRadius: 42, background: '#5b8def', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 40}}>{icono}</div>
       <div style={{flex: 1}}>
         <div style={{fontSize: 24, color: '#aaa'}}>Llamada entrante · {hora}</div>

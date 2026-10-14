@@ -30,6 +30,11 @@ Estas reglas son posteriores a `planpy-marca` y `planpy-copy`; si chocan, mandan
 
 ## Texto y ritmo
 
+- **Zonas seguras de Meta** (2026-10-14): en 9:16 nada importante fuera de x 65–1015, y 285–1248
+  (Meta: 14 % arriba, 35 % abajo y 6 % a los lados libres de texto y logos en Reels y Stories; el Feed
+  recorta a 4:5). Subtítulos abajo de la zona, stickers en la franja alta, tarjetas a un costado.
+  Detalle en `plantilla-json.md` → «Zonas seguras de Meta».
+
 - Colombia: **usted**. Montos en COP con punto de miles ($89.900).
 - En la voz, "Planpi"; en pantalla, "PlanPy".
 - **La voz manda**: cada bloque dura lo que dura su frase + una cola corta. Nada de aire muerto.
