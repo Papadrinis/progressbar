@@ -125,7 +125,7 @@ lee". Para una toma de noche en casa, mismo personaje, sala sencilla y cálida.
 > **Regla del usuario (2026-10-14): en UGC / hablando a cámara se usa siempre el mejor modelo disponible,
 > aunque cueste más.** Aquí no se ahorra créditos: ni calidad «high» en vez de la máxima, ni 720p, ni
 > recetas baratas. El ahorro de créditos aplica solo a tomas de apoyo sin labios.
-> **Modelo para UGC a cámara: Seedance 2.5** (elegido por el usuario el 2026-10-14, «by far the best»,
+> **Modelo para todo contenido realista (UGC, a cámara, voz en off, POV…): Seedance 2.5** (elegido por el usuario el 2026-10-14, «by far the best»,
 > en una comparativa con el mismo gancho y fotograma contra Veo 3.1 ultra y Kling 3.0 4K):
 >
 > ```json
@@ -237,9 +237,10 @@ Precios consultados con `get_cost`:
 | wan2_7 1080p, 4 s | **Descartado para labios** | 10 |
 | Voz ElevenLabs (text2speech_v2) | Por clip | 0,3 |
 
-Reglas para no gastar de más:
+Reglas para no gastar de más (nunca a costa de la calidad del contenido realista):
 - Tomas de apoyo sin labios (voz en off con interfaz encima): el fotograma aprobado con push-in en
-  Remotion (0 créditos). Solo si hace falta movimiento real, Seedance 720p.
+  Remotion (0 créditos) solo si el plano no necesita movimiento. Si hace falta video, Seedance 2.5
+  1080p bitrate alto, nunca 720p ni otro modelo.
 - Fotogramas: `count` 1; casting: 2 opciones; regenerar solo lo rechazado.
 - La energía de la voz se consigue con el texto (exclamaciones, frases cortas): el motor no tiene control
   de estilo. El CTA reutiliza `public/voz/cta/<voz>-<co|ar>.mp3` (o `cta.mp3` si narra Xavier).

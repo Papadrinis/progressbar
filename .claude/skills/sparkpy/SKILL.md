@@ -250,6 +250,11 @@ de `out/` no se versionan) y resume: duración, créditos gastados, qué quedó 
 
 Resumen; el detalle y el porqué están en `references/reglas.md`.
 
+0. **Contenido realista (personas reales, UGC, a cámara, voz en off, POV, antes/después): siempre
+   Seedance 2.5** (`omni_reference`, 1080p, `bitrate_mode: "high"`, casting como `image_references`;
+   con `generate_audio` cuando el avatar habla). Siempre el mejor modelo aunque cueste más: nada de Veo,
+   Kling ni Wan para esto, ni bajar resolución para ahorrar. Decisión del usuario (2026-10-14).
+
 1. CTA siempre con el precio más barato: "15 días gratis · Desde $46.500 al mes con el plan anual ·
    Plan mensual: desde $62.000". Nunca nombrar PYME/Pro. (Ya lo trae el cierre de SparkPy.)
 2. Computador = gestión; celular = consulta.
