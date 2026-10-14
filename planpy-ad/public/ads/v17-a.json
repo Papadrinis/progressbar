@@ -26,10 +26,10 @@
           "tipo": "sticker",
           "en": "5%",
           "texto": "7:00 a. m. ⏰",
-          "x": 300,
-          "y": 380,
+          "x": 330,
+          "y": 925,
           "giro": -4,
-          "tamano": 56,
+          "tamano": 52,
           "fondo": "#ffffff"
         }
       ],
@@ -57,10 +57,10 @@
           "tipo": "sticker",
           "en": "40%",
           "texto": "📒 + 💬 = 😵",
-          "x": 760,
-          "y": 400,
+          "x": 700,
+          "y": 925,
           "giro": 6,
-          "tamano": 62,
+          "tamano": 52,
           "fondo": "#ff4d4d",
           "color": "#fff",
           "sfx": "boing",
@@ -135,10 +135,10 @@
           "tipo": "sticker",
           "en": "15%",
           "texto": "Sin instalar nada ✅",
-          "x": 540,
-          "y": 380,
+          "x": 440,
+          "y": 925,
           "giro": -3,
-          "tamano": 56,
+          "tamano": 52,
           "fondo": "#ffd400"
         }
       ],
@@ -202,5 +202,6 @@
     },
     "voz": "Audio propio de cada toma de Seedance, extraído y recortado al final de la frase (entrada 0, velocidad 1)",
     "cta": "Editado por el dueño (cta_editado): «15 días gratis y sin tarjeta» (claim «sin tarjeta» por confirmar)"
-  }
+  },
+  "formato": "9:16"
 }

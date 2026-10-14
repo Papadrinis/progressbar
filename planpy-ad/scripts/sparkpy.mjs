@@ -18,8 +18,9 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const PUB = join(ROOT, 'public');
 const FPS = 30;
 const MAX_MB = 30;
-// Zona segura de Meta (Reels/Stories 9:16). Mismos números que src/ad/zonas.ts.
-const ZONA = {arriba: 285, abajo: 1248, izq: 65, der: 1015};
+// Zonas protegidas por formato. Mismos números que src/ad/zonas.ts (fuente: references/meta-creativos.md).
+const ZONAS = {'9:16': {arriba: 346, abajo: 1152, izq: 87, der: 918}, '4:5': {arriba: 81, abajo: 1269, izq: 65, der: 1015}};
+const medidaSticker = (texto, tamano) => ({w: [...texto].length * tamano * 0.58 + tamano * 0.72, h: tamano * 1.5});
 const BROWSER = ['/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell'].find(existsSync);
 
 const [cmd, ad, ...rest] = process.argv.slice(2);
@@ -147,11 +148,13 @@ const comandos = {
       if (t.lineas.some((l) => /planpi/i.test(l))) problemas.push(`${t.id}: en pantalla se escribe "PlanPy", no "Planpi"`);
       if (t.locucion && /planpy/i.test(t.locucion)) problemas.push(`${t.id}: en la locución se escribe "Planpi" (así lo pronuncia la voz)`);
       if (t.id !== 'cierre' && t.d / (a.velocidadVoz ?? 1.08) > 7) avisos.push(`${t.id}: la voz dura más de 7 s y las tomas de Seedance son de 5 s; parta el bloque o use un fotograma`);
-      if (t.texto?.top !== undefined && t.texto.top < ZONA.arriba) avisos.push(`${t.id}: subtítulo con "top" ${t.texto.top} queda bajo la interfaz de Meta; se baja a ${ZONA.arriba}. Mejor quite "top" (van abajo, sobre la zona reservada)`);
+      const Z = ZONAS[a.formato ?? '9:16'];
       for (const x of t.extras) {
-        if ((x.tipo === 'sticker' || x.tipo === 'emoji') && (x.y < ZONA.arriba + 40 || x.y > ZONA.abajo - 40 || x.x < ZONA.izq + 80 || x.x > ZONA.der - 80)) {
-          avisos.push(`${t.id}: ${x.tipo} «${x.texto}» en (${x.x}, ${x.y}) cae fuera de la zona segura de Meta (y ${ZONA.arriba}–${ZONA.abajo}); se mueve al borde. Ubíquelo en la franja alta (y ~360) o a media altura`);
+        const caja = x.tipo === 'sticker' ? medidaSticker(x.texto, x.tamano ?? 62) : x.tipo === 'emoji' ? {w: (x.tamano ?? 120) * 1.3, h: (x.tamano ?? 120) * 1.3} : null;
+        if (caja && (x.x - caja.w / 2 < Z.izq || x.x + caja.w / 2 > Z.der || x.y - caja.h / 2 < Z.arriba || x.y + caja.h / 2 > Z.abajo)) {
+          avisos.push(`${t.id}: ${x.tipo} «${x.texto}» (${Math.round(caja.w)}×${Math.round(caja.h)} en ${x.x}, ${x.y}) no entra completo en la zona ${a.formato ?? '9:16'} (x ${Z.izq}–${Z.der}, y ${Z.arriba}–${Z.abajo}); se mueve adentro al renderizar. Ubíquelo usted`);
         }
+        if (x.tipo === 'tarjeta' && x.formato === 'computador' && (a.formato ?? '9:16') === '9:16') avisos.push(`${t.id}: la tarjeta de computador ocupa el ancho de la zona y tapa la cara: úsela solo en tomas de apoyo, no a cámara`);
         if (x.tipo !== 'tarjeta') continue;
         const en = typeof x.en === 'number' ? x.en : t.lead + (t.vf * parseFloat(x.en)) / 100;
         const visible = (t.len - en) / FPS;
@@ -165,6 +168,7 @@ const comandos = {
     if (/\btú\b|\btienes\b|\bpuedes\b/.test(texto)) avisos.push('¿tuteo? En Colombia el registro es "usted"');
     console.log(`\nTotal: ${(total / FPS).toFixed(1)} s (${total} frames)`);
     if (total / FPS > 30) avisos.push('pasa de 30 s');
+    avisos.push(`NEEDS REVIEW: vista previa de colocación en Ads Manager (${a.formato ?? '9:16'}, con CTA, texto principal y subtítulos activos); SparkPy no puede hacerla`);
     avisos.forEach((p) => console.log(`! ${p}`));
     problemas.forEach((p) => console.log(`✗ ${p}`));
     if (problemas.length) process.exit(1);

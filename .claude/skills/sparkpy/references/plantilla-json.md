@@ -114,21 +114,21 @@ Con fuentes completas, el anuncio se puede reconstruir en un checkout limpio.
 3. `npm run typecheck`, documentarlo aquí.
 
 
-## Zonas seguras de Meta (obligatorio)
+## Formato y zonas protegidas (obligatorio)
 
-Reels y Stories tapan el 14 % de arriba, el 35 % de abajo y el 6 % de cada lado (perfil, caption, botón,
-íconos); el Feed recorta el 9:16 a 4:5. En el lienzo de 1080×1920 todo lo importante va dentro de
-**x 65–1015, y 285–1248** (`src/ad/zonas.ts`, la única fuente de estos números).
+`"formato": "9:16"` (Reels/Stories, 1080×1920, por defecto) o `"4:5"` (Feed, 1080×1350). Si el brief pide los
+dos, se hacen dos JSON con las mismas tomas (`v18-a.json` y `v18-a-45.json`). Reglas completas en
+`meta-creativos.md`; los números viven en `src/ad/zonas.ts`.
 
-| Elemento | Dónde va | Cómo |
+| Elemento | 9:16 (x 87–918, y 346–1152) | 4:5 (x 65–1015, y 81–1269) |
 |---|---|---|
-| Subtítulos | franja baja de la zona, ~980–1240 | automático: anclados a y 1240; no use `texto.top` |
-| Stickers cortos | franja alta, y ~360–420 | `"y": 380`; a media altura (y ~600–800) a un costado si tapan la cara |
-| Emojis | a un costado, y 400–900 | |
-| Tarjeta celular | arriba a la derecha, y 300–910 | automático (escala 0,78) |
-| Tarjeta computador | centrada, y 420–~900 | automático (escala 0,8) |
-| Llamada entrante | arriba, como notificación | automático |
-| Cierre | centrado | ya cumple |
+| Subtítulos | automáticos: 1–2 líneas sobre panel, franja 52–60 % (y ~994–1146) | automáticos, abajo de la zona |
+| Stickers | `"y": 420` (franja alta), `"x"` según el lado libre; tamaño ≤ 56 | `"y": 170` |
+| Tarjeta celular | notificación ancha arriba de la zona (automática) | igual |
+| Tarjeta computador | ancho de la zona, tapa la cara: solo en tomas de apoyo | igual |
+| Cierre | centrado dentro de la zona (automático) | igual |
+| Encuadre de la toma | `"encuadre": 50` (% vertical) | por defecto 30: sube la cara al recortar |
 
-Lo que se ubica a mano (stickers, emojis) se mueve solo al borde de la zona si queda afuera, y
-`revisar` lo avisa. `muestras` dibuja las zonas tapadas en rojo: nada importante puede caer ahí.
+Stickers y emojis se comprueban por sus bordes completos: si no entran, el render los mete y `revisar` avisa.
+`texto.top` ya no se usa (los subtítulos se ubican solos). `muestras` dibuja en rojo lo que queda fuera de la
+zona (solo en la revisión, nunca en el render).

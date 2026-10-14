@@ -1,24 +1,40 @@
-// Zonas seguras de Meta para 9:16 (1080×1920), Reels y Stories de Instagram/Facebook.
-// Meta pide dejar libre de texto y logos el 14 % de arriba, el 35 % de abajo y el 6 % de cada lado
-// (perfil, caption, botón CTA, íconos). En el Feed, el 9:16 se recorta a 4:5 (~285 px arriba y abajo).
-// Fuente: facebook.com/business/ads-guide (Instagram Reels / Instagram Stories), revisado 2026-10-14.
-export const LIENZO = {ancho: 1080, alto: 1920} as const;
+// Zonas protegidas de SparkPy por formato. Fuente: .claude/skills/sparkpy/references/meta-creativos.md
+// (directiva «META ADS CREATIVE PRODUCTION RULES — 4:5 AND 9:16», 2026-10-14). Márgenes internos y
+// conservadores: todo lo esencial (texto, subtítulos, precio, logo, CTA, ojos y boca del que habla, el
+// detalle del producto) va dentro de la caja con sus BORDES completos, no solo su centro.
+export type Formato = '9:16' | '4:5';
 
-// Caja donde puede ir todo lo importante (texto, stickers, tarjetas, logo).
-export const ZONA = {
-  arriba: 285, // máx(14 % = 269, recorte del Feed 4:5 = 285)
-  abajo: 1248, // 1920 − 35 %
-  izq: 65, // 6 %
-  der: 1015, // 1080 − 6 %
-} as const;
+export type Zona = {
+  formato: Formato;
+  ancho: number;
+  alto: number;
+  // Caja protegida (px desde arriba a la izquierda).
+  arriba: number;
+  abajo: number;
+  izq: number;
+  der: number;
+  // Subtítulos: panel anclado por abajo en `base`; tamaño de letra.
+  subtitulo: {base: number; tamano: number};
+  // Franja para stickers cortos y notificaciones, arriba de la caja.
+  franjaAlta: number;
+  // Encuadre por defecto de la toma (object-position vertical, %).
+  encuadre: number;
+};
 
-// Diagrama de un vertical:
-//   285–450  franja alta: stickers cortos, notificaciones (llamada)
-//   300–950  la cara del personaje (los fotogramas se encuadran así)
-//   400–950  tarjetas de interfaz, a un costado
-//   ~980–1240 subtítulos, anclados abajo de la zona
-export const SUBTITULO_BASE = ZONA.abajo - 8; // borde inferior del bloque de subtítulos
-export const FRANJA_ALTA = 360; // y por defecto de stickers
-export const TARJETA = {celular: {x: 555, y: 300, escala: 0.78}, computador: {x: 156, y: 420, escala: 0.8}} as const;
+export const ZONAS: Record<Formato, Zona> = {
+  // Reels / Stories, 1080×1920: x 8–85 %, y 18–60 %.
+  '9:16': {formato: '9:16', ancho: 1080, alto: 1920, arriba: 346, abajo: 1152, izq: 87, der: 918, subtitulo: {base: 1146, tamano: 52}, franjaAlta: 400, encuadre: 50},
+  // Feed, 1080×1350: 6 % por lado.
+  '4:5': {formato: '4:5', ancho: 1080, alto: 1350, arriba: 81, abajo: 1269, izq: 65, der: 1015, subtitulo: {base: 1255, tamano: 50}, franjaAlta: 150, encuadre: 30},
+};
 
-export const dentro = (y: number, alto = 0) => y - alto / 2 >= ZONA.arriba && y + alto / 2 <= ZONA.abajo;
+export const zonaDe = (f: Formato | undefined): Zona => ZONAS[f ?? '9:16'];
+
+// Mueve un elemento (centro cx, cy; tamaño w × h) para que entre completo en la caja.
+export const encajar = (z: Zona, cx: number, cy: number, w: number, h: number) => ({
+  x: Math.min(Math.max(cx, z.izq + w / 2), z.der - w / 2),
+  y: Math.min(Math.max(cy, z.arriba + h / 2), z.abajo - h / 2),
+});
+
+// Tamaño aproximado de un sticker (misma geometría que Sticker en v6/kit: padding 0,18/0,36 em).
+export const medidaSticker = (texto: string, tamano: number) => ({w: [...texto].length * tamano * 0.58 + tamano * 0.72, h: tamano * 1.5});

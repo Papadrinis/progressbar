@@ -1,12 +1,13 @@
 import {getAudioDurationInSeconds} from '@remotion/media-utils';
 import {AbsoluteFill, Audio, CalculateMetadataFunction, Img, interpolate, OffthreadVideo, Sequence, staticFile, useCurrentFrame} from 'remotion';
 import {Texture} from '../components/Texture';
-import {Emoji, Sticker, Whip, WordPop} from '../v6/kit';
+import {Emoji, Sticker, Whip} from '../v6/kit';
 import {CierreDesde} from '../v6/screens';
 import {anuncio, Anuncio, Extra, Momento} from './schema';
 import {ESCENAS} from './Escenas';
 import {Llamada, Tarjeta} from './Tarjetas';
-import {FRANJA_ALTA, SUBTITULO_BASE, ZONA} from './zonas';
+import {Subtitulos} from './Subtitulos';
+import {encajar, medidaSticker, Zona, zonaDe} from './zonas';
 
 // SparkPy — una sola composición que monta cualquier anuncio a partir de public/ads/<ad>.json.
 // Cada bloque dura lo que dura su voz (a velocidadVoz) + entrada + cola; el cierre (CTA) va siempre al final.
@@ -40,7 +41,8 @@ export const calcularSparkPy: CalculateMetadataFunction<SparkPyProps> = async ({
   const voces = [...datos.bloques.map((b) => ({voz: b.voz, duracion: b.duracion})), datos.cierre];
   const duraciones = await Promise.all(voces.map((v) => v.duracion ?? getAudioDurationInSeconds(staticFile(v.voz))));
   const {total} = lineaDeTiempo(datos, duraciones);
-  return {durationInFrames: total, props: {...props, datos, duraciones}};
+  const z = zonaDe(datos.formato);
+  return {durationInFrames: total, width: z.ancho, height: z.alto, props: {...props, datos, duraciones}};
 };
 
 const Sfx: React.FC<{at: number; name: string; volume?: number}> = ({at, name, volume = 0.6}) => (
@@ -51,7 +53,7 @@ const Sfx: React.FC<{at: number; name: string; volume?: number}> = ({at, name, v
 
 const esFoto = (src: string) => /\.(png|jpe?g|webp)$/i.test(src);
 
-const Toma: React.FC<{src: string}> = ({src}) => {
+const Toma: React.FC<{src: string; encuadre: number}> = ({src, encuadre}) => {
   const frame = useCurrentFrame();
   const Escena = src.startsWith('escena:') ? ESCENAS[src.slice(7)] : null;
   return (
@@ -59,25 +61,18 @@ const Toma: React.FC<{src: string}> = ({src}) => {
       {Escena ? (
         <Escena />
       ) : esFoto(src) ? (
-        <Img src={staticFile(src)} style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${interpolate(frame, [0, 150], [1.02, 1.1])})`}} />
+        <Img src={staticFile(src)} style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: `50% ${encuadre}%`, transform: `scale(${interpolate(frame, [0, 150], [1.02, 1.1])})`}} />
       ) : (
-        <OffthreadVideo src={staticFile(src)} muted style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+        <OffthreadVideo src={staticFile(src)} muted style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: `50% ${encuadre}%`}} />
       )}
-      {/* Sombra detrás de los subtítulos (franja baja de la zona segura). */}
-      <AbsoluteFill style={{background: 'linear-gradient(rgba(0,0,0,0) 42%, rgba(0,0,0,0.5) 60%, rgba(0,0,0,0.3) 72%, rgba(0,0,0,0.15) 100%)'}} />
     </AbsoluteFill>
   );
 };
 
-// Lo que se ubica a mano (stickers, emojis) nunca sale de la zona segura de Meta.
-const enZona = (x: number, y: number, medio = 60) => ({
-  x: Math.min(Math.max(x, ZONA.izq + medio * 2), ZONA.der - medio * 2),
-  y: Math.min(Math.max(y, ZONA.arriba + medio), ZONA.abajo - medio),
-});
-
 const aFrame = (m: Momento, lead: number, vf: number) => (typeof m === 'number' ? m : Math.round(lead + (vf * parseFloat(m)) / 100));
 
-const ExtraEl: React.FC<{x: Extra; lead: number; vf: number}> = ({x, lead, vf}) => {
+// Lo que se ubica a mano (stickers, emojis) entra completo en la zona protegida (por sus bordes, no el centro).
+const ExtraEl: React.FC<{x: Extra; lead: number; vf: number; zona: Zona}> = ({x, lead, vf, zona}) => {
   switch (x.tipo) {
     case 'sfx':
       return <Sfx at={aFrame(x.en, lead, vf)} name={x.nombre} volume={x.volumen ?? 0.4} />;
@@ -85,7 +80,10 @@ const ExtraEl: React.FC<{x: Extra; lead: number; vf: number}> = ({x, lead, vf}) 
       const at = aFrame(x.en, lead, vf);
       return (
         <>
-          <Sticker at={at} {...enZona(x.x, x.y ?? FRANJA_ALTA, (x.tamano ?? 62) * 0.8)} rot={x.giro ?? -6} size={x.tamano ?? 62} bg={x.fondo ?? '#fff'} color={x.color ?? '#141414'}>
+          <Sticker at={at} {...(() => {
+            const m = medidaSticker(x.texto, x.tamano ?? 62);
+            return encajar(zona, x.x, x.y, m.w + 20, m.h + 20);
+          })()} rot={x.giro ?? -6} size={x.tamano ?? 62} bg={x.fondo ?? '#fff'} color={x.color ?? '#141414'}>
             {x.texto}
           </Sticker>
           {x.sfx ? <Sfx at={at} name={x.sfx} volume={x.volumenSfx ?? 0.4} /> : null}
@@ -94,7 +92,7 @@ const ExtraEl: React.FC<{x: Extra; lead: number; vf: number}> = ({x, lead, vf}) 
     }
     case 'emoji':
       return (
-        <Emoji at={aFrame(x.en, lead, vf)} {...enZona(x.x, x.y, (x.tamano ?? 120) * 0.6)} size={x.tamano ?? 120} spin={x.giro ?? 0}>
+        <Emoji at={aFrame(x.en, lead, vf)} {...encajar(zona, x.x, x.y, (x.tamano ?? 120) * 1.3, (x.tamano ?? 120) * 1.3)} size={x.tamano ?? 120} spin={x.giro ?? 0}>
           {x.texto}
         </Emoji>
       );
@@ -104,7 +102,7 @@ const ExtraEl: React.FC<{x: Extra; lead: number; vf: number}> = ({x, lead, vf}) 
       const celular = x.formato === 'celular';
       return (
         <>
-          <Tarjeta at={at} formato={x.formato} titulo={x.titulo} seccion={x.seccion} menu={x.menu} filas={x.filas} resaltar={x.resaltar} listo={x.listo} />
+          <Tarjeta zona={zona} at={at} formato={x.formato} titulo={x.titulo} seccion={x.seccion} menu={x.menu} filas={x.filas} resaltar={x.resaltar} listo={x.listo} />
           {sonido ? (
             <>
               <Sfx at={at} name="whoosh" volume={0.35} />
@@ -119,7 +117,7 @@ const ExtraEl: React.FC<{x: Extra; lead: number; vf: number}> = ({x, lead, vf}) 
       const at = x.en === undefined ? 4 : aFrame(x.en, lead, vf);
       return (
         <>
-          <Llamada nombre={x.nombre} hora={x.hora} icono={x.icono} at={at} />
+          <Llamada zona={zona} nombre={x.nombre} hora={x.hora} icono={x.icono} at={at} />
           {x.vibrar === false ? null : [0, 30, 60, 90].map((d) => <Sfx key={d} at={at + d} name="vibrate" volume={0.45} />)}
         </>
       );
@@ -127,20 +125,24 @@ const ExtraEl: React.FC<{x: Extra; lead: number; vf: number}> = ({x, lead, vf}) 
   }
 };
 
-// Guías de revisión (solo en las muestras): rojo = tapado por la interfaz de Reels/Stories.
-const Guias: React.FC = () => (
-  <AbsoluteFill style={{pointerEvents: 'none'}}>
-    <div style={{position: 'absolute', left: 0, right: 0, top: 0, height: ZONA.arriba, background: 'rgba(230,40,40,0.35)'}} />
-    <div style={{position: 'absolute', left: 0, right: 0, top: ZONA.abajo, bottom: 0, background: 'rgba(230,40,40,0.35)'}} />
-    <div style={{position: 'absolute', left: 0, width: ZONA.izq, top: ZONA.arriba, height: ZONA.abajo - ZONA.arriba, background: 'rgba(230,40,40,0.35)'}} />
-    <div style={{position: 'absolute', left: ZONA.der, right: 0, top: ZONA.arriba, height: ZONA.abajo - ZONA.arriba, background: 'rgba(230,40,40,0.35)'}} />
-  </AbsoluteFill>
-);
+// Guías de revisión (solo en las muestras, nunca en el render): rojo = fuera de la zona protegida.
+const Guias: React.FC<{z: Zona}> = ({z}) => {
+  const c = 'rgba(230,40,40,0.35)';
+  return (
+    <AbsoluteFill style={{pointerEvents: 'none'}}>
+      <div style={{position: 'absolute', left: 0, right: 0, top: 0, height: z.arriba, background: c}} />
+      <div style={{position: 'absolute', left: 0, right: 0, top: z.abajo, bottom: 0, background: c}} />
+      <div style={{position: 'absolute', left: 0, width: z.izq, top: z.arriba, height: z.abajo - z.arriba, background: c}} />
+      <div style={{position: 'absolute', left: z.der, right: 0, top: z.arriba, height: z.abajo - z.arriba, background: c}} />
+    </AbsoluteFill>
+  );
+};
 
 export const SparkPy: React.FC<SparkPyProps> = ({datos, duraciones, guias}) => {
   if (!datos || !duraciones) return <AbsoluteFill style={{background: '#000'}} />;
   const {tramos, total} = lineaDeTiempo(datos, duraciones);
   const cta = tramos[tramos.length - 1];
+  const zona = zonaDe(datos.formato);
   return (
     <AbsoluteFill style={{background: '#000'}}>
       {datos.bloques.map((b, i) => {
@@ -148,13 +150,13 @@ export const SparkPy: React.FC<SparkPyProps> = ({datos, duraciones, guias}) => {
         return (
           <Sequence key={b.id} name={b.id} from={t.from} durationInFrames={t.len}>
             <Whip dir={i % 2 ? -1 : 1} flash={i === 0}>
-              <Toma src={b.toma} />
+              <Toma src={b.toma} encuadre={b.encuadre ?? zona.encuadre} />
               <Texture strength={0.25} />
             </Whip>
             {b.extras.map((x, k) => (
-              <ExtraEl key={k} x={x} lead={t.lead} vf={t.vf} />
+              <ExtraEl key={k} x={x} lead={t.lead} vf={t.vf} zona={zona} />
             ))}
-            <WordPop lines={b.lineas} keys={b.claves.map((k) => k.toLowerCase())} start={t.lead} voFrames={t.vf} size={b.texto?.tamano ?? 62} side={ZONA.izq} {...(b.texto?.top !== undefined ? {top: Math.max(b.texto.top, ZONA.arriba)} : {bottom: SUBTITULO_BASE})} />
+            <Subtitulos texto={b.lineas.join(' ')} claves={b.claves.map((k) => k.toLowerCase())} start={t.lead} voFrames={t.vf} zona={zona} />
             <Sfx at={0} name={i === 0 ? 'impact' : 'whoosh'} volume={i === 0 ? 0.6 : 0.35} />
             <Sequence from={t.lead} layout="none">
               <Audio src={staticFile(b.voz)} playbackRate={datos.velocidadVoz} volume={b.volumenVoz ?? 1} />
@@ -164,7 +166,7 @@ export const SparkPy: React.FC<SparkPyProps> = ({datos, duraciones, guias}) => {
       })}
       <Sequence name="cierre" from={cta.from} durationInFrames={cta.len}>
         <Whip>
-          <CierreDesde {...datos.cierre.pantalla} />
+          <CierreDesde {...datos.cierre.pantalla} caja={zona} />
           {[2, 10, 20, 40].map((a) => (
             <Sfx key={a} at={a} name="pop" volume={0.4} />
           ))}
@@ -174,7 +176,7 @@ export const SparkPy: React.FC<SparkPyProps> = ({datos, duraciones, guias}) => {
           <Audio src={staticFile(datos.cierre.voz)} playbackRate={datos.velocidadVoz} />
         </Sequence>
       </Sequence>
-      {guias ? <Guias /> : null}
+      {guias ? <Guias z={zona} /> : null}
       {datos.musica ? (
         <Audio
           src={staticFile(datos.musica.src)}

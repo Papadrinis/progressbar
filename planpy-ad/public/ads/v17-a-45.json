@@ -1,0 +1,207 @@
+{
+  "id": "PLANPY_CO_ESCALA_PELUQUERIA_V17_A_45",
+  "titulo": "V17-A · La clienta de las seis (Valentina a cámara, UGC, Seedance con voz nativa) · 4:5 Feed",
+  "velocidadVoz": 1,
+  "musica": null,
+  "bloques": [
+    {
+      "id": "a",
+      "voz": "voz/v17/a.wav",
+      "locucion": "Siete de la mañana. Una clienta me escribió a medianoche pidiendo cita. ¿Cuántas más se me habrán ido así?",
+      "entrada": 0,
+      "toma": "v17/shot1.mp4",
+      "lineas": [
+        "Siete de la mañana. Una clienta",
+        "me escribió a medianoche",
+        "pidiendo cita. ¿Cuántas más",
+        "se me habrán ido así?"
+      ],
+      "claves": [
+        "medianoche",
+        "¿Cuántas"
+      ],
+      "cola": 2,
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": "5%",
+          "texto": "7:00 a. m. ⏰",
+          "x": 300,
+          "y": 170,
+          "giro": -4,
+          "tamano": 52,
+          "fondo": "#ffffff"
+        }
+      ],
+      "duracion": 6.75
+    },
+    {
+      "id": "i",
+      "voz": "voz/v17/i.wav",
+      "locucion": "Mi agenda era el cuaderno y el WhatsApp. Y yo no puedo estar contestando a todas horas.",
+      "entrada": 0,
+      "toma": "v17/shot2.mp4",
+      "lineas": [
+        "Mi agenda era el cuaderno",
+        "y el WhatsApp. Y yo no puedo",
+        "estar contestando",
+        "a todas horas."
+      ],
+      "claves": [
+        "cuaderno",
+        "WhatsApp"
+      ],
+      "cola": 2,
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": "40%",
+          "texto": "📒 + 💬 = 😵",
+          "x": 690,
+          "y": 170,
+          "giro": 6,
+          "tamano": 52,
+          "fondo": "#ff4d4d",
+          "color": "#fff",
+          "sfx": "boing",
+          "volumenSfx": 0.3
+        }
+      ],
+      "duracion": 5.75
+    },
+    {
+      "id": "d1",
+      "voz": "voz/v17/d1.wav",
+      "locucion": "Con Planpi la agenda se llena sola, a cualquier hora. Yo duermo y las citas entran.",
+      "entrada": 0,
+      "toma": "v17/shot3.mp4",
+      "lineas": [
+        "Con PlanPy la agenda",
+        "se llena sola, a cualquier hora.",
+        "Yo duermo",
+        "y las citas entran."
+      ],
+      "claves": [
+        "sola",
+        "duermo"
+      ],
+      "cola": 2,
+      "extras": [
+        {
+          "tipo": "tarjeta",
+          "en": "25%",
+          "formato": "celular",
+          "titulo": "Nueva reserva",
+          "seccion": "Agenda",
+          "filas": [
+            [
+              "Clienta",
+              "Laura M."
+            ],
+            [
+              "Servicio",
+              "Corte y cepillado"
+            ],
+            [
+              "Hora",
+              "Hoy · 10:00 a. m."
+            ]
+          ],
+          "resaltar": 2,
+          "listo": "Reservada a las 12:14 a. m."
+        }
+      ],
+      "duracion": 5.95
+    },
+    {
+      "id": "d2",
+      "voz": "voz/v17/d2.wav",
+      "locucion": "Funciona en el celular, sin instalar nada. Y ahora sí puedo pensar en crecer, no en contestar mensajes.",
+      "entrada": 0,
+      "toma": "v17/shot4.mp4",
+      "lineas": [
+        "Funciona en el celular,",
+        "sin instalar nada. Y ahora sí",
+        "puedo pensar en crecer,",
+        "no en contestar mensajes."
+      ],
+      "claves": [
+        "sin instalar",
+        "crecer"
+      ],
+      "cola": 2,
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": "15%",
+          "texto": "Sin instalar nada ✅",
+          "x": 400,
+          "y": 170,
+          "giro": -3,
+          "tamano": 52,
+          "fondo": "#ffd400"
+        }
+      ],
+      "duracion": 6.75
+    },
+    {
+      "id": "cta",
+      "voz": "voz/v17/cta.wav",
+      "locucion": "Pruébelo quince días gratis, en planpi punto io.",
+      "entrada": 0,
+      "toma": "v17/shot5.mp4",
+      "lineas": [
+        "Pruébelo 15 días gratis,",
+        "en planpy.io"
+      ],
+      "claves": [
+        "gratis"
+      ],
+      "cola": 4,
+      "extras": [],
+      "duracion": 3.65
+    }
+  ],
+  "cierre": {
+    "voz": "voz/v17/silencio.wav",
+    "locucion": "",
+    "cola": 36,
+    "pantalla": {
+      "titulo": "15 días gratis",
+      "oferta": "y sin tarjeta",
+      "nota": ""
+    },
+    "duracion": 0.4
+  },
+  "fuentes": [],
+  "receta": {
+    "pedido": "dva052szggx2ae9bcez5",
+    "mercado": "CO (usted)",
+    "eje": "ESCALA",
+    "estructura": "AIDA",
+    "estilo": "Personas reales · hablando a cámara (Seedance 2.5 omni_reference 1080p high, voz nativa de Bogotá)",
+    "avatar": "Valentina · casting 7aef0783-efb0-418e-9f75-c4f0954ce987",
+    "fotogramas": [
+      "9bcd400e-e2a8-4aee-aeae-4ab74b2b391a",
+      "b4656075-ddfb-4453-9477-515d87b7d9ce",
+      "8418cd53-7890-41bd-b3ed-4b48d2ff0028",
+      "0a69ffa0-5bbd-4d54-a8e8-24f4a4fb84ba",
+      "bf2fce4b-e0fe-441f-9905-40f84db5aa35"
+    ],
+    "tomas": [
+      "8ebedba9-4c7d-4017-a9ee-7a3e5ddf28d4",
+      "3de19245-72fc-4bcf-b673-74eb05b0a587",
+      "e41dd0ae-93af-4242-901e-962b6d04db92",
+      "3e013ebe-f276-4b2c-b381-bb3645000b64",
+      "94ab1540-dff6-4008-9cc5-d09571a21559"
+    ],
+    "comparativa_gancho": {
+      "veo3_1_ultra": "cfec4165-9009-41be-b0df-80b9492a55f5",
+      "kling3_0_4k": "56ba641c-d326-4f21-a0cd-f0c2a1e71fef",
+      "ganador": "seedance_2_5"
+    },
+    "voz": "Audio propio de cada toma de Seedance, extraído y recortado al final de la frase (entrada 0, velocidad 1)",
+    "cta": "Editado por el dueño (cta_editado): «15 días gratis y sin tarjeta» (claim «sin tarjeta» por confirmar)"
+  },
+  "formato": "4:5"
+}

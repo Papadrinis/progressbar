@@ -119,8 +119,10 @@ export const AgendaDesktop: React.FC<{cols: string[]; hours: string[]; citas: Ci
 // Cierre de marca: SIEMPRE el precio más barato ("desde"), por decisión del dueño de marca.
 // Textos del cierre; sin props sale el de marca (precio más barato de Colombia).
 export type CierreTextos = {titulo?: string; oferta?: string; nota?: string; pie?: string; boton?: string};
+// Caja protegida opcional (px): el contenido se centra dentro de ella (SparkPy, zonas de Meta).
+export type CajaCierre = {arriba: number; abajo: number; izq: number; der: number; ancho: number; alto: number};
 
-export const CierreDesde: React.FC<CierreTextos> = ({titulo, oferta, nota, pie, boton}) => {
+export const CierreDesde: React.FC<CierreTextos & {caja?: CajaCierre}> = ({titulo, oferta, nota, pie, boton, caja}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const up = (d: number) => {
@@ -128,7 +130,7 @@ export const CierreDesde: React.FC<CierreTextos> = ({titulo, oferta, nota, pie, 
     return {opacity: Math.min(1, s * 1.4), transform: `translateY(${(1 - s) * 40}px) scale(${0.9 + 0.1 * s})`};
   };
   return (
-    <div style={{position: 'absolute', inset: 0, background: PAPER, fontFamily: `${SANS}, ${EMOJI}`, color: '#141414', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 90px 260px'}}>
+    <div style={{position: 'absolute', inset: 0, background: PAPER, fontFamily: `${SANS}, ${EMOJI}`, color: '#141414', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: caja ? `${caja.arriba}px ${caja.ancho - caja.der}px ${caja.alto - caja.abajo}px ${caja.izq}px` : '0 90px 260px'}}>
       <div style={up(2)}>
         <Img src={staticFile('logo-horizontal.png')} style={{width: 520}} />
       </div>

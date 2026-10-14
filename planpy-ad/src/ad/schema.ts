@@ -72,8 +72,10 @@ export const bloque = z.object({
   toma: z.string(),
   lineas: z.array(z.string()).min(1).max(4),
   claves: z.array(z.string()).default([]),
-  // Subtítulo: tamaño de letra y altura (px desde arriba) si el texto largo tapa la cara.
+  // (Obsoleto: los subtítulos se ubican solos en la zona protegida del formato; se ignora.)
   texto: z.object({tamano: z.number().positive().optional(), top: z.number().min(0).optional()}).optional(),
+  // Encuadre vertical de la toma (object-position y, 0–100 %) si al recortar a otro formato la cara queda fuera.
+  encuadre: z.number().min(0).max(100).optional(),
   cola: z.number().int().min(0).optional(),
   // Frames antes de que arranque la voz (3 por defecto). 0 en tomas con labios sincronizados.
   entrada: z.number().int().min(0).optional(),
@@ -101,6 +103,8 @@ export const anuncio = z.object({
     })
     .nullable()
     .default({src: 'music/cama-112bpm.wav', volumen: 0.28, bajo: 0.1}),
+  // Formato del anuncio: 9:16 (Reels/Stories, 1080×1920) o 4:5 (Feed, 1080×1350). Ver meta-creativos.md.
+  formato: z.enum(['9:16', '4:5']).default('9:16'),
   bloques: z.array(bloque).min(1),
   cierre: z.object({
     voz: z.string(),

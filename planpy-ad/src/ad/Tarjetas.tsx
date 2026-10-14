@@ -1,4 +1,4 @@
-import {TARJETA, ZONA} from './zonas';
+import {Zona} from './zonas';
 import {interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {SANS, UI_LIME} from '../brand';
 import {EMOJI} from '../v6/kit';
@@ -23,11 +23,33 @@ export const Tarjeta: React.FC<{
   filas: [string, string][];
   resaltar?: number;
   listo?: string;
-}> = ({at, formato, titulo, seccion, menu = MENU, filas, resaltar, listo}) => {
+  zona: Zona;
+}> = ({at, formato, titulo, seccion, menu = MENU, filas, resaltar, listo, zona}) => {
   const frame = useCurrentFrame();
   const s = usePop(at, formato === 'celular' ? 12 : 13);
   if (frame < at) return null;
   const phone = formato === 'celular';
+  // Celular: notificación ancha en la parte alta de la zona protegida. Se lee a tamaño de teléfono y no
+  // tapa la boca del que habla (la directiva prohíbe achicar la interfaz hasta volverla ilegible).
+  if (phone) {
+    const fila = resaltar !== undefined ? filas[resaltar] : filas[filas.length - 1];
+    const resto = filas.filter((f) => f !== fila).map(([a, b]) => `${a}: ${b}`).join(' · ');
+    return (
+      <div style={{position: 'absolute', left: zona.izq, width: zona.der - zona.izq, top: zona.arriba + 8, borderRadius: 34, background: 'rgba(250,248,244,0.97)', color: '#141414', fontFamily: `${SANS}, ${EMOJI}`, padding: '20px 26px 18px', boxSizing: 'border-box', boxShadow: '0 20px 50px rgba(0,0,0,0.45)', transform: `translateY(${(1 - s) * -140}px)`, opacity: Math.min(1, s * 1.4)}}>
+        <div style={{display: 'flex', alignItems: 'center', gap: 12, fontSize: 24, color: '#6b665e', fontWeight: 700}}>
+          <div style={{width: 34, height: 34, borderRadius: 9, background: '#171a14', color: UI_LIME, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, fontWeight: 900}}>P</div>
+          PlanPy · {seccion}
+          <span style={{marginLeft: 'auto', fontSize: 20, fontWeight: 600}}>Datos de ejemplo</span>
+        </div>
+        <div style={{fontSize: 38, fontWeight: 800, marginTop: 10, lineHeight: 1.15}}>
+          {titulo}
+          {fila ? <span style={{color: '#2f8a43'}}> · {fila[1]}</span> : null}
+        </div>
+        {resto ? <div style={{fontSize: 28, fontWeight: 600, marginTop: 4, color: '#3a3631', lineHeight: 1.2}}>{resto}</div> : null}
+        {listo ? <div style={{marginTop: 12, borderRadius: 16, padding: '10px 16px', background: '#171a14', color: UI_LIME, fontSize: 28, fontWeight: 800, textAlign: 'center'}}>{listo}</div> : null}
+      </div>
+    );
+  }
   const rowEls = filas.map(([a, b], i) => {
     const rs = interpolate(frame, [at + 10 + i * 6, at + 18 + i * 6], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
     const strong = i === resaltar;
@@ -54,21 +76,9 @@ export const Tarjeta: React.FC<{
       </div>
     );
   });
-  if (phone) {
-    return (
-      <div style={{position: 'absolute', left: TARJETA.celular.x, top: TARJETA.celular.y, width: 580, height: 780, borderRadius: 60, background: '#111', padding: 12, transformOrigin: 'top left', transform: `scale(${TARJETA.celular.escala}) translateY(${(1 - s) * 500}px) rotate(${-4 + (1 - s) * 8}deg)`, boxShadow: '0 30px 70px rgba(0,0,0,0.6)'}}>
-        <div style={{width: '100%', height: '100%', borderRadius: 50, background: '#faf8f4', fontFamily: `${SANS}, ${EMOJI}`, padding: '60px 24px', boxSizing: 'border-box', color: '#141414'}}>
-          <div style={{fontSize: 22, color: '#8a857c', fontWeight: 600}}>{seccion}</div>
-          <div style={{fontSize: 36, fontWeight: 800, marginBottom: 18}}>{titulo}</div>
-          {rowEls}
-          {listo ? <div style={{marginTop: 8, borderRadius: 18, padding: '14px 16px', background: '#171a14', color: UI_LIME, fontSize: 26, fontWeight: 800, textAlign: 'center'}}>{listo}</div> : null}
-          <div style={{fontSize: 16, color: '#8a857c', textAlign: 'center', marginTop: 8}}>Datos de ejemplo</div>
-        </div>
-      </div>
-    );
-  }
   return (
-    <div style={{position: 'absolute', left: TARJETA.computador.x, top: TARJETA.computador.y, width: 960, transformOrigin: 'top left', transform: `scale(${TARJETA.computador.escala * s}) rotate(${(1 - s) * -5}deg)`, borderRadius: 22, overflow: 'hidden', boxShadow: '0 40px 80px rgba(0,0,0,0.55)', border: '10px solid #1d1f22', background: '#faf8f4', fontFamily: SANS, color: '#141414'}}>
+    // Computador: ancho de la zona, arriba de ella. Tapa la cara: usar en tomas de apoyo, no a cámara.
+    <div style={{position: 'absolute', left: zona.izq, top: zona.arriba + 10, width: 960, transformOrigin: 'top left', transform: `scale(${((zona.der - zona.izq) / 960) * s}) rotate(${(1 - s) * -5}deg)`, borderRadius: 22, overflow: 'hidden', boxShadow: '0 40px 80px rgba(0,0,0,0.55)', border: '10px solid #1d1f22', background: '#faf8f4', fontFamily: SANS, color: '#141414'}}>
       <div style={{height: 34, background: '#e8e3da', display: 'flex', alignItems: 'center', gap: 8, padding: '0 14px'}}>
         {['#e06c5a', '#e5b54a', '#68b36b'].map((c) => (
           <div key={c} style={{width: 11, height: 11, borderRadius: 6, background: c}} />
@@ -96,13 +106,13 @@ export const Tarjeta: React.FC<{
 };
 
 // Llamada entrante, sobre el celular real de la toma.
-export const Llamada: React.FC<{nombre: string; hora?: string; icono?: string; at?: number}> = ({nombre, hora = '9:07 p. m.', icono = '📞', at = 4}) => {
+export const Llamada: React.FC<{nombre: string; hora?: string; icono?: string; at?: number; zona: Zona}> = ({nombre, hora = '9:07 p. m.', icono = '📞', at = 4, zona}) => {
   const frame = useCurrentFrame();
   const s = usePop(at);
   if (frame < at) return null;
   const pulse = 1 + 0.06 * Math.sin((frame - at) / 3);
   return (
-    <div style={{position: 'absolute', left: ZONA.izq, right: 1080 - ZONA.der, top: ZONA.arriba + 10, padding: '26px 28px', borderRadius: 40, background: 'rgba(20,20,22,0.92)', color: '#fff', fontFamily: `${SANS}, ${EMOJI}`, display: 'flex', alignItems: 'center', gap: 22, transform: `translateY(${(1 - s) * -200}px)`, opacity: s, boxShadow: '0 20px 50px rgba(0,0,0,0.5)'}}>
+    <div style={{position: 'absolute', left: zona.izq, width: zona.der - zona.izq, boxSizing: 'border-box', top: zona.arriba + 8, padding: '26px 28px', borderRadius: 40, background: 'rgba(20,20,22,0.92)', color: '#fff', fontFamily: `${SANS}, ${EMOJI}`, display: 'flex', alignItems: 'center', gap: 22, transform: `translateY(${(1 - s) * -200}px)`, opacity: s, boxShadow: '0 20px 50px rgba(0,0,0,0.5)'}}>
       <div style={{width: 84, height: 84, borderRadius: 42, background: '#5b8def', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 40}}>{icono}</div>
       <div style={{flex: 1}}>
         <div style={{fontSize: 24, color: '#aaa'}}>Llamada entrante · {hora}</div>

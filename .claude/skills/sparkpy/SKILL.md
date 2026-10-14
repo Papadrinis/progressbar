@@ -204,9 +204,11 @@ personaje para todo lo que sigue.
 ## 4 · Fotogramas ⏸
 
 Un fotograma por toma con el mismo modelo y el casting aprobado como referencia
-(`generate_image_batch`). **Encuadre para las zonas seguras de Meta:** la cabeza arriba con algo de aire,
-la cara entre el 15 % y el 50 % del alto (y ~300–950), y el pecho o la mesa abajo, donde van los
-subtítulos; nada importante en el 35 % de abajo ni en el 14 % de arriba. Pantallas: el monitor de espaldas o el celular sin leerse; la interfaz la
+(`generate_image_batch`). **Encuadre según `references/meta-creativos.md`:** el fotograma ya debe venir bien
+compuesto (el video no arregla un mal recorte). 9:16: ojos y boca arriba del centro y algo a la izquierda
+(y ~25–45 % del alto), nada clave en el 40 % de abajo ni en el 18 % de arriba, escena a cuadro completo.
+4:5: cara en la mitad superior. Prompt por toma: sujeto, lugar, acción, encuadre, espacio para overlays,
+luz, estilo, movimiento controlado y exclusiones; nunca parámetros inventados como `safe_zone`. Pantallas: el monitor de espaldas o el celular sin leerse; la interfaz la
 pone Remotion. Muéstralos todos juntos (`show_generation_by_ids`) y espera aprobación; rehaz solo los
 rechazados. Descarga los aprobados a `public/v<N>/shot<k>.png` (sirven de respaldo con push-in).
 
@@ -238,9 +240,10 @@ cd planpy-ad
 npm run sparkpy -- revisar <ad>    # archivos, legibilidad, "Planpi"/"PlanPy", usted, precio
 npm run sparkpy -- muestras <ad>   # out/<ad>/<bloque>.png, un fotograma por bloque
 ```
-Corrige todo lo marcado con ✗ y los avisos de zona segura. Mira las muestras tú mismo (Read) antes de
-mostrarlas: traen en rojo lo que tapa la interfaz de Reels/Stories y ahí no puede quedar nada importante;
-subtítulo legible y sin tapar la cara, stickers dentro de la zona, tarjeta sin tapar el texto. Envíaselas al
+Corrige todo lo marcado con ✗ y los avisos de zona. Mira las muestras tú mismo (Read) antes de mostrarlas:
+traen en rojo lo que queda fuera de la zona protegida del formato (las guías nunca van al render) y ahí no
+puede quedar nada esencial; ojos y boca visibles y dentro durante toda la toma, subtítulos de 1–2 líneas
+legibles a tamaño de teléfono, tarjetas sin tapar la boca. Lo que no se revisó se marca NEEDS REVIEW. Envíaselas al
 usuario y espera el visto bueno antes de renderizar (un render tarda ~3 min).
 
 ## 8 · Render y entrega
@@ -257,10 +260,12 @@ Resumen; el detalle y el porqué están en `references/reglas.md`.
    Seedance 2.5** (`omni_reference`, 1080p, `bitrate_mode: "high"`, casting como `image_references`;
    con `generate_audio` cuando el avatar habla). Siempre el mejor modelo aunque cueste más: nada de Veo,
    Kling ni Wan para esto, ni bajar resolución para ahorrar. Decisión del usuario (2026-10-14).
-0. **Zonas seguras de Meta en todo video 9:16**: texto, stickers, tarjetas y logo dentro de
-   x 65–1015, y 285–1248 (Reels/Stories tapan 14 % arriba, 35 % abajo, 6 % a los lados; el Feed recorta a
-   4:5). Los fotogramas dejan la cara en y ~300–950 y aire abajo para los subtítulos. Detalle en
-   `references/plantilla-json.md` → «Zonas seguras de Meta».
+0. **Creativos de Meta (4:5 y 9:16): `references/meta-creativos.md` es obligatoria** para todo anuncio
+   (UGC, a cámara, demos, estáticos, testimonios, listicles, motion). Zonas protegidas internas:
+   9:16 x 87–918 / y 346–1152; 4:5 x 65–1015 / y 81–1269, por bordes completos. Escena a cuadro completo
+   (sin franjas vacías ni achicar a la persona); protegidos: texto, subtítulos, oferta, logo, CTA, ojos y
+   boca del que habla, el detalle del producto. Si el brief pide los dos formatos, dos composiciones
+   adaptadas. Lo que SparkPy no puede verificar (vista previa en Ads Manager) se entrega como NEEDS REVIEW.
 
 1. CTA siempre con el precio más barato: "15 días gratis · Desde $46.500 al mes con el plan anual ·
    Plan mensual: desde $62.000". Nunca nombrar PYME/Pro. (Ya lo trae el cierre de SparkPy.)
