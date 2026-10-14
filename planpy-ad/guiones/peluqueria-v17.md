@@ -1,8 +1,8 @@
 # PlanPy · V17 · «La clienta de las seis» (Valentina a cámara)
 
 Pedido del Estudio `dva052szggx2ae9bcez5` · Colombia (usted) · Eje ESCALA · Ángulo «Escalar negocio» ·
-Estructura AIDA · ~30 s · Avatar **Valentina** · Estilo: personas reales hablando a cámara (Veo 3.1
-ultra con voz nativa de Bogotá) · Feature: agenda y reservas 24/7.
+Estructura AIDA · ~30 s · Avatar **Valentina** · Estilo: personas reales hablando a cámara (Seedance 2.5
+con voz nativa de Bogotá; elegido tras comparar con Veo 3.1 ultra y Kling 3.0) · Feature: agenda y reservas 24/7.
 
 **Vestuario (cambio del usuario):** dueña de salón de belleza: blusa satinada terracota, jeans oscuros, aretes dorados; sin delantal ni tijeras. Tomas 1–3 en el carro, 4–5 en el salón.
 
