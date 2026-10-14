@@ -125,10 +125,19 @@ lee". Para una toma de noche en casa, mismo personaje, sala sencilla y cálida.
 > **Regla del usuario (2026-10-14): en UGC / hablando a cámara se usa siempre el mejor modelo disponible,
 > aunque cueste más.** Aquí no se ahorra créditos: ni calidad «high» en vez de la máxima, ni 720p, ni
 > recetas baratas. El ahorro de créditos aplica solo a tomas de apoyo sin labios.
-> Veo 3.1 ultra quedó «bastante mal» para UGC según el usuario (V17, gancho `cfec4165`). Comparativa
-> en curso con el mismo gancho y fotograma: Kling 3.0 `mode: "4k"`, `sound: "on"` (48 cr / 8 s) y
-> Seedance 2.5 `omni_reference` 1080p `bitrate_mode: "high"`, `generate_audio: true`, con el casting
-> como `image_references` (128 cr / 8 s). Usar el que el usuario elija; anotar aquí el ganador.
+> **Modelo para UGC a cámara: Seedance 2.5** (elegido por el usuario el 2026-10-14, «by far the best»,
+> en una comparativa con el mismo gancho y fotograma contra Veo 3.1 ultra y Kling 3.0 4K):
+>
+> ```json
+> {"model": "seedance_2_5", "mode": "omni_reference", "resolution": "1080p", "bitrate_mode": "high",
+>  "generate_audio": true, "duration": 8, "aspect_ratio": "9:16",
+>  "declined_preset_id": "24bae836-2c4a-48e0-89b6-49fcc0b21612",
+>  "medias": [{"value": "<fotograma aprobado>", "role": "start_image"},
+>             {"value": "<casting del avatar>", "role": "image_references"}]}
+> ```
+> ~128 cr / 8 s. Mismo prompt de VIDEO + voz (diálogo exacto en español entre comillas, acento nativo,
+> micrófono inalámbrico, sin música). Veo 3.1 ultra quedó «bastante mal» en UGC (V17, `cfec4165`): ya no
+> es la receta por defecto; lo de abajo queda como referencia.
 
 **Receta actual (2026-10-03, pedida por el usuario): Veo 3.1 con su propio audio.** La voz, los labios y
 el ambiente salen juntos de Veo, con acento nativo. Ya **no** se usa ElevenLabs + Sync para las tomas a

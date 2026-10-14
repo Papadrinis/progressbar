@@ -47,7 +47,7 @@ Cuando llegue `/sparkpy pedido <id>`:
    **Voz del avatar**: cada avatar trae `avatar.voz` (`voice_id`, `voice_type`, `nombre`), asignada por
    género y siempre en español (catálogo en `references/higgsfield.md`). Se usa en voz en off **sin pedir aprobación**;
    solo se cambia si el usuario lo pide. **Excepción: cuando el avatar habla a cámara** (orgánico, UGC,
-   *Personas reales · hablando a cámara*, creador sobre fondo) la voz la genera Veo 3.1 con acento nativo
+   *Personas reales · hablando a cámara*, creador sobre fondo) la voz la genera el propio modelo de video (Seedance 2.5, el mejor para UGC; nunca se ahorra aquí) con acento nativo
    del mercado (colombiano, argentino…) según `references/higgsfield.md` → «Hablando a cámara»; no se
    usa ElevenLabs ni Sync. Debe sonar a persona local, nunca a extranjero hablando español.
    **La voz del anuncio es `pedido.voz`** y narra todo (bloques y CTA): por defecto la del avatar; si el
