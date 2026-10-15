@@ -70,6 +70,20 @@ export const bloque = z.object({
   volumenVoz: z.number().min(0).max(1).optional(),
   // Ruta en public/. .mp4 = toma animada; .png/.jpg = fotograma aprobado con push-in lento.
   toma: z.string(),
+  // Green screen: la toma de arriba es la «pantalla» de atrás y encima va la persona recortada (WebM con
+  // transparencia hecho con scripts/croma.py). x, y = esquina superior izquierda y ancho en px del lienzo;
+  // desde = segundo de la toma recortada en que arranca este bloque. «deteccion» es la toma con el verde
+  // (maquetar la usa para ubicar la cara de la miniatura).
+  verde: z
+    .object({
+      miniatura: z.string(),
+      deteccion: z.string().optional(),
+      x: z.number(),
+      y: z.number(),
+      ancho: z.number().positive(),
+      desde: z.number().min(0).default(0),
+    })
+    .optional(),
   lineas: z.array(z.string()).min(1).max(4),
   claves: z.array(z.string()).default([]),
   // (Obsoleto: los subtítulos se ubican solos en la zona protegida del formato; se ignora.)

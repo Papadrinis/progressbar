@@ -84,6 +84,20 @@ def cuadros_de(ruta, dur):
     return out
 
 
+def cuadros_de_desde(ruta, desde, dur):
+    if not ruta.exists():
+        return []
+    cap = cv2.VideoCapture(str(ruta))
+    out, t = [], 0.0
+    while t < dur:
+        cap.set(cv2.CAP_PROP_POS_MSEC, (desde + t) * 1000)
+        ok, f = cap.read()
+        if ok:
+            out.append(f)
+        t += 0.33
+    return out
+
+
 def caras_en(f):
     h, w = f.shape[:2]
     esc = 640 / max(w, h)
@@ -171,6 +185,27 @@ def analizar(b, z):
         personas_sin_cara += 1
         # Se protege la mitad de arriba del cuerpo (cabeza y torso).
         obst.append({'tipo': 'persona', 'caja': [caja[0], caja[1], caja[2], caja[1] + (caja[3] - caja[1]) * 0.55]})
+    # Green screen: la persona recortada encima. Se busca su cara en la toma con verde y se lleva al lienzo
+    # según dónde y de qué tamaño va la miniatura. Es quien habla: su boca manda para los subtítulos.
+    v = b.get('verde')
+    if v:
+        src = PUB / (v.get('deteccion') or v['miniatura'].rsplit('.', 1)[0] + '.mp4')
+        mini = cuadros_de_desde(src, v.get('desde', 0), (b.get('duracion') or 6) + 0.3)
+        if mini:
+            hm, wm = mini[0].shape[:2]
+            k = v['ancho'] / wm
+            lleva = lambda c: [v['x'] + c[0] * k, v['y'] + c[1] * k, v['x'] + c[2] * k, v['y'] + c[3] * k]
+            dm = []
+            for i, f in enumerate(mini):
+                for c in caras_en(f):
+                    cj = lleva(c['caja'])
+                    cj[3] += (cj[3] - cj[1]) * 0.06
+                    dm.append(dict(c, caja=cj))
+                    caras_t.append((i * 0.33, cj))
+            for t in agrupar([c['caja'] for c in dm], max(1, len(mini) // 5)):
+                obst.append({'tipo': 'cara', 'caja': t['u']})
+            if dm:
+                boca = v['y'] + max(c['boca'] for c in dm) * k
     for p in b.get('proteger', []):
         obst.append({'tipo': 'producto', 'caja': [p['x0'], p['y0'], p['x1'], p['y1']]})
     return obst, boca, personas_sin_cara, caras_t

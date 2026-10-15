@@ -39,3 +39,10 @@ reflejada sin quedar como la villana.
   tomas 2 y 4 de V18-A y las tarjetas de PlanPy dibujadas en código.
 - **Remotion:** hay que agregar un modo «green screen»: video de fondo + miniatura recortada encima, con
   posición y escala por bloque, y que maquetar tenga en cuenta las dos caras.
+
+## Decisión de producción (2026-10-15)
+
+El usuario eligió **«Hook en green screen»**: hook, problema y agitación en green screen (2 tomas nuevas de
+Carolina sobre verde, con voz, más 1 toma de ella furiosa). Desde la solución corta a pantalla completa a las
+tomas 3, 4 y 5 ya aprobadas de V18-A, con su voz y su copy original. Costo: ~16 créditos por segundo, ~405 en
+total. Pedido en el Estudio: `v18b-esta-era-yo`.

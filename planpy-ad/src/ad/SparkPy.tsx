@@ -3,7 +3,7 @@ import {AbsoluteFill, Audio, CalculateMetadataFunction, Img, interpolate, Offthr
 import {Texture} from '../components/Texture';
 import {Emoji, Sticker, Whip} from '../v6/kit';
 import {CierreDesde} from '../v6/screens';
-import {anuncio, Anuncio, Extra, Momento} from './schema';
+import {anuncio, Anuncio, Extra, Momento, Bloque} from './schema';
 import {ESCENAS} from './Escenas';
 import {Llamada, Tarjeta} from './Tarjetas';
 import {Subtitulos} from './Subtitulos';
@@ -68,6 +68,15 @@ const Toma: React.FC<{src: string; encuadre: number}> = ({src, encuadre}) => {
     </AbsoluteFill>
   );
 };
+
+// Persona recortada sobre la toma de atrás (green screen), con sombra suave para despegarla del fondo.
+const Miniatura: React.FC<{v: NonNullable<Bloque['verde']>}> = ({v}) => (
+  <AbsoluteFill>
+    <div style={{position: 'absolute', left: v.x, top: v.y, width: v.ancho, height: (v.ancho * 16) / 9, filter: 'drop-shadow(0 18px 30px rgba(0,0,0,.45))'}}>
+      <OffthreadVideo src={staticFile(v.miniatura)} transparent muted startFrom={Math.round(v.desde * 30)} style={{width: '100%', height: '100%', objectFit: 'contain'}} />
+    </div>
+  </AbsoluteFill>
+);
 
 const aFrame = (m: Momento, lead: number, vf: number) => (typeof m === 'number' ? m : Math.round(lead + (vf * parseFloat(m)) / 100));
 
@@ -164,6 +173,7 @@ export const SparkPy: React.FC<SparkPyProps> = ({datos, duraciones, guias}) => {
             <Whip dir={i % 2 ? -1 : 1} flash={i === 0}>
               <Toma src={b.toma} encuadre={b.encuadre ?? zona.encuadre} />
               <Texture strength={0.25} />
+              {b.verde ? <Miniatura v={b.verde} /> : null}
             </Whip>
             {b.extras.map((x, k) => (
               <ExtraEl key={k} x={x} lead={t.lead} vf={t.vf} zona={zona} u={b.layout?.extras[k]} />
