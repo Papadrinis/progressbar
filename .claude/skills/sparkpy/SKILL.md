@@ -269,6 +269,10 @@ Resumen; el detalle y el porqué están en `references/reglas.md`.
    (sin franjas vacías ni achicar a la persona); protegidos: texto, subtítulos, oferta, logo, CTA, ojos y
    boca del que habla, el detalle del producto. Si el brief pide los dos formatos, dos composiciones
    adaptadas. Lo que SparkPy no puede verificar (vista previa en Ads Manager) se entrega como NEEDS REVIEW.
+   **Ningún anuncio se usa sin pasar por esta lógica** (pedido del usuario, 2026-10-15): todo video pasa por
+   `maquetar` + `revisar` (lo corren solos `revisar`, `muestras` y `render`) y todo estático por el canvas
+   del Estudio (zonas por formato + detector de caras). Un video renderizado antes de 2026-10-15 o una
+   composición vieja (V1–V9, `src/v6`…) no se entrega ni se pauta sin re-renderizar con `SPARKPY`.
 
 1. CTA siempre con el precio más barato: "15 días gratis · Desde $46.500 al mes con el plan anual ·
    Plan mensual: desde $62.000". Nunca nombrar PYME/Pro. (Ya lo trae el cierre de SparkPy.)

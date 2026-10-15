@@ -301,6 +301,7 @@ pre.raw { white-space: pre-wrap; font-family: var(--mono); font-size: 12px; back
 .gal figure { margin: 0; display: flex; flex-direction: column; gap: 6px; }
 .gal img, .gal video { width: 100%; max-width: 100%; border-radius: 10px; background: var(--surface-2); display: block; }
 .gal figcaption { font-size: 12.5px; color: var(--muted); }
+figcaption.mal { color: var(--danger, #c0392b); font-weight: 600; }
 .rev-actions { display: flex; flex-direction: column; gap: 8px; }
 .rev-actions textarea, .ped-box > textarea { border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 8px 10px; min-height: 56px; resize: vertical; width: 100%; }
 .cambios { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
@@ -372,6 +373,7 @@ canvas.pieza { width: 180px; max-width: 100%; height: auto; border-radius: 8px; 
 <div id="editor-root"></div>
 <div id="toast" class="toast" hidden></div>
 
+<script src="caras.js"></script>
 <script>
 (() => {
   // ---------- modelo ----------
@@ -1409,27 +1411,141 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
     'captura-social': { fondo: 'papel', b: [['logo', 0.06], ['post', 0.6], ['vacio', 0.04], ['cta', 0.14]] },
   };
 
-  function dibujarPieza(est, g, mercado, formato, fotos, logo) {
+  // Zona protegida por formato (references/meta-creativos.md): [izq, der, arriba, abajo] en fracción del lienzo.
+  // 9:16 deja afuera el 18 % de arriba, el 40 % de abajo, el 8 % izquierdo y el 15 % derecho (interfaz de
+  // Reels/Stories); 4:5 un 6 % por lado; 1:1 y 1.91:1 (Feed y columna derecha) igual que 4:5. Texto, logo, CTA,
+  // tarjetas y precio van completos adentro; la foto o el fondo llenan todo el lienzo.
+  const ZONA_EST = { '1:1': [0.06, 0.94, 0.06, 0.94], '4:5': [0.06, 0.94, 0.06, 0.94], '9:16': [0.08, 0.85, 0.18, 0.60], '1.91:1': [0.06, 0.94, 0.06, 0.94] };
+  const recetaDe = (est) => RECETAS[est?.id] || RECETAS['titular-impacto'];
+
+  // Geometría de una pieza: lienzo, zona, escala y la caja de cada bloque de la receta (px del lienzo).
+  function geometria(est, formato) {
     const [W, H] = TAM[formato] || TAM['4:5'];
-    const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    const [l, r, t, b] = ZONA_EST[formato] || ZONA_EST['4:5'];
+    const zona = { x: W * l, y: H * t, w: W * (r - l), h: H * (b - t) };
+    const horizontal = W > H;
+    let s, cx, cw;
     // En horizontal (1.91:1) el contenido va en una columna centrada, para que la letra no quede diminuta.
-    const horizontal = W > H, s = (horizontal ? H * 1.15 : W) / 1080, pad = 72 * s;
-    const ctx = cv.getContext('2d'), x0 = horizontal ? (W - H * 1.15) / 2 : 0;
-    const rec = RECETAS[est?.id] || RECETAS['titular-impacto'];
+    if (horizontal) { s = H * 1.15 / 1080; cw = H * 1.15 - 144 * s; cx = (W - cw) / 2; }
+    else { const m = 72 * W / 1080; cx = Math.max(m, zona.x); cw = Math.min(W - m, zona.x + zona.w) - cx; s = cw / 936; }
+    const m = 72 * s, cy = Math.max(m, zona.y), ch = Math.min(H - m, zona.y + zona.h) - cy;
+    const bloques = [];
+    let y = cy;
+    for (const blq of recetaDe(est).b) {
+      const conZona = typeof blq[1] === 'string';
+      const frac = conZona ? blq[2] : blq[1];
+      bloques.push({ tipo: blq[0], z: conZona ? blq[1] : null, o: (conZona ? blq[3] : blq[2]) || {}, x: cx, y, w: cw, h: frac * ch - 14 * s });
+      y += frac * ch;
+    }
+    return { W, H, zona, horizontal, s, cx, cy, cw, ch, bloques };
+  }
+
+  // Dónde hay foto y qué parte de ella no puede tener cara (porque ahí va texto), por receta.
+  // Lo que de verdad ocupa cada bloque: un texto, solo sus líneas (medidas con la letra final); el logo, su ancho.
+  const _medidor = document.createElement('canvas').getContext('2d');
+  const ocupacion = (geo, g) => geo.bloques.filter((b) => b.tipo !== 'vacio').map((b) => {
+    if (b.tipo === 't' && g) {
+      const txt = zonaTxt(g, b.z); if (!txt) return null;
+      const alto = texto(_medidor, txt, b.x, b.y, b.w, b.h, { ...b.o, size: (b.o.size || 80) * geo.s, min: 14 });
+      const y = b.o.valign === 'middle' ? b.y + (b.h - alto) / 2 : b.o.valign === 'bottom' ? b.y + b.h - alto : b.y;
+      return { x: b.x, y, w: b.w, h: alto };
+    }
+    if (b.tipo === 'logo') return { x: b.x, y: b.y, w: Math.min(b.w, Math.min(Math.max(b.h * 0.8, 40 * geo.s), 56 * geo.s) * 5), h: b.h };
+    return { x: b.x, y: b.y, w: b.w, h: b.h };
+  }).filter(Boolean);
+
+  function fotosDe(est, geo, g) {
+    const rec = recetaDe(est), out = [];
+    const ocupado = ocupacion(geo, g);
+    if (rec.fondo === 'foto') out.push({ caja: { x: 0, y: 0, w: geo.W, h: geo.H }, evitar: ocupado, dentro: geo.zona });
+    for (const b of geo.bloques) {
+      if (b.tipo === 'fotoTexto') out.push({ caja: b, evitar: [{ x: b.x, y: b.y + b.h * 0.42, w: b.w, h: b.h * 0.58 }], dentro: b });
+      if (b.tipo === 'split') {
+        const vert = !geo.horizontal, g = 16 * geo.s, pw = vert ? b.w : (b.w - g) / 2, ph = vert ? (b.h - g) / 2 : b.h, lh = 64 * geo.s;
+        [0, 1].forEach((i) => { const c = { x: vert ? b.x : b.x + i * (pw + g), y: vert ? b.y + i * (ph + g) : b.y, w: pw, h: ph }; out.push({ caja: c, evitar: [{ x: c.x, y: c.y + c.h - lh - 40 * geo.s, w: c.w, h: lh + 40 * geo.s }], dentro: c }); });
+      }
+    }
+    return out;
+  }
+
+  // Franja (en % del alto de la foto) donde conviene la cara: la tira libre de texto más alta dentro de `dentro`.
+  function franjaCara(f) {
+    const filas = [];
+    for (let i = 0; i < 100; i++) {
+      const yy = f.caja.y + f.caja.h * (i + 0.5) / 100;
+      const enZona = yy >= f.dentro.y && yy <= f.dentro.y + f.dentro.h;
+      filas.push(enZona && !f.evitar.some((e) => yy >= e.y - 10 && yy <= e.y + e.h + 10));
+    }
+    let mejor = [0, 0];
+    for (let i = 0; i < 100;) { if (!filas[i]) { i++; continue; } let j = i; while (j < 100 && filas[j]) j++; if (j - i > mejor[1] - mejor[0]) mejor = [i, j]; i = j; }
+    const texto = [];
+    for (let i = 0; i < 100;) { if (filas[i]) { i++; continue; } let j = i; while (j < 100 && !filas[j]) j++; texto.push([i, j]); i = j; }
+    return { cara: mejor, libre: mejor[1] - mejor[0], texto };
+  }
+
+  const _caras = new WeakMap();
+  const carasDe = (img) => {
+    if (!img || typeof window.carasEn !== 'function') return null;
+    if (!_caras.has(img)) { let c = null; try { c = window.carasEn(img); } catch { c = null; } _caras.set(img, c); }
+    return _caras.get(img);
+  };
+  const cruce = (a, b) => Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x)) * Math.max(0, Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y));
+
+  // Ubica la foto (cover, con zoom de hasta 1.35 y corrimiento) para que ninguna cara quede bajo el texto y,
+  // si es foto de fondo, que la cara quede dentro de la zona protegida. Nunca estira.
+  function colocarFoto(img, f) {
+    const caras = carasDe(img), { caja } = f;
+    const base = Math.max(caja.w / img.width, caja.h / img.height);
+    if (!caras || !caras.length) return { r: base, dx: caja.x + (caja.w - img.width * base) / 2, dy: caja.y + (caja.h - img.height * base) / 2, caras: [], choque: false, sinCara: !!caras };
+    let mejor = null;
+    for (const zoom of [1, 1.08, 1.16, 1.25, 1.35]) {
+      const r = base * zoom, iw = img.width * r, ih = img.height * r;
+      for (let a = 0; a <= 8; a++) for (let bb = 0; bb <= 8; bb++) {
+        const dx = caja.x + (caja.w - iw) * (iw > caja.w + 1 ? a / 8 : 0.5), dy = caja.y + (caja.h - ih) * (ih > caja.h + 1 ? bb / 8 : 0.5);
+        const cs = caras.map((c) => { const m = c.w * 0.15; return { x: dx + (c.x - m) * r, y: dy + (c.y - m) * r, w: (c.w + 2 * m) * r, h: (c.h + 2 * m) * r }; });
+        let costo = (zoom - 1) * 40 + (Math.abs(a - 4) + Math.abs(bb - 4)) * 0.5, choque = false;
+        for (const c of cs) {
+          const area = c.w * c.h, tapado = f.evitar.reduce((t, e) => t + cruce(c, e), 0) / area;
+          if (tapado > 0.02) { choque = true; costo += 1000 * tapado; }
+          const vis = cruce(c, caja) / area, dentro = cruce(c, f.dentro) / area;
+          costo += 300 * (1 - vis) + 120 * (1 - dentro);
+        }
+        if (!mejor || costo < mejor.costo) mejor = { r, dx, dy, caras: cs, choque, costo };
+        if (ih <= caja.h + 1) break;
+      }
+    }
+    return mejor;
+  }
+  const pintarFoto = (ctx, img, f, pos) => {
+    ctx.save(); ctx.beginPath(); ctx.rect(f.caja.x, f.caja.y, f.caja.w, f.caja.h); ctx.clip();
+    ctx.drawImage(img, pos.dx, pos.dy, img.width * pos.r, img.height * pos.r); ctx.restore();
+  };
+
+  function dibujarPieza(est, g, mercado, formato, fotos, logo) {
+    const geo = geometria(est, formato), { W, H, horizontal, s, zona } = geo;
+    const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    const ctx = cv.getContext('2d');
+    const rec = recetaDe(est);
+    const avisos = [], zonasFoto = fotosDe(est, geo, g);
+    const posFoto = zonasFoto.map((f, i) => {
+      const img = fotos?.[i];
+      if (!img) return null;
+      const pos = colocarFoto(img, f);
+      if (pos.choque) avisos.push(`✗ ${formato}: el texto tapa la cara de la foto${zonasFoto.length > 1 ? ` ${i + 1}` : ''}. Regenérela (pide la cara en otra franja).`);
+      else if (pos.sinCara) avisos.push(`NEEDS REVIEW ${formato}: no se detectó una cara en la foto${zonasFoto.length > 1 ? ` ${i + 1}` : ''}; mire que el texto no tape a la persona.`);
+      return pos;
+    });
+    cv.avisos = avisos;
     const oferta = ofertaDe(mercado);
     const fondo = rec.fondo;
     const oscuro = fondo === 'tinta' || fondo === 'verde' || fondo === 'foto';
-    if (fondo === 'foto') { if (fotos?.[0]) cubrir(ctx, fotos[0], 0, 0, W, H); else fotoFalsa(ctx, 0, 0, W, H, s); degradado(ctx, W, H, rec.grad, rec.fuerza); if (rec.grad === 'arriba') degradado(ctx, W, H, 'abajo', 0.55); }
-    else { ctx.fillStyle = { papel: K.papel, tinta: K.tinta, verde: K.verde }[fondo]; ctx.fillRect(0, 0, W, H); }
-    if (horizontal && fondo !== 'foto') { dibujarLogo(ctx, logo, pad, pad, 56 * s, oscuro); }
-    ctx.save(); ctx.translate(x0, 0);
-    const ancho = (horizontal ? H * 1.15 : W) - pad * 2, util = H - pad * 2;
-    let y = pad;
-    for (const blq of rec.b) {
-      const [tipo] = blq;
-      const conZona = typeof blq[1] === 'string';
-      const z = conZona ? blq[1] : null, frac = conZona ? blq[2] : blq[1], o = (conZona ? blq[3] : blq[2]) || {};
-      const h = frac * util, gap = 14 * s, bh = h - gap;
+    if (fondo === 'foto') { if (fotos?.[0]) pintarFoto(ctx, fotos[0], zonasFoto[0], posFoto[0]); else fotoFalsa(ctx, 0, 0, W, H, s); degradado(ctx, W, H, rec.grad, rec.fuerza); if (rec.grad === 'arriba') degradado(ctx, W, H, 'abajo', 0.55); }
+    else { ctx.fillStyle = { papel: K.papel, tinta: K.tinta, verde: K.verde }[fondo]; ctx.fillRect(0, 0, W, H); if (formato === '9:16') decorarBordes(ctx, W, H, zona, fondo); }
+    if (horizontal && fondo !== 'foto') { dibujarLogo(ctx, logo, zona.x, geo.cy, 56 * s, oscuro); }
+    ctx.save();
+    const pad = geo.cx, ancho = geo.cw;
+    for (const blq of geo.bloques) {
+      const { tipo, z, o, y, h: bh } = blq;
       if (tipo === 'logo') { if (!horizontal || fondo === 'foto') dibujarLogo(ctx, logo, pad, y, Math.min(Math.max(bh * 0.8, 40 * s), 56 * s), oscuro); }
       else if (tipo === 't') texto(ctx, zonaTxt(g, z), pad, y, ancho, bh, { ...o, size: (o.size || 80) * s, min: 14 });
       else if (tipo === 'cta') barraCta(ctx, pad, y, ancho, bh, s, zonaTxt(g, 'cta') || oferta.cta, o.sinPrecio ? null : oferta.precio, o.tema || (oscuro ? 'oscuro' : 'claro'));
@@ -1464,7 +1580,7 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
         [['antes', 0], ['despues', 1]].forEach(([zz, i]) => {
           const px = vert ? pad : pad + i * (pw + gapS), py = vert ? y + i * (ph + gapS) : y;
           ctx.save(); ctx.beginPath(); ctx.roundRect(px, py, pw, ph, 22 * s); ctx.clip();
-          if (fotos?.[i]) cubrir(ctx, fotos[i], px, py, pw, ph); else fotoFalsa(ctx, px, py, pw, ph, s, i ? 'Foto IA · después' : 'Foto IA · antes');
+          if (fotos?.[i]) pintarFoto(ctx, fotos[i], zonasFoto[i], posFoto[i]); else fotoFalsa(ctx, px, py, pw, ph, s, i ? 'Foto IA · después' : 'Foto IA · antes');
           ctx.restore();
           const lh = 64 * s; rrect(ctx, px + 16 * s, py + ph - lh - 16 * s, pw - 32 * s, lh, lh / 2, i ? K.verde : 'rgba(20,20,20,.82)');
           texto(ctx, zonaTxt(g, zz), px + 34 * s, py + ph - lh - 16 * s, pw - 68 * s, lh, { size: 32 * s, peso: 700, fam: F_TXT, color: K.blanco, align: 'center', valign: 'middle', min: 12 });
@@ -1472,7 +1588,7 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
         texto(ctx, '→', pad, y, ancho, bh, { size: 90 * s, color: K.tinta, align: 'center', valign: 'middle' });
       } else if (tipo === 'fotoTexto') {
         ctx.save(); ctx.beginPath(); ctx.roundRect(pad, y, ancho, bh, 26 * s); ctx.clip();
-        if (fotos?.[0]) cubrir(ctx, fotos[0], pad, y, ancho, bh); else fotoFalsa(ctx, pad, y, ancho, bh, s);
+        if (fotos?.[0]) pintarFoto(ctx, fotos[0], zonasFoto[0], posFoto[0]); else fotoFalsa(ctx, pad, y, ancho, bh, s);
         const gr = ctx.createLinearGradient(0, y + bh, 0, y + bh * 0.35); gr.addColorStop(0, 'rgba(10,12,8,.85)'); gr.addColorStop(1, 'rgba(10,12,8,0)'); ctx.fillStyle = gr; ctx.fillRect(pad, y, ancho, bh);
         ctx.restore();
         texto(ctx, zonaTxt(g, z), pad + 30 * s, y + bh * 0.45, ancho - 60 * s, bh * 0.5, { size: 64 * s, color: K.blanco, valign: 'bottom', min: 14 });
@@ -1497,8 +1613,8 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
           texto(ctx, t, pad + 110 * s, y + i * rh, ancho - 140 * s, rh - 14 * s, { size: 42 * s, peso: 700, fam: F_TXT, valign: 'middle', min: 12 });
         });
       } else if (tipo === 'postit') {
-        const lado = Math.min(ancho * 0.86, bh), px = (W - lado) / 2;
-        ctx.save(); ctx.translate(px + lado / 2, y + lado / 2); ctx.rotate(-0.04);
+        const lado = Math.min(ancho * 0.86, bh * 0.94), px = pad + (ancho - lado) / 2;
+        ctx.save(); ctx.translate(px + lado / 2, y + bh / 2); ctx.rotate(-0.04);
         ctx.shadowColor = 'rgba(0,0,0,.35)'; ctx.shadowBlur = 30 * s; ctx.shadowOffsetY = 12 * s;
         ctx.fillStyle = K.postit; ctx.fillRect(-lado / 2, -lado / 2, lado, lado); ctx.shadowColor = 'transparent';
         texto(ctx, zonaTxt(g, z), -lado / 2 + 50 * s, -lado / 2 + 50 * s, lado - 100 * s, lado - 100 * s, { size: 92 * s, peso: 700, fam: F_MANO, color: '#2b2824', valign: 'middle', lh: 1.15, min: 18 });
@@ -1525,11 +1641,19 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
         texto(ctx, zonaTxt(g, 'post'), pad + 40 * s, y + 140 * s, ancho - 80 * s, bh - 230 * s, { size: 54 * s, peso: 500, fam: F_TXT, min: 14 });
         texto(ctx, '♡  💬  ↗', pad + 40 * s, y + bh - 80 * s, ancho - 80 * s, 50 * s, { size: 38 * s, peso: 400, fam: F_TXT, color: K.gris, valign: 'middle' });
       }
-      y += h;
     }
     ctx.restore();
     return cv;
   }
+
+  // 9:16 con fondo liso: fuera de la zona protegida no va nada importante, pero tampoco queda una franja vacía.
+  const decorarBordes = (ctx, W, H, zona, fondo) => {
+    const c = fondo === 'papel' ? 'rgba(61,181,92,.10)' : 'rgba(255,255,255,.07)';
+    ctx.fillStyle = c;
+    ctx.beginPath(); ctx.arc(W * 0.92, zona.y * 0.35, W * 0.42, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.arc(W * 0.08, H * 0.86, W * 0.55, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.arc(W * 0.95, H * 0.98, W * 0.3, 0, 7); ctx.fill();
+  };
 
   let logoImg = null;
   const cargarRecursos = async () => {
@@ -1572,12 +1696,20 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
       'Negocio pequeño de Colombia, humilde pero cuidado: paredes pintadas, ordenado, limpio, nada lujoso.',
       'Sin texto, sin letras, sin logos, sin pantallas legibles (monitor de espaldas o celular sin leerse).',
     ].filter(Boolean).join(' ');
-    const aire = /arriba/.test(RECETAS[est.id]?.grad || '') ? 'Deja la parte de arriba despejada (cielo, pared lisa) para poner texto.' : 'Deja una zona despejada para poner texto.';
+    // Encuadre que reserva el lugar del texto (meta-creativos.md §5): la cara va en la franja libre de la zona
+    // protegida de ese formato; donde va texto, solo fondo. Si no hay franja suficiente, la foto va sin persona.
+    const aire = (f, vi) => {
+      const zf = fotosDe(est, geometria(est, f), g)[vi]; if (!zf) return '';
+      const fr = franjaCara(zf), pc = (a) => `${a[0]}–${a[1]} %`;
+      const textoEn = fr.texto.filter(([a, b]) => b - a >= 4).map(pc).join(' y ');
+      if (fr.libre < 12) return `Encuadre: escena sin cara visible (manos, objetos o el lugar); de ${textoEn} del alto, fondo liso o desenfocado porque ahí va texto.`;
+      return `Encuadre (medidas desde arriba, en % del alto de la imagen): ojos y boca de la persona entre el ${fr.cara[0] + 2} % y el ${fr.cara[1] - 2} %, plano medio (cabeza y hombros), sin primerísimo plano, sin cortar la cabeza; de ${textoEn} solo fondo liso, pared o desenfoque, sin cara ni detalles importantes, porque ahí va texto.`;
+    };
     const medias = av.casting_job ? [{ value: av.casting_job, role: 'image_references' }] : undefined;
     const reqs = [];
     formatos.forEach((f, fi) => {
       const variantes = est.id === 'antes-despues' ? [`Momento ANTES: ${zonaTxt(g, 'antes')}. Expresión cansada pero digna.`, `Momento DESPUÉS: ${zonaTxt(g, 'despues')}. Misma persona, tranquila.`] : [''];
-      variantes.forEach((v, vi) => reqs.push({ index: fi * 10 + vi, params: { model: 'gpt_image_2_5', quality: 'high', resolution: '2k', aspect_ratio: AR_IA[f], prompt: `${base} ${v} ${aire}`.trim(), ...(medias ? { medias } : {}) } }));
+      variantes.forEach((v, vi) => reqs.push({ index: fi * 10 + vi, params: { model: 'gpt_image_2_5', quality: 'high', resolution: '2k', aspect_ratio: AR_IA[f], prompt: `${base} ${v} ${aire(f, vi)}`.trim(), ...(medias ? { medias } : {}) } }));
     });
     avance(`Pidiendo ${reqs.length} foto(s) a Higgsfield…`);
     const sub = await llamar('Higgsfield', 'generate_image_batch', { requests: reqs });
@@ -1619,15 +1751,26 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
       if (necesitaFoto(est)) { info = await generarFotos(est, g, p, formatos, avance); fotos = info.fotos; }
       avance('Componiendo el texto…');
       const version = Math.max(0, ...(p.produccion?.entregas || []).map((e) => e.version || 1)) + 1;
-      const nuevas = [];
+      const nuevas = [], avisos = [];
       for (const [i, f] of formatos.entries()) {
-        const cv = dibujarPieza(est, g, p.mercado, f, fotos[i], logoImg);
+        let cv = dibujarPieza(est, g, p.mercado, f, fotos[i], logoImg);
+        // Si ni corriendo ni haciendo zoom la cara queda libre de texto, se pide otra foto una vez.
+        if (necesitaFoto(est) && cv.avisos.some((a) => a.startsWith('✗'))) {
+          avance(`El texto tapaba la cara en ${f}: pidiendo otra foto…`);
+          const otra = await generarFotos(est, g, p, [f], avance);
+          info = { ...info, jobs: [...info.jobs, ...otra.jobs], creditos: info.creditos + otra.creditos };
+          fotos[i] = otra.fotos[0];
+          cv = dibujarPieza(est, g, p.mercado, f, fotos[i], logoImg);
+        }
+        avisos.push(...cv.avisos);
         const blob = await new Promise((r) => cv.toBlob(r, 'image/png'));
         const up = await assets.upload(new File([blob], `${slug(p.titulo)}-${f.replace(/[:.]/g, '-')}-v${version}.png`, { type: 'image/png' }));
         nuevas.push({ asset: up.id, tipo: 'image', nombre: `${p.titulo || 'Anuncio'} · ${f}`, formato: f, version, fecha: new Date().toISOString() });
       }
       const gastado = (p.produccion?.creditos?.gastado || 0) + info.creditos;
-      await ref.update({ estado: 'listo', resultado: { creditos: gastado, fotos: info.jobs }, produccion: { ...pasos({ f: 'hecho', c: 'hecho' }, { f: info.jobs.length ? `${info.jobs.length} foto(s) · ${info.creditos} créditos` : '' }), creditos: { estimado: costoEstatico(est, formatos), gastado }, entregas: [...(p.produccion?.entregas || []), ...nuevas] } });
+      const malas = avisos.filter((a) => a.startsWith('✗'));
+      const notaC = [...avisos, 'NEEDS REVIEW: vista previa de colocación en Ads Manager (con el CTA y el texto principal).'].join(' · ');
+      await ref.update({ estado: malas.length ? 'esperando aprobación' : 'listo', resultado: { creditos: gastado, fotos: info.jobs }, produccion: { ...pasos({ f: 'hecho', c: malas.length ? 'esperando aprobación' : 'hecho' }, { f: info.jobs.length ? `${info.jobs.length} foto(s) · ${info.creditos} créditos` : '', c: notaC }), creditos: { estimado: costoEstatico(est, formatos), gastado }, entregas: [...(p.produccion?.entregas || []), ...nuevas] } });
       delete estadoGen[p.id]; toast('Piezas listas'); abiertos.add(p.id); render();
     } catch (e) {
       const msg = e?.code === 'descarga' || e?.code === undefined ? (e?.message || 'Algo falló al generar.') : errMcp(e, 'Higgsfield');
@@ -2031,7 +2174,7 @@ Responde SOLO con JSON: {"piezas":[{"template":"<id>","idea":"una frase","copy":
       for (const f of formatos) {
         const fotos = (await Promise.all((pz.fotos?.[f] || []).map(bitmapDe))).filter(Boolean);
         const cv = dibujarPieza(e, { copy: pz.copy }, mercado, f, fotos, logoImg); cv.className = 'pieza';
-        figs.push(h('figure', {}, cv, h('figcaption', {}, f, ' ', h('button', { class: 'add', onclick: () => descargarPieza(pz, f, mercado) }, 'Descargar'))));
+        figs.push(h('figure', {}, cv, h('figcaption', {}, f, ' ', h('button', { class: 'add', onclick: () => descargarPieza(pz, f, mercado) }, 'Descargar')), ...(cv.avisos || []).map((a) => h('figcaption', { class: a.startsWith('✗') ? 'mal' : '' }, a))));
       }
       lienzos.replaceChildren(...figs);
     };

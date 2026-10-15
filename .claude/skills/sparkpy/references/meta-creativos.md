@@ -187,6 +187,21 @@ FINAL STANDARD: A natural full-frame creative, a clear selling message, protecte
   movimiento, exclusiones). 9:16: «eyes and mouth in the upper-middle, slightly left of center (around 25–45 %
   of frame height); lower 40 % free of key details; controlled, minimal camera movement». 4:5: «face in the
   upper half, centered». Nunca parámetros inventados como `safe_zone`.
+- **Cómo detecta (videos):** `maquetar.py` usa YuNet (OpenCV `FaceDetectorYN`, `scripts/modelos/yunet.onnx`)
+  para caras y boca, y HOG para personas de espaldas o de perfil (sin cara visible: se protege la parte de
+  arriba del cuerpo y queda **✗ NEEDS REVIEW** para mirarla). En demos de producto se marca a mano lo que
+  no puede taparse con `"proteger": [{x0,y0,x1,y1,nota}]` (px del lienzo final) en el bloque.
+- **A cámara vs. apoyo:** `"a_camara": true` (por defecto cuando el bloque arranca la voz en la toma) = la
+  persona habla y su cara no se tapa nunca. En tomas de apoyo (`a_camara: false`), si una tarjeta no entra
+  sin tapar a la persona, se muestra como **corte a pantalla**: la toma se desenfoca detrás y la tarjeta va
+  arriba de la zona. En una toma a cámara eso no se hace: se omite y se avisa.
+- **Estáticos (Estudio, pestaña Estáticos y pedidos de imagen):** el canvas usa la zona de cada formato
+  (9:16 x 8–85 % / y 18–60 %; 4:5, 1:1 y 1.91:1 un 6 % por lado); el fondo o la foto llenan todo el lienzo.
+  La foto se pide con la franja exacta donde van ojos y boca (la libre de texto en ese formato) y, al
+  componer, un detector de caras en la página (pico.js, `sparkpy/caras.js`) corre/acerca la foto hasta
+  1.35× para que ningún texto, logo ni CTA la tape. Si igual la tapa, se pide otra foto una vez; si sigue,
+  la pieza queda «✗ el texto tapa la cara» y el pedido en «esperando aprobación». Si no detecta cara:
+  NEEDS REVIEW en la pieza.
 - **Validación:** `muestras` dibuja la zona protegida solo en las imágenes de revisión (nunca en el render).
   La vista previa real de colocación en Ads Manager no la puede hacer SparkPy: en cada entrega figura como
   **NEEDS REVIEW**.
