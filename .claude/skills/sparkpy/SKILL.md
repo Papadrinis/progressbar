@@ -87,6 +87,24 @@ Cuando llegue `/sparkpy pedido <id>`:
    Si el avatar se castea nuevo y se aprueba, guarda el job en `avatares/<id>.casting_job`, sube el
    retrato como `imagen`, pasa su estado a «aprobado» y añade el anuncio a `usado_en`.
 
+### Biblioteca de contenido: reutilizar antes de generar (obligatorio)
+
+Todo lo ya generado vive en `planpy-ad/biblioteca/clips.py` (fuente de verdad: archivo en `public/`, persona,
+escenario, acción, emoción, si habla y qué dice, dónde se usó) y en la colección `clips` del Estudio (pestaña
+**Contenido**, con miniaturas). El paso 3 del Estudio ya no es un guion sino un **storyboard**: cada bloque trae
+`clip` = id de la biblioteca o `"nuevo"` («Nuevo a crear»), y el usuario lo puede cambiar.
+
+- Al producir un pedido, **los bloques con `clip` no se generan**: se usa `public/<archivo>` del catálogo como
+  `toma` (si el clip habla, su audio es la voz del bloque, extraída como en V17/V18). Solo se generan los
+  bloques `"nuevo"`. El presupuesto que se muestra al usuario descuenta lo reutilizado.
+- Reglas: mismo estilo visual (real/3d/verde/foto); si se ve a una persona, tiene que ser el avatar del
+  anuncio; un clip que habla solo con su frase exacta; un clip más corto que el bloque se estira con
+  `velocidadToma` (cámara lenta) o se combina con otro, nunca se congela.
+- Al cerrar cada anuncio: agregar sus tomas y fondos nuevos a `biblioteca/clips.py`, correr
+  `python3 scripts/biblioteca.py` (valida, mide, hace miniaturas), subir las miniaturas nuevas como assets del
+  Estudio, anotar su id en `biblioteca/miniaturas.json` y escribir los docs en la colección `clips` (batch).
+  Así el próximo storyboard ya las puede proponer.
+
 ### Seguimiento en la pestaña Pedidos (obligatorio)
 
 El usuario sigue la producción en la pestaña **Pedidos** del Estudio, no solo en el chat. Todo lo que se

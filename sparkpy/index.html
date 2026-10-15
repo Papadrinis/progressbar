@@ -149,6 +149,23 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .tl div:nth-child(1) { background: var(--lime); color: var(--on-lime); }
 .tl div.cta { background: var(--brand); color: #fff; }
 .board-wrap { overflow-x: auto; }
+.sb-sum { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; margin: 6px 0 10px; }
+.sb-sum b { font-variant-numeric: tabular-nums; }
+.sb { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 12px; }
+.sb-card { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--bg); display: flex; flex-direction: column; min-width: 0; }
+.sb-thumb { aspect-ratio: 9 / 16; max-height: 300px; background: var(--surface-2); position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.sb-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sb-thumb .nuevo { border: 2px dashed var(--line); border-radius: 10px; margin: 14px; padding: 14px 10px; text-align: center; color: var(--muted); font-weight: 700; font-size: 13px; line-height: 1.35; }
+.sb-badge { position: absolute; top: 8px; left: 8px; right: 8px; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; pointer-events: none; }
+.sb-badge span { background: rgba(12,12,14,.72); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 7px; border-radius: 999px; white-space: nowrap; }
+.sb-badge .reusa { background: var(--brand); }
+.sb-body { padding: 10px; font-size: 12.5px; display: flex; flex-direction: column; gap: 6px; }
+.sb-body .voz { font-style: italic; }
+.sb-body .muted { font-size: 12px; }
+.sb-body select, .sb-body textarea { width: 100%; font: inherit; font-size: 12px; }
+.cont-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; }
+.cont-filtros { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 14px; }
+.cont-filtros input { flex: 1 1 220px; min-width: 0; }
 table.board { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 640px; }
 .board th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 700; padding: 8px 10px; border-bottom: 1px solid var(--line); }
 .board td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
@@ -357,6 +374,7 @@ canvas.pieza { width: 180px; max-width: 100%; height: auto; border-radius: 8px; 
       <button role="tab" id="tab-crear" data-view="crear" aria-selected="true">Crear</button>
       <button role="tab" id="tab-est" data-view="est" aria-selected="false">Estáticos</button>
       <button role="tab" id="tab-lib" data-view="lib" aria-selected="false">Librería</button>
+      <button role="tab" id="tab-cont" data-view="cont" aria-selected="false">Contenido</button>
       <button role="tab" id="tab-ped" data-view="ped" aria-selected="false">Pedidos <span class="count" id="ped-count">0</span></button>
     </nav>
     <button id="tema" class="btn ghost small" type="button" title="Cambiar entre modo claro y oscuro">🌙 Oscuro</button>
@@ -369,6 +387,7 @@ canvas.pieza { width: 180px; max-width: 100%; height: auto; border-radius: 8px; 
   <section id="view-lib" hidden></section>
   <section id="view-ped" hidden></section>
   <section id="view-est" hidden></section>
+  <section id="view-cont" hidden></section>
 </main>
 <div id="editor-root"></div>
 <div id="toast" class="toast" hidden></div>
@@ -522,6 +541,7 @@ canvas.pieza { width: 180px; max-width: 100%; height: auto; border-radius: 8px; 
   const ORDER = Object.keys(COLS);
   const lib = Object.fromEntries(ORDER.map((k) => [k, []]));
   let pedidos = [];
+  let clips = []; // biblioteca de contenido ya generado (planpy-ad/biblioteca/clips.py → colección «clips»)
   let db = null, sample = null, assets = null;
   let loaded = false;
 
@@ -585,7 +605,7 @@ canvas.pieza { width: 180px; max-width: 100%; height: auto; border-radius: 8px; 
   const setView = (v) => {
     view = v; store.set('view', v);
     document.querySelectorAll('.tabs button').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.view === v)));
-    for (const k of ['crear', 'est', 'lib', 'ped']) document.getElementById('view-' + k).hidden = k !== v;
+    for (const k of ['crear', 'est', 'lib', 'cont', 'ped']) document.getElementById('view-' + k).hidden = k !== v;
     render();
   };
   document.querySelectorAll('.tabs button').forEach((b) => b.addEventListener('click', () => setView(b.dataset.view)));
@@ -711,11 +731,11 @@ canvas.pieza { width: 180px; max-width: 100%; height: auto; border-radius: 8px; 
 
     // paso 2
     const s2 = h('div', { class: 'step' },
-      h('div', { class: 'step-head' }, h('span', { class: 'n' }, 'PASO 3'), h('h2', {}, esImagen() ? 'Copy' : 'Guiones'), h('p', {}, esImagen() ? 'Tres propuestas de copy para las zonas del template, con el visual de cada una. Elija una y edítela.' : 'Tres opciones de guion y storyboard pensadas para el estilo elegido. Elija una y edítela.')));
+      h('div', { class: 'step-head' }, h('span', { class: 'n' }, 'PASO 3'), h('h2', {}, esImagen() ? 'Copy' : 'Storyboards'), h('p', {}, esImagen() ? 'Tres propuestas de copy para las zonas del template, con el visual de cada una. Elija una y edítela.' : 'Tres storyboards pensados para el estilo elegido. Cada toma propone un clip de la biblioteca de Contenido si ya existe; si no, «Nuevo a crear». Elija uno y edítelo.')));
     if (!sample) s2.append(h('div', { class: 'empty' }, 'Generar con Claude necesita abrir esta página en claude.ai y permitir que use Claude.'));
     else if (generando) s2.append(h('div', { class: 'thinking' }, h('span', { class: 'dot' }), h('span', {}, rawGen ? `Escribiendo… ${rawGen.length} caracteres` : (esImagen() ? 'Pensando el copy…' : 'Pensando los guiones…') + ' tarda entre 20 y 60 segundos.'), h('button', { class: 'btn ghost small', onclick: () => generando?.abort() }, 'Detener')));
     else if (errorGen) s2.append(h('div', { class: 'claims' }, errorGen), rawGen ? h('pre', { class: 'raw' }, rawGen) : null);
-    if (!generando && !opciones.length && sample && !errorGen) s2.append(h('div', { class: 'empty' }, ready() ? `Todo listo: pulse «${esImagen() ? 'Generar 3 copys' : 'Generar 3 guiones'}».` : `Complete rubro, buyer persona, ángulo, ${esImagen() ? 'template y formato' : 'estructura y estilo de ad'}.`));
+    if (!generando && !opciones.length && sample && !errorGen) s2.append(h('div', { class: 'empty' }, ready() ? `Todo listo: pulse «${esImagen() ? 'Generar 3 copys' : 'Generar 3 storyboards'}».` : `Complete rubro, buyer persona, ángulo, ${esImagen() ? 'template y formato' : 'estructura y estilo de ad'}.`));
     if (opciones.length && !esImagen() && genEstilo !== estilo) s2.append(h('div', { class: 'claims' }, 'Estos guiones se escribieron para otro estilo. Pulse «Generar otras 3» para tenerlos pensados para ', h('b', {}, name('estilos', estilo) || 'el estilo elegido'), '.'));
     if (opciones.length) s2.append(h('div', { class: 'options' }, opciones.map((o, i) => (o.copy ? renderOptionImg(o, i) : renderOption(o, i)))));
 
@@ -778,7 +798,7 @@ canvas.pieza { width: 180px; max-width: 100%; height: auto; border-radius: 8px; 
           row('Ángulo', name('angulos', sel.angulo)), row('Features', guion?.features?.length ? guion.features.map((f) => name('features', f) || f).join(', ') : (opciones.length ? 'según la opción' : 'las elige Claude')), row('Avatar', name('avatares', avatarActual())),
           row('Tipo', esImagen() ? 'Imagen estática' : 'Video'), row(esImagen() ? 'Template' : 'Estructura', name('estructuras', sel.estructura)), esImagen() ? row('Formato', sel.formatos.join(', ')) : row('Duración', sel.duracion + ' s'), row('Estilo', est2?.nombre)),
         fl.length ? h('div', { class: 'flags' }, fl.map((f) => h('div', {}, f))) : null,
-        h('button', { class: 'btn block lime', disabled: !ready() || !sample || !!generando, onclick: generar }, opciones.length ? 'Generar otras 3' : esImagen() ? 'Generar 3 copys' : 'Generar 3 guiones'),
+        h('button', { class: 'btn block lime', disabled: !ready() || !sample || !!generando, onclick: generar }, opciones.length ? 'Generar otras 3' : esImagen() ? 'Generar 3 copys' : 'Generar 3 storyboards'),
         h('button', { class: 'btn block ghost small', onclick: () => { Object.assign(sel, { rubro: null, persona: null, angulo: null, avatar: null, avatarManual: false, estructura: null }); opciones = []; elegido = null; guion = null; errorGen = null; save(); render(); } }, 'Limpiar selección')));
 
     root.append(h('div', { class: 'create' }, h('div', {}, s1, s3, s2, s4), aside));
@@ -811,6 +831,21 @@ canvas.pieza { width: 180px; max-width: 100%; height: auto; border-radius: 8px; 
       (o.claims_a_confirmar || []).length ? h('div', { class: 'claims' }, h('b', {}, 'Confirmar antes de pautar: '), o.claims_a_confirmar.join(' · ')) : null);
   }
 
+  // ---------- storyboard: cada bloque propone un clip de la biblioteca o «Nuevo a crear» ----------
+  const clipDe = (id) => (id && id !== 'nuevo' ? clips.find((c) => c.id === id) || null : null);
+  // Lo que costaría generar el bloque desde cero con el pipeline del estilo (Seedance 2.5 1080p ≈ 16 cr/s).
+  const costoNuevo = (seg) => {
+    const e = byId('estilos', estilo);
+    if (/2D|tipograf|captura|cin[eé]tica/i.test(`${e?.nombre || ''} ${e?.pipeline || ''}`)) return 0;
+    return Math.max(5, Math.ceil(+seg || 5)) * 16;
+  };
+  const resumenClips = (g) => {
+    const bs = g.bloques || [];
+    const reus = bs.filter((b) => clipDe(b.clip));
+    return { total: bs.length, reus: reus.length, ahorro: reus.reduce((a, b) => a + (clipDe(b.clip)?.costo_regenerar || 0), 0), nuevo: bs.filter((b) => !clipDe(b.clip)).reduce((a, b) => a + costoNuevo(b.seg), 0) };
+  };
+  const miniClip = (c) => (c?.miniatura ? h('img', { src: imgSrc(c.miniatura), alt: c.accion || c.id, loading: 'lazy' }) : null);
+
   function renderOption(o, i) {
     const isSel = elegido === i;
     const g = isSel ? guion : o;
@@ -827,38 +862,91 @@ canvas.pieza { width: 180px; max-width: 100%; height: auto; border-radius: 8px; 
       });
       return span;
     };
-    const edit = (b, field, val, isList) => h('textarea', { 'aria-label': field, oninput: (e) => { b[field] = isList ? e.target.value.split('\n').filter((x) => x.trim()) : e.target.value; } }, isList ? (val || []).join('\n') : val || '');
-    const rows = bloques.map((b) => h('tr', {},
-      h('td', {}, h('div', { class: 'paso' }, b.paso), h('div', { class: 'tc' }, tc(b.seg))),
-      h('td', { class: 'voz' }, isSel ? edit(b, 'voz', b.voz) : `“${b.voz || ''}”`),
-      h('td', { class: 'pant' }, isSel ? edit(b, 'pantalla', b.pantalla, true) : (b.pantalla || []).map((l) => h('div', {}, keyed(l, b.claves)))),
-      h('td', {}, isSel ? edit(b, 'toma', b.toma) : b.toma),
-      h('td', { class: 'muted' }, isSel ? edit(b, 'interfaz', b.interfaz) : b.interfaz || '—')));
+    const edit = (b, field, val, isList) => h('textarea', { 'aria-label': field, rows: 2, oninput: (e) => { b[field] = isList ? e.target.value.split('\n').filter((x) => x.trim()) : e.target.value; } }, isList ? (val || []).join('\n') : val || '');
+    // Clips que tienen sentido para este bloque: mismo estilo visual; los que hablan, solo con su frase.
+    const opcionesClip = (b) => clips.filter((c) => !c.habla || norm(c.habla) === norm(b.voz)).sort((x, y) => (x.persona || '').localeCompare(y.persona || ''));
+    const tarjeta = (b) => {
+      const c = clipDe(b.clip);
+      const thumb = h('div', { class: 'sb-thumb' },
+        c ? miniClip(c) : h('div', { class: 'nuevo' }, 'Nuevo a crear', h('div', { style: 'font-weight:500;margin-top:6px;font-size:12px' }, costoNuevo(b.seg) ? `≈ ${costoNuevo(b.seg)} créditos` : 'se hace en código · 0 créditos')),
+        h('div', { class: 'sb-badge' }, h('span', {}, `${b.paso || ''} · ${tc(b.seg)}`), c ? h('span', { class: 'reusa' }, `Reutilizar · ahorra ${Math.round(c.costo_regenerar || 0)}`) : null));
+      const elegirClip = isSel ? h('select', { 'aria-label': 'Clip para este bloque', onchange: (e) => { b.clip = e.target.value; b.clip_motivo = b.clip === 'nuevo' ? '' : 'elegido a mano'; render(); } },
+        h('option', { value: 'nuevo', selected: !c }, 'Nuevo a crear'),
+        opcionesClip(b).map((x) => h('option', { value: x.id, selected: c?.id === x.id }, `${x.persona || '—'} · ${x.accion}`.slice(0, 80)))) : null;
+      return h('div', { class: 'sb-card' }, thumb, h('div', { class: 'sb-body' },
+        isSel ? edit(b, 'voz', b.voz) : h('div', { class: 'voz' }, `“${b.voz || ''}”`),
+        isSel ? edit(b, 'pantalla', b.pantalla, true) : (b.pantalla || []).length ? h('div', { class: 'pant' }, (b.pantalla || []).map((l) => h('div', {}, keyed(l, b.claves)))) : null,
+        isSel ? edit(b, 'toma', b.toma) : h('div', { class: 'muted' }, b.toma || ''),
+        c ? h('div', { class: 'muted' }, h('b', {}, 'Clip: '), `${c.persona || '—'} · ${c.accion}${c.usado_en?.length ? ` (de ${c.usado_en.join(', ')})` : ''}`, b.clip_motivo ? ` — ${b.clip_motivo}` : '') : null,
+        (isSel || b.interfaz) ? (isSel ? edit(b, 'interfaz', b.interfaz) : h('div', { class: 'muted' }, h('b', {}, 'Interfaz: '), b.interfaz)) : null,
+        elegirClip));
+    };
+    const cards = bloques.map(tarjeta);
     if (isSel && !g.cta) g.cta = ctaMarca();
     if (g.cta) {
       const aviso = h('div', {});
-      const pintarAviso = () => aviso.replaceChildren(...ctaAvisos(g.cta).map((t) => h('div', { class: 'pill warn', style: 'margin-top:6px;text-transform:none;letter-spacing:0' }, t)));
-      const editCta = (field) => h('textarea', { 'aria-label': `CTA ${field}`, oninput: (e) => { g.cta[field] = e.target.value; pintarAviso(); } }, g.cta[field] || '');
+      const pintarAviso = () => aviso.replaceChildren(...ctaAvisos(g.cta).map((x) => h('div', { class: 'pill warn', style: 'margin-top:6px;text-transform:none;letter-spacing:0' }, x)));
+      const editCta = (field) => h('textarea', { 'aria-label': `CTA ${field}`, rows: 2, oninput: (e) => { g.cta[field] = e.target.value; pintarAviso(); } }, g.cta[field] || '');
       pintarAviso();
-      rows.push(h('tr', {},
-        h('td', {}, h('div', { class: 'paso' }, 'CTA'), h('div', { class: 'tc' }, tc(g.cta.seg || 4))),
-        h('td', { class: 'voz' }, isSel ? editCta('voz') : `“${g.cta.voz || ''}”`),
-        h('td', { class: 'pant' }, isSel ? [editCta('pantalla'), aviso] : [g.cta.pantalla || '', aviso]),
-        h('td', {}, isSel ? h('div', {}, 'Cierre de marca con este texto. ', h('button', { class: 'add', onclick: () => { g.cta = ctaMarca(g.cta.seg); render(); } }, 'Restaurar el de marca')) : 'Cierre de marca (logo, oferta, precio)'),
-        h('td', { class: 'muted' }, 'CierreDesde')));
+      const cc = clipDe(g.cta.clip);
+      cards.push(h('div', { class: 'sb-card' },
+        h('div', { class: 'sb-thumb' }, cc ? miniClip(cc) : h('div', { class: 'nuevo' }, 'Cierre de marca', h('div', { style: 'font-weight:500;margin-top:6px;font-size:12px' }, 'logo, oferta y precio · 0 créditos')),
+          h('div', { class: 'sb-badge' }, h('span', {}, `CTA · ${tc(g.cta.seg || 4)}`), cc ? h('span', { class: 'reusa' }, 'Reutilizar') : null)),
+        h('div', { class: 'sb-body' },
+          isSel ? editCta('voz') : h('div', { class: 'voz' }, `“${g.cta.voz || ''}”`),
+          isSel ? [editCta('pantalla'), aviso] : [h('div', { class: 'pant' }, g.cta.pantalla || ''), aviso],
+          isSel ? h('button', { class: 'add', onclick: () => { g.cta = ctaMarca(g.cta.seg); render(); } }, 'Restaurar el de marca') : null)));
     }
+    const r = resumenClips(g);
     return h('article', { class: 'opt', 'aria-current': String(isSel) },
       h('div', { class: 'opt-head' },
         h('div', {}, h('h3', {}, `${String.fromCharCode(65 + i)} · ${o.titulo || 'Opción'}`), h('p', { class: 'idea' }, o.idea || ''), o.situacion ? h('p', { class: 'idea muted' }, h('b', {}, 'Situación: '), o.situacion) : null),
-        isSel ? h('span', { class: 'pill ok' }, 'Elegido · editable') : h('button', { class: 'btn small', onclick: () => { elegido = i; guion = JSON.parse(JSON.stringify(o)); render(); } }, 'Elegir este guion')),
+        isSel ? h('span', { class: 'pill ok' }, 'Elegido · editable') : h('button', { class: 'btn small', onclick: () => { elegido = i; guion = JSON.parse(JSON.stringify(o)); render(); } }, 'Elegir este storyboard')),
       h('div', { class: 'tl', 'aria-hidden': 'true' }, bloques.map((b) => h('div', { style: `flex:${Math.max(+b.seg || 1, 1)}` }, b.paso)), h('div', { class: 'cta', style: `flex:${+g.cta?.seg || 4}` }, 'CTA')),
-      h('div', { class: 'tc mono muted' }, `≈ ${Math.round(total)} s · gancho forma ${o.gancho_forma || '—'}`),
+      h('div', { class: 'sb-sum' },
+        h('span', { class: 'mono muted' }, `≈ ${Math.round(total)} s · gancho ${o.gancho_forma || '—'}`),
+        h('span', {}, 'Reutiliza ', h('b', {}, `${r.reus} de ${r.total}`), ' tomas'),
+        r.ahorro ? h('span', {}, 'Ahorra ', h('b', {}, `≈ ${Math.round(r.ahorro)}`), ' créditos') : null,
+        h('span', {}, 'Nuevo a crear ', h('b', {}, `≈ ${Math.round(r.nuevo)}`), ' créditos')),
       h('div', { class: 'opt-meta' },
         (g.features || []).length ? h('div', {}, h('span', { class: 'k2' }, 'Features'), (g.features || []).map((f) => h('span', { class: 'chip mini' }, name('features', f) || f))) : null,
         g.look ? h('div', {}, h('span', { class: 'k2' }, `Look de ${name('avatares', avatarActual()) || 'el avatar'}`), [g.look.vestuario, g.look.escenario].filter(Boolean).join(' · ')) : null),
-      h('div', { class: 'board-wrap' }, h('table', { class: 'board' },
-        h('thead', {}, h('tr', {}, ['Paso', 'Voz (locución)', 'Pantalla', 'Toma', 'Interfaz'].map((x) => h('th', {}, x)))), h('tbody', {}, rows))),
+      h('div', { class: 'sb' }, cards),
       (o.claims_a_confirmar || []).length ? h('div', { class: 'claims' }, h('b', {}, 'Confirmar antes de pautar: '), o.claims_a_confirmar.join(' · ')) : null);
+  }
+  const norm = (x) => String(x || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+
+  // ---------- CONTENIDO: biblioteca de clips ya generados ----------
+  let contQ = '', contEstilo = '';
+  function renderCont() {
+    const root = document.getElementById('view-cont');
+    const q = norm(contQ);
+    const items = clips.filter((c) => (!contEstilo || c.estilo === contEstilo) && (!q || norm(JSON.stringify(c)).includes(q))).sort((a, b) => b.id.localeCompare(a.id, 'es', { numeric: true }));
+    const pagado = clips.reduce((a, c) => a + (c.costo_regenerar || 0), 0);
+    const reusados = pedidos.flatMap((p) => (p.guion?.bloques || []).map((b) => b.clip)).filter((id) => clipDe(id));
+    const ahorro = reusados.reduce((a, id) => a + (clipDe(id)?.costo_regenerar || 0), 0);
+    const ESTILOS = [['', 'Todos'], ['real', 'Personas reales'], ['verde', 'Green screen'], ['3d', '3D'], ['foto', 'Fotos']];
+    const grid = h('div', { class: 'cont-grid' }, items.map((c) => h('div', { class: 'sb-card' },
+      h('div', { class: 'sb-thumb' }, miniClip(c), h('div', { class: 'sb-badge' }, h('span', {}, c.tipo === 'video' ? `${c.duracion} s` : 'foto'), c.habla ? h('span', {}, 'habla') : h('span', { class: 'reusa' }, 'cualquier voz'))),
+      h('div', { class: 'sb-body' },
+        h('div', {}, h('b', {}, c.persona || '—'), ` · ${c.rubro || ''}`),
+        h('div', {}, c.accion),
+        h('div', { class: 'muted' }, `${c.escenario || ''}${c.emocion ? ` · ${c.emocion}` : ''}`),
+        c.habla ? h('div', { class: 'voz' }, `“${c.habla}”`) : null,
+        h('div', { class: 'muted' }, `Usado en ${(c.usado_en || []).join(', ') || '—'} · regenerarlo ≈ ${Math.round(c.costo_regenerar || 0)} cr`),
+        h('div', { class: 'mono muted', style: 'font-size:11px' }, c.id)))));
+    root.replaceChildren(
+      h('div', { class: 'step-head' }, h('span', { class: 'n' }, 'CONTENIDO'), h('h2', {}, 'Biblioteca de clips'),
+        h('p', {}, 'Todo lo que ya se generó (tomas, fondos, green screen). El storyboard de cada anuncio propone de aquí lo que sirva antes de crear algo nuevo.')),
+      h('div', { class: 'sb-sum' },
+        h('span', {}, h('b', {}, clips.length), ' clips'),
+        h('span', {}, h('b', {}, `≈ ${Math.round(pagado)}`), ' créditos de contenido ya pagado'),
+        h('span', {}, 'Reutilizados en pedidos: ', h('b', {}, reusados.length), ahorro ? ` · ahorro ≈ ${Math.round(ahorro)} cr` : '')),
+      h('div', { class: 'cont-filtros' },
+        h('input', { type: 'search', placeholder: 'Buscar: cuaderno, celular, Carolina, camioneta…', value: contQ, 'aria-label': 'Buscar clips', oninput: (e) => { contQ = e.target.value; const pos = e.target.selectionStart; renderCont(); const el = document.querySelector('#view-cont input[type=search]'); if (el) { el.focus(); el.setSelectionRange(pos, pos); } } }),
+        h('div', { class: 'seg' }, ESTILOS.map(([k, l]) => h('button', { 'aria-pressed': String(contEstilo === k), onclick: () => { contEstilo = k; renderCont(); } }, l)))),
+      clips.length ? grid : h('div', { class: 'empty' }, db ? 'Todavía no hay clips cargados.' : 'La biblioteca vive en claude.ai: abra esta página allí.'),
+      items.length || !clips.length ? null : h('div', { class: 'empty' }, 'Ningún clip coincide con la búsqueda.'));
   }
 
   // ---------- generación con Claude ----------
@@ -915,6 +1003,7 @@ Escribe primero la situación de cada guion (quién, dónde, cuándo, qué pasa 
       avatar: pickFields(byId('avatares', avatarActual()), ['nombre', 'edad', 'genero', 'ciudad', 'rasgos', 'estilo']),
       estructura: pickFields(est, ['nombre', 'pasos', 'nota']),
       estilo_de_ad: pickFields(byId('estilos', estilo), ['nombre', 'descripcion', 'pipeline', 'riesgos']),
+      biblioteca_clips: clips.map((c) => ({ id: c.id, estilo: c.estilo, persona: c.persona, rubro: c.rubro, escenario: c.escenario, accion: c.accion, emocion: c.emocion, seg: c.duracion || 'foto', ...(c.habla ? { dice: c.habla } : {}) })),
     };
     return `Eres el guionista de anuncios en video de PlanPy (vertical 9:16, Meta/TikTok). Escribe 3 guiones distintos (storyboards) para este brief. Cada uno con un gancho diferente.
 
@@ -930,10 +1019,17 @@ Elige tú las features: 1 o 2 de features_disponibles (por id) que resuelvan el 
 ${LIBERTAD}
 Formato: escribe el guion y el storyboard para el estilo_de_ad elegido, no para un video genérico. Las "toma" tienen que poder producirse con su pipeline y verse como ese formato (p. ej. animación 3D: personajes y escenas animadas; voz en off: nadie habla a cámara y la voz es narración sobre lo que se ve; meme o UGC: plano de celular, ritmo nativo de TikTok). La "voz" también se escribe para ese formato: narración, diálogo a cámara o pensamiento en primera persona, según corresponda.
 ${aCamara(byId('estilos', estilo)) ? `\nEste anuncio es orgánico, con ${byId('avatares', avatarActual())?.nombre || 'el avatar'} hablando a cámara: la "voz" de cada bloque es lo que dice a cámara, como lo diría un dueño real ${sel.mercado === 'AR' ? 'argentino (vos)' : 'colombiano (usted)'} grabándose con el celular, frases cortas y naturales, máximo 18 palabras por bloque (cada bloque es una toma de 8 s). La "toma" dice dónde está, qué hace mientras habla y qué se oye de fondo.\n` : ''}
+Storyboard con la biblioteca: biblioteca_clips es el contenido que YA está generado y pagado. Para cada bloque propone en "clip" el id de un clip que sirva tal cual, o "nuevo" si hay que crearlo. Reglas para reutilizar:
+- Solo si el clip cuenta lo mismo que el bloque (misma acción y emoción, escenario coherente con la situación) y del mismo estilo visual que estilo_de_ad (real con real, 3d con 3d; un "verde" es una persona sobre croma para green screen; una "foto" sirve de fondo con zoom lento).
+- Si el clip muestra a una persona, tiene que ser el mismo avatar de este anuncio (no mezcles actores). Planos sin el avatar (objetos, cuaderno, empleados, clientes, la calle) sirven en cualquier anuncio si encajan con la historia.
+- Un clip con "dice" tiene la voz y los labios grabados: úsalo solo si la "voz" del bloque es exactamente esa frase (p. ej. el CTA del mismo avatar).
+- No fuerces: si reutilizar cambia la historia o se nota pegado, "nuevo". Pero si encaja, prefiere reutilizar (ahorra créditos). En "clip_motivo" explica en una frase por qué ese clip encaja.
+- La "toma" sigue describiendo lo que se ve; si reutilizas, que coincida con el clip.
+
 Usa los pasos de la estructura "${est?.nombre}" en orden (${(est?.pasos || []).join(' → ')}); puedes repartir un paso en dos bloques o juntar dos pasos cortos si la duración lo pide. El CTA va aparte, al final. La suma de "seg" de los bloques más el CTA debe acercarse a ${sel.duracion} s.
 
 Responde SOLO con JSON con esta forma:
-{"opciones":[{"titulo":"nombre corto","idea":"una frase","situacion":"la escena de este guion en 1–2 frases: quién, dónde, cuándo, qué pasa","gancho_forma":"A|B|C|D","bloques":[{"paso":"nombre del paso","voz":"locución con Planpi","pantalla":["línea 1","línea 2"],"claves":["palabra"],"toma":"qué se ve en este momento de la situación (persona, acción, lugar, encuadre; sin pantallas legibles)","interfaz":"tarjeta o sticker que pone Remotion, o vacío","seg":4}],"cta":{"voz":"...","pantalla":"...","seg":4},"features":["id"],"look":{"vestuario":"ropa del avatar en este anuncio","escenario":"el local y la luz"},"claims_a_confirmar":["..."]}]}`;
+{"opciones":[{"titulo":"nombre corto","idea":"una frase","situacion":"la escena de este guion en 1–2 frases: quién, dónde, cuándo, qué pasa","gancho_forma":"A|B|C|D","bloques":[{"paso":"nombre del paso","voz":"locución con Planpi","pantalla":["línea 1","línea 2"],"claves":["palabra"],"toma":"qué se ve en este momento de la situación (persona, acción, lugar, encuadre; sin pantallas legibles)","interfaz":"tarjeta o sticker que pone Remotion, o vacío","seg":4,"clip":"id de biblioteca_clips o nuevo","clip_motivo":"..."}],"cta":{"voz":"...","pantalla":"...","seg":4,"clip":"id o nuevo"},"features":["id"],"look":{"vestuario":"ropa del avatar en este anuncio","escenario":"el local y la luz"},"claims_a_confirmar":["..."]}]}`;
   }
 
   function buildPromptImg() {
@@ -978,6 +1074,10 @@ Responde SOLO con JSON con esta forma:
       const res = await sample.json(esImagen() ? buildPromptImg() : buildPrompt(), { signal: ctl.signal, cache: false, onText: ({ text }) => { rawGen = text; const el = document.querySelector('.thinking span:nth-child(2)'); if (el) el.textContent = `Escribiendo… ${text.length} caracteres`; } });
       const ops = Array.isArray(res?.opciones) ? res.opciones.filter((o) => (esImagen() ? o?.copy && typeof o.copy === 'object' : Array.isArray(o?.bloques))) : [];
       if (!ops.length) throw { code: 'invalid_json', text: JSON.stringify(res) };
+      if (!esImagen()) for (const o of ops) {
+        for (const b of o.bloques) if (!clipDe(b.clip)) { b.clip = 'nuevo'; b.clip_motivo = ''; }
+        if (o.cta && !clipDe(o.cta.clip)) o.cta.clip = 'nuevo';
+      }
       opciones = ops; genEstilo = estilo; elegido = null; guion = null; rawGen = '';
     } catch (e) {
       const m = {
@@ -2260,6 +2360,7 @@ Responde SOLO con JSON: {"piezas":[{"template":"<id>","idea":"una frase","copy":
     if (view === 'crear') renderCrear();
     else if (view === 'lib') renderLib();
     else if (view === 'est') renderEst();
+    else if (view === 'cont') renderCont();
     else renderPed();
   }
 
@@ -2297,6 +2398,10 @@ Responde SOLO con JSON: {"piezas":[{"template":"<id>","idea":"una frase","copy":
     db.collection('estaticos').orderBy('creado', 'desc').limit(100).onSnapshot((snap) => {
       guardadas = snap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       if (view === 'est') soon();
+    }, onErr);
+    db.collection('clips').onSnapshot((snap) => {
+      clips = snap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      if (view === 'cont' || view === 'crear') soon();
     }, onErr);
     let firstP = true;
     db.collection('pedidos').orderBy('creado', 'desc').limit(200).onSnapshot((snap) => {
