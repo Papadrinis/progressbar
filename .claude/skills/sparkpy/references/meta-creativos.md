@@ -171,6 +171,9 @@ FINAL STANDARD: A natural full-frame creative, a clear selling message, protecte
   1. subtítulos debajo de la cara; si la toma es muy cerrada, debajo de la boca (sobre la barbilla, con aviso);
   2. tarjetas y stickers apilados entre la cara y los subtítulos, arriba de la cara, o a un costado si caben;
   3. la tarjeta celular pasa a versión compacta (2 líneas) si la completa no entra;
+     la cara se mide solo mientras el elemento está en pantalla (desde su `en`), no en toda la toma; y si
+     igual no entra, los subtítulos del bloque pasan a **1 línea** (`layout.subtitulo.lineas: 1`) para dejar
+     más aire entre el mentón y el texto;
   4. si un elemento no entra sin tapar la cara, **se omite y se avisa**: se arregla reencuadrando la toma o
      llevándolo a otra toma, nunca tapando la cara ni achicándolo hasta volverlo ilegible.
   Las muestras de revisión dibujan la caja de la cara; ningún elemento puede cruzarla.

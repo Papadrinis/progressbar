@@ -1,0 +1,332 @@
+{
+  "id": "PLANPY_CO_VIDA_DISTRIBUIDORA_V18_A",
+  "titulo": "V18-A · La que llega sin avisar (Carolina a cámara, UGC, Seedance con voz nativa)",
+  "formato": "9:16",
+  "velocidadVoz": 1,
+  "musica": null,
+  "cierre": {
+    "voz": "voz/v18/silencio.wav",
+    "locucion": "",
+    "cola": 36,
+    "pantalla": {
+      "titulo": "15 días gratis",
+      "oferta": "y sin poner la tarjeta",
+      "nota": ""
+    },
+    "duracion": 0.4
+  },
+  "fuentes": [],
+  "receta": {
+    "pedido": "9yj9b64lt2fphitecjuk",
+    "mercado": "CO (usted)",
+    "eje": "VIDA",
+    "estructura": "PAS",
+    "estilo": "Personas reales · hablando a cámara (Seedance 2.5 omni_reference 1080p high, voz nativa de Bogotá)",
+    "avatar": "Carolina · referencia: imagen del avatar (Higgsfield media b7b73501-34ab-4610-bafe-1309b5affdaa)",
+    "fotogramas": [
+      "84271a6d-3d90-4b88-be17-05e1f16731aa",
+      "d93bb5cf-3d6d-4a41-aad8-d75d9fa27360",
+      "b37a320c-0a3b-4a52-bc1b-1419368df569",
+      "d0aa5f01-79a8-435f-a4b0-5c0078d28834"
+    ],
+    "tomas": [
+      "d76d0c81-54f2-4b95-a231-6a2031de3b9f",
+      "e6a9d248-c3a7-4345-a851-9b5eab3836f7",
+      "303a1138-6b94-46da-bad6-ebe4fdc02541",
+      "2277e631-0a19-4c19-8f10-d3343d15b838",
+      "36597c7e-401e-4600-96b9-75fff9b689e2"
+    ],
+    "voz": "Audio propio de cada toma de Seedance; tomas 3 y 4 recortadas al inicio, toma 2 con corte (jump cut) en el suspiro",
+    "cta": "Editado por el dueño (cta_editado): «15 días gratis y sin poner la tarjeta» (claim «sin tarjeta» por confirmar)"
+  },
+  "bloques": [
+    {
+      "id": "p",
+      "voz": "voz/v18/p.wav",
+      "locucion": "Le confieso algo: entro al segundo local tres veces por semana, sin necesidad. Solo a verificar. ¿A usted le pasa?",
+      "entrada": 0,
+      "toma": "v18/shot1.mp4",
+      "lineas": [
+        "Le confieso algo: entro",
+        "al segundo local tres veces",
+        "por semana, sin necesidad.",
+        "Solo a verificar. ¿A usted le pasa?"
+      ],
+      "claves": [
+        "tres veces",
+        "verificar"
+      ],
+      "cola": 2,
+      "extras": [],
+      "duracion": 7.776,
+      "cara": {
+        "x0": 259,
+        "y0": 377,
+        "x1": 706,
+        "y1": 941
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 259,
+          "y0": 377,
+          "x1": 706,
+          "y1": 941
+        }
+      ],
+      "layout": {
+        "extras": [],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
+    },
+    {
+      "id": "a",
+      "voz": "voz/v18/a.wav",
+      "locucion": "Mi gente probablemente hace bien su trabajo. Pero yo no tengo cómo comprobarlo. Así no puedo ni pensar en crecer.",
+      "entrada": 0,
+      "toma": "v18/shot2.mp4",
+      "lineas": [
+        "Mi gente probablemente",
+        "hace bien su trabajo.",
+        "Pero yo no tengo cómo comprobarlo.",
+        "Así no puedo ni pensar en crecer."
+      ],
+      "claves": [
+        "comprobarlo",
+        "crecer"
+      ],
+      "cola": 2,
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": "70%",
+          "texto": "¿Crecer así? 🤔",
+          "x": 420,
+          "y": 925,
+          "giro": 5,
+          "tamano": 52,
+          "fondo": "#ff4d4d",
+          "color": "#fff"
+        }
+      ],
+      "duracion": 6.677,
+      "cara": {
+        "x0": 209,
+        "y0": 380,
+        "x1": 629,
+        "y1": 872
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 209,
+          "y0": 380,
+          "x1": 629,
+          "y1": 872
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "x": 420,
+            "y": 991
+          }
+        ],
+        "avisos": [
+          "subtítulos de 1 línea para que entren tarjetas/stickers sin tapar la cara"
+        ],
+        "subtitulo": {
+          "base": 1150,
+          "lineas": 1
+        }
+      }
+    },
+    {
+      "id": "s1",
+      "voz": "voz/v18/s1.wav",
+      "locucion": "Con Planpi cada empleado tiene su acceso y yo veo qué hizo cada uno, desde el celular, sin preguntar.",
+      "entrada": 0,
+      "toma": "v18/shot3.mp4",
+      "lineas": [
+        "Con PlanPy cada empleado",
+        "tiene su acceso y yo veo",
+        "qué hizo cada uno, desde",
+        "el celular, sin preguntar."
+      ],
+      "claves": [
+        "su acceso",
+        "cada uno"
+      ],
+      "cola": 2,
+      "extras": [
+        {
+          "tipo": "tarjeta",
+          "en": "30%",
+          "formato": "celular",
+          "titulo": "Su equipo hoy",
+          "seccion": "Usuarios",
+          "filas": [
+            [
+              "Diana",
+              "Venta · 8:02 a. m."
+            ],
+            [
+              "Jorge",
+              "Inventario · 8:15 a. m."
+            ],
+            [
+              "Luisa · Sede 2",
+              "Pedido · 8:31 a. m."
+            ]
+          ],
+          "resaltar": 0,
+          "listo": "Cada uno con su acceso"
+        }
+      ],
+      "duracion": 6.144,
+      "cara": {
+        "x0": 242,
+        "y0": 370,
+        "x1": 595,
+        "y1": 868
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 242,
+          "y0": 370,
+          "x1": 595,
+          "y1": 868
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "y": 894,
+            "compacta": true
+          }
+        ],
+        "avisos": [
+          "tarjeta «Su equipo hoy» en versión compacta (2 líneas) para no tapar a la persona",
+          "subtítulos de 1 línea para que entren tarjetas/stickers sin tapar la cara"
+        ],
+        "subtitulo": {
+          "base": 1150,
+          "lineas": 1
+        }
+      }
+    },
+    {
+      "id": "s2",
+      "voz": "voz/v18/s2.wav",
+      "locucion": "Y el cierre de los dos locales, en una sola pantalla. Funciona en el navegador, sin instalar nada.",
+      "entrada": 0,
+      "toma": "v18/shot4.mp4",
+      "lineas": [
+        "Y el cierre de los dos locales,",
+        "en una sola pantalla.",
+        "Funciona en el navegador,",
+        "sin instalar nada."
+      ],
+      "claves": [
+        "una sola pantalla",
+        "sin instalar"
+      ],
+      "cola": 2,
+      "extras": [
+        {
+          "tipo": "tarjeta",
+          "en": "15%",
+          "formato": "celular",
+          "titulo": "Cierre de hoy",
+          "seccion": "Reportes",
+          "filas": [
+            [
+              "Sede Centro",
+              "$2.340.000"
+            ],
+            [
+              "Sede 2",
+              "$1.870.000"
+            ],
+            [
+              "Total",
+              "$4.210.000"
+            ]
+          ],
+          "resaltar": 2,
+          "listo": "Las dos sedes en una pantalla"
+        }
+      ],
+      "duracion": 5.376,
+      "cara": {
+        "x0": 143,
+        "y0": 220,
+        "x1": 501,
+        "y1": 640
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 143,
+          "y0": 220,
+          "x1": 501,
+          "y1": 640
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "y": 752
+          }
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
+    },
+    {
+      "id": "cta",
+      "voz": "voz/v18/cta.wav",
+      "locucion": "Pruébelo quince días gratis, en planpi punto io.",
+      "entrada": 0,
+      "toma": "v18/shot5.mp4",
+      "lineas": [
+        "Pruébelo 15 días gratis,",
+        "en planpy.io"
+      ],
+      "claves": [
+        "gratis"
+      ],
+      "cola": 4,
+      "extras": [],
+      "duracion": 3.616,
+      "cara": {
+        "x0": 285,
+        "y0": 269,
+        "x1": 584,
+        "y1": 671
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 285,
+          "y0": 269,
+          "x1": 584,
+          "y1": 671
+        }
+      ],
+      "layout": {
+        "extras": [],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
+    }
+  ]
+}

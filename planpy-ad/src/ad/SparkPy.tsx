@@ -168,7 +168,7 @@ export const SparkPy: React.FC<SparkPyProps> = ({datos, duraciones, guias}) => {
             {b.extras.map((x, k) => (
               <ExtraEl key={k} x={x} lead={t.lead} vf={t.vf} zona={zona} u={b.layout?.extras[k]} />
             ))}
-            <Subtitulos texto={b.lineas.join(' ')} claves={b.claves.map((k) => k.toLowerCase())} start={t.lead} voFrames={t.vf} zona={zona} base={b.layout?.subtitulo.base} tope={b.layout?.subtitulo.tope} />
+            <Subtitulos texto={b.lineas.join(' ')} claves={b.claves.map((k) => k.toLowerCase())} start={t.lead} voFrames={t.vf} zona={zona} base={b.layout?.subtitulo.base} tope={b.layout?.subtitulo.tope} maxLineas={b.layout?.subtitulo.lineas} />
             <Sfx at={0} name={i === 0 ? 'impact' : 'whoosh'} volume={i === 0 ? 0.6 : 0.35} />
             <Sequence from={t.lead} layout="none">
               <Audio src={staticFile(b.voz)} playbackRate={datos.velocidadVoz} volume={b.volumenVoz ?? 1} />

@@ -19,7 +19,7 @@ const partir = (texto: string, maxChars: number) => {
   return lineas;
 };
 
-export const Subtitulos: React.FC<{texto: string; claves: string[]; start: number; voFrames: number; zona: Zona; base?: number; tope?: number}> = ({texto, claves, start, voFrames, zona, base, tope}) => {
+export const Subtitulos: React.FC<{texto: string; claves: string[]; start: number; voFrames: number; zona: Zona; base?: number; tope?: number; maxLineas?: 1 | 2}> = ({texto, claves, start, voFrames, zona, base, tope, maxLineas = 2}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const size = zona.subtitulo.tamano;
@@ -29,7 +29,11 @@ export const Subtitulos: React.FC<{texto: string; claves: string[]; start: numbe
   // Páginas equilibradas de hasta 2 líneas: se reparte el texto en partes de largo parecido (sin colas
   // sueltas de una palabra) y cada parte se corta en 1–2 líneas.
   const palabrasTodas = texto.split(/\s+/).filter(Boolean);
-  const nPag = Math.max(1, Math.ceil(partir(texto, maxChars).length / 2));
+  // Con maxLineas = 1 (lo decide maquetar cuando hace falta lugar para una tarjeta sin tapar la cara)
+  // cada página es una sola línea, con margen para que el reparto parejo no la pase de largo.
+  const nPag = maxLineas === 1
+    ? Math.max(partir(texto, maxChars).length, Math.ceil(texto.length / (maxChars * 0.85)))
+    : Math.max(1, Math.ceil(partir(texto, maxChars).length / 2));
   const meta = texto.length / nPag;
   const partes: string[][] = [[]];
   let largo = 0;
@@ -44,7 +48,7 @@ export const Subtitulos: React.FC<{texto: string; claves: string[]; start: numbe
   });
   const paginas: string[][] = partes.map((p) => {
     const t = p.join(' ');
-    if (t.length <= maxChars) return [t];
+    if (t.length <= maxChars || maxLineas === 1) return [t];
     // Corte en dos líneas lo más parejas posible.
     let mejor = 1;
     let dif = Infinity;

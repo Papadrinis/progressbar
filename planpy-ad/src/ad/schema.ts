@@ -85,7 +85,7 @@ export const bloque = z.object({
   proteger: z.array(z.object({x0: z.number(), y0: z.number(), x1: z.number(), y1: z.number(), nota: z.string().optional()})).optional(),
   layout: z
     .object({
-      subtitulo: z.object({base: z.number().optional(), tope: z.number().optional()}),
+      subtitulo: z.object({base: z.number().optional(), tope: z.number().optional(), lineas: z.union([z.literal(1), z.literal(2)]).optional()}),
       extras: z.array(z.object({x: z.number().optional(), y: z.number().optional(), compacta: z.boolean().optional(), inserto: z.boolean().optional(), omitido: z.string().optional()})),
       avisos: z.array(z.string()).default([]),
     })

@@ -61,8 +61,8 @@ def medida_extra(x, z, compacta=False):
     return None
 
 
-def alto_subtitulo(z):
-    return 2 * z['sub'] * 1.12 + 4 + 30
+def alto_subtitulo(z, lineas=2):
+    return lineas * z['sub'] * 1.12 + 4 + 30
 
 
 # ---------- detección ----------
@@ -140,12 +140,16 @@ def analizar(b, z):
     enc = b.get('encuadre', z['encuadre'])
     cuadros = cuadros_de(PUB / b['toma'], (b.get('duracion') or 6) + 0.3)
     if not cuadros:
-        return [], None, 0  # escena 2D, interfaz, etc.
+        return [], None, 0, []  # escena 2D, interfaz, etc.
     hs, ws = cuadros[0].shape[:2]
-    det_caras, det_personas = [], []
-    for f in cuadros:
+    det_caras, det_personas, caras_t = [], [], []
+    for i, f in enumerate(cuadros):
         cs = caras_en(f)
         det_caras += cs
+        for c in cs:
+            k = a_lienzo(c['caja'], ws, hs, z, enc)
+            k[3] += (k[3] - k[1]) * 0.06
+            caras_t.append((i * 0.33, k))
         if not cs:
             det_personas += personas_en(f)
     n = len(cuadros)
@@ -169,7 +173,27 @@ def analizar(b, z):
         obst.append({'tipo': 'persona', 'caja': [caja[0], caja[1], caja[2], caja[1] + (caja[3] - caja[1]) * 0.55]})
     for p in b.get('proteger', []):
         obst.append({'tipo': 'producto', 'caja': [p['x0'], p['y0'], p['x1'], p['y1']]})
-    return obst, boca, personas_sin_cara
+    return obst, boca, personas_sin_cara, caras_t
+
+
+def inicio_de(x, dur):
+    """Segundo del bloque en que aparece un extra («30%» o frames a 30 fps)."""
+    en = x.get('en', 0)
+    if isinstance(en, str) and en.strip().endswith('%'):
+        return float(en.strip()[:-1]) / 100 * dur
+    try:
+        return float(en) / 30
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def bloqueos_desde(obst, caras_t, t0):
+    """Obstáculos mientras el extra está en pantalla: la cara medida solo desde t0 (no antes), el resto igual."""
+    resto = [o['caja'] for o in obst if o['tipo'] != 'cara']
+    vistas = [c for t, c in caras_t if t >= t0 - 0.2]
+    if not vistas:
+        return [o['caja'] for o in obst]
+    return resto + [t['u'] for t in agrupar(vistas, 1)]
 
 
 # ---------- ubicación ----------
@@ -201,7 +225,7 @@ def maquetar(ad):
     hsub = alto_subtitulo(z)
     anchosub = z['der'] - z['izq']
     for b in a['bloques']:
-        obst, boca, sin_cara = analizar(b, z)
+        obst, boca, sin_cara, caras_t = analizar(b, z)
         avisos = []
         lay = {'extras': [], 'avisos': avisos}
         caras = [o for o in obst if o['tipo'] == 'cara']
@@ -235,41 +259,58 @@ def maquetar(ad):
             ocupados.append(r_abajo)
             avisos.append('✗ no hay lugar para los subtítulos sin tapar la boca o el producto: reencuadre la toma')
         # 2. Tarjetas y llamadas primero (llevan información), después stickers y emojis.
-        extras = b.get('extras', [])
-        res = [{} for _ in extras]
-        for i in sorted(range(len(extras)), key=lambda i: 0 if extras[i]['tipo'] in ('tarjeta', 'llamada') else 1):
-            x = extras[i]
-            m = medida_extra(x, z)
-            if m is None:
-                continue
-            w, h = m
-            hallado = buscar(w, h, x.get('x', 540), z, duras, ocupados)
-            compacta = False
-            if not hallado and x['tipo'] == 'tarjeta' and x['formato'] == 'celular':
-                w, h = medida_extra(x, z, compacta=True)
-                hallado = buscar(w, h, 540, z, duras, ocupados)
-                compacta = bool(hallado)
-            a_camara = b.get('a_camara', b.get('entrada') == 0)
-            if not hallado and x['tipo'] == 'tarjeta' and not a_camara:
-                # Toma de apoyo (nadie habla a cámara): corte a pantalla. La tarjeta ocupa la zona sobre la toma
-                # desenfocada, así no tapa una cara y la demo del producto se ve completa.
-                res[i] = {'inserto': True, 'y': z['arriba'] + 10}
-                avisos.append(f'tarjeta «{x["titulo"]}» como corte a pantalla (la toma se desenfoca detrás): no entraba sin tapar a la persona')
-                continue
-            if not hallado:
-                nombre = x.get('texto') or x.get('titulo') or x.get('nombre')
-                res[i] = {'omitido': f'no entra sin tapar ({round(w)}×{round(h)} px)'}
-                avisos.append(f'{x["tipo"]} «{nombre}» omitido: no hay lugar libre sin tapar a la persona o el producto; muévalo a otra toma o reencuadre')
-                continue
-            cx, cy, r = hallado
-            ocupados.append(r)
-            if x['tipo'] in ('tarjeta', 'llamada'):
-                res[i] = {'y': round(r[1])}
-                if compacta:
-                    res[i]['compacta'] = True
-                    avisos.append(f'tarjeta «{x["titulo"]}» en versión compacta (2 líneas) para no tapar a la persona')
-            else:
-                res[i] = {'x': round(cx), 'y': round(cy)}
+        def ubicar(ocupados):
+            ocupados = list(ocupados)
+            avisos = []
+            extras = b.get('extras', [])
+            res = [{} for _ in extras]
+            for i in sorted(range(len(extras)), key=lambda i: 0 if extras[i]['tipo'] in ('tarjeta', 'llamada') else 1):
+                x = extras[i]
+                m = medida_extra(x, z)
+                if m is None:
+                    continue
+                w, h = m
+                bloq = bloqueos_desde(obst, caras_t, inicio_de(x, b.get('duracion') or 6))
+                hallado = buscar(w, h, x.get('x', 540), z, bloq, ocupados)
+                compacta = False
+                if not hallado and x['tipo'] == 'tarjeta' and x['formato'] == 'celular':
+                    w, h = medida_extra(x, z, compacta=True)
+                    hallado = buscar(w, h, 540, z, bloq, ocupados)
+                    compacta = bool(hallado)
+                a_camara = b.get('a_camara', b.get('entrada') == 0)
+                if not hallado and x['tipo'] == 'tarjeta' and not a_camara:
+                    # Toma de apoyo (nadie habla a cámara): corte a pantalla. La tarjeta ocupa la zona sobre la toma
+                    # desenfocada, así no tapa una cara y la demo del producto se ve completa.
+                    res[i] = {'inserto': True, 'y': z['arriba'] + 10}
+                    avisos.append(f'tarjeta «{x["titulo"]}» como corte a pantalla (la toma se desenfoca detrás): no entraba sin tapar a la persona')
+                    continue
+                if not hallado:
+                    nombre = x.get('texto') or x.get('titulo') or x.get('nombre')
+                    res[i] = {'omitido': f'no entra sin tapar ({round(w)}×{round(h)} px)'}
+                    avisos.append(f'{x["tipo"]} «{nombre}» omitido: no hay lugar libre sin tapar a la persona o el producto; muévalo a otra toma o reencuadre')
+                    continue
+                cx, cy, r = hallado
+                ocupados.append(r)
+                if x['tipo'] in ('tarjeta', 'llamada'):
+                    res[i] = {'y': round(r[1])}
+                    if compacta:
+                        res[i]['compacta'] = True
+                        avisos.append(f'tarjeta «{x["titulo"]}» en versión compacta (2 líneas) para no tapar a la persona')
+                else:
+                    res[i] = {'x': round(cx), 'y': round(cy)}
+
+            malos = sum(1 for r in res if r.get('omitido') or r.get('inserto'))
+            return res, avisos, malos
+        res, av_extras, malos = ubicar(ocupados)
+        # Si algo no entra con subtítulos de 2 líneas, se prueba con 1 línea (más aire entre el mentón y el texto).
+        if malos and 'base' in lay['subtitulo']:
+            h1 = alto_subtitulo(z, 1)
+            r1 = [z['izq'], z['abajo'] - 2 - h1, z['der'], z['abajo'] - 2]
+            res1, av1, malos1 = ubicar([r1 if o is ocupados[0] else o for o in ocupados] if ocupados else [r1])
+            if malos1 < malos:
+                res, av_extras = res1, av1 + ['subtítulos de 1 línea para que entren tarjetas/stickers sin tapar la cara']
+                lay['subtitulo'] = {'base': z['abajo'] - 2, 'lineas': 1}
+        avisos.extend(av_extras)
         lay['extras'] = res
         b['layout'] = lay
     ruta.write_text(json.dumps(a, ensure_ascii=False, indent=2) + '\n')
