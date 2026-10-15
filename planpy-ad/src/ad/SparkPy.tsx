@@ -53,11 +53,11 @@ const Sfx: React.FC<{at: number; name: string; volume?: number}> = ({at, name, v
 
 const esFoto = (src: string) => /\.(png|jpe?g|webp)$/i.test(src);
 
-const Toma: React.FC<{src: string; encuadre: number}> = ({src, encuadre}) => {
+const Toma: React.FC<{src: string; encuadre: number; fondo?: {escala: number; x: number; y: number}}> = ({src, encuadre, fondo}) => {
   const frame = useCurrentFrame();
   const Escena = src.startsWith('escena:') ? ESCENAS[src.slice(7)] : null;
   return (
-    <AbsoluteFill>
+    <AbsoluteFill style={fondo ? {transform: `translate(${fondo.x}px, ${fondo.y}px) scale(${fondo.escala})`} : undefined}>
       {Escena ? (
         <Escena />
       ) : esFoto(src) ? (
@@ -73,7 +73,7 @@ const Toma: React.FC<{src: string; encuadre: number}> = ({src, encuadre}) => {
 const Miniatura: React.FC<{v: NonNullable<Bloque['verde']>}> = ({v}) => (
   <AbsoluteFill>
     <div style={{position: 'absolute', left: v.x, top: v.y, width: v.ancho, height: (v.ancho * 16) / 9, filter: 'drop-shadow(0 18px 30px rgba(0,0,0,.45))'}}>
-      <OffthreadVideo src={staticFile(v.miniatura)} transparent muted startFrom={Math.round(v.desde * 30)} style={{width: '100%', height: '100%', objectFit: 'contain'}} />
+      <OffthreadVideo src={staticFile(v.miniatura)} transparent muted startFrom={Math.round(v.desde * 30)} style={{width: '100%', height: '100%', objectFit: 'contain', WebkitMaskImage: 'linear-gradient(to bottom, #000 72%, transparent 96%)', maskImage: 'linear-gradient(to bottom, #000 72%, transparent 96%)'}} />
     </div>
   </AbsoluteFill>
 );
@@ -171,14 +171,14 @@ export const SparkPy: React.FC<SparkPyProps> = ({datos, duraciones, guias}) => {
         return (
           <Sequence key={b.id} name={b.id} from={t.from} durationInFrames={t.len}>
             <Whip dir={i % 2 ? -1 : 1} flash={i === 0}>
-              <Toma src={b.toma} encuadre={b.encuadre ?? zona.encuadre} />
+              <Toma src={b.toma} encuadre={b.encuadre ?? zona.encuadre} fondo={b.verde?.fondo} />
               <Texture strength={0.25} />
               {b.verde ? <Miniatura v={b.verde} /> : null}
             </Whip>
             {b.extras.map((x, k) => (
               <ExtraEl key={k} x={x} lead={t.lead} vf={t.vf} zona={zona} u={b.layout?.extras[k]} />
             ))}
-            <Subtitulos texto={b.lineas.join(' ')} claves={b.claves.map((k) => k.toLowerCase())} start={t.lead} voFrames={t.vf} zona={zona} base={b.layout?.subtitulo.base} tope={b.layout?.subtitulo.tope} maxLineas={b.layout?.subtitulo.lineas} />
+            <Subtitulos texto={b.lineas.join(' ')} claves={b.claves.map((k) => k.toLowerCase())} start={t.lead} voFrames={t.vf} zona={zona} base={b.layout?.subtitulo.base} tope={b.layout?.subtitulo.tope} maxLineas={b.layout?.subtitulo.lineas} x0={b.layout?.subtitulo.x0} x1={b.layout?.subtitulo.x1} />
             <Sfx at={0} name={i === 0 ? 'impact' : 'whoosh'} volume={i === 0 ? 0.6 : 0.35} />
             <Sequence from={t.lead} layout="none">
               <Audio src={staticFile(b.voz)} playbackRate={datos.velocidadVoz} volume={b.volumenVoz ?? 1} />

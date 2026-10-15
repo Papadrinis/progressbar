@@ -19,12 +19,14 @@ const partir = (texto: string, maxChars: number) => {
   return lineas;
 };
 
-export const Subtitulos: React.FC<{texto: string; claves: string[]; start: number; voFrames: number; zona: Zona; base?: number; tope?: number; maxLineas?: 1 | 2}> = ({texto, claves, start, voFrames, zona, base, tope, maxLineas = 2}) => {
+export const Subtitulos: React.FC<{texto: string; claves: string[]; start: number; voFrames: number; zona: Zona; base?: number; tope?: number; maxLineas?: 1 | 2; x0?: number; x1?: number}> = ({texto, claves, start, voFrames, zona, base, tope, maxLineas = 2, x0, x1}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const size = zona.subtitulo.tamano;
   const padX = 26;
-  const ancho = zona.der - zona.izq;
+  // Panel angosto (x0–x1) cuando maquetar no encuentra una franja de ancho completo sin tapar caras.
+  const izq = x0 ?? zona.izq;
+  const ancho = (x1 ?? zona.der) - izq;
   const maxChars = Math.floor((ancho - padX * 2) / (size * 0.56));
   // Páginas equilibradas de hasta 2 líneas: se reparte el texto en partes de largo parecido (sin colas
   // sueltas de una palabra) y cada parte se corta en 1–2 líneas.
@@ -86,7 +88,7 @@ export const Subtitulos: React.FC<{texto: string; claves: string[]; start: numbe
   const esClave = (w: string) => claves.some((c) => w.toLowerCase().replace(/[¿?¡!,.:]/g, '').includes(c));
   const entra = spring({frame: frame - a, fps, config: {damping: 14, stiffness: 220}, durationInFrames: 8});
   return (
-    <div style={{position: 'absolute', left: zona.izq, width: ancho, ...(tope !== undefined ? {top: tope} : {bottom: zona.alto - (base ?? zona.subtitulo.base)}), display: 'flex', justifyContent: 'center'}}>
+    <div style={{position: 'absolute', left: izq, width: ancho, ...(tope !== undefined ? {top: tope} : {bottom: zona.alto - (base ?? zona.subtitulo.base)}), display: 'flex', justifyContent: 'center'}}>
       <div style={{background: 'rgba(12,12,14,0.62)', borderRadius: 24, padding: `14px ${padX}px 16px`, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, fontFamily: `${SANS}, ${EMOJI}`, fontWeight: 800, fontSize: size, lineHeight: 1.12, letterSpacing: -1, opacity: Math.min(1, entra * 1.5), transform: `translateY(${(1 - entra) * 12}px)`}}>
         {pag.map((_, li) => (
           <div key={li} style={{display: 'flex', flexWrap: 'nowrap', justifyContent: 'center', gap: `0 ${size * 0.22}px`, whiteSpace: 'nowrap'}}>

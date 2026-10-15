@@ -82,6 +82,8 @@ export const bloque = z.object({
       y: z.number(),
       ancho: z.number().positive(),
       desde: z.number().min(0).default(0),
+      // La toma de atrás se agranda (desde el centro) y se corre en px para dejar lugar a la miniatura.
+      fondo: z.object({escala: z.number().min(1).default(1), x: z.number().default(0), y: z.number().default(0)}).optional(),
     })
     .optional(),
   lineas: z.array(z.string()).min(1).max(4),
@@ -99,7 +101,7 @@ export const bloque = z.object({
   proteger: z.array(z.object({x0: z.number(), y0: z.number(), x1: z.number(), y1: z.number(), nota: z.string().optional()})).optional(),
   layout: z
     .object({
-      subtitulo: z.object({base: z.number().optional(), tope: z.number().optional(), lineas: z.union([z.literal(1), z.literal(2)]).optional()}),
+      subtitulo: z.object({base: z.number().optional(), tope: z.number().optional(), lineas: z.union([z.literal(1), z.literal(2)]).optional(), x0: z.number().optional(), x1: z.number().optional()}),
       extras: z.array(z.object({x: z.number().optional(), y: z.number().optional(), compacta: z.boolean().optional(), inserto: z.boolean().optional(), omitido: z.string().optional()})),
       avisos: z.array(z.string()).default([]),
     })

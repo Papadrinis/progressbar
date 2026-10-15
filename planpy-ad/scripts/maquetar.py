@@ -143,15 +143,23 @@ def agrupar(cajas, min_frac):
     return [t for t in tracks if t['n'] >= min_frac]
 
 
-def a_lienzo(c, ws, hs, z, enc):
+def a_lienzo(c, ws, hs, z, enc, fondo=None):
     esc = max(z['ancho'] / ws, z['alto'] / hs)
     ox = (z['ancho'] - ws * esc) * 0.5
     oy = (z['alto'] - hs * esc) * (enc / 100)
-    return [c[0] * esc + ox, c[1] * esc + oy, c[2] * esc + ox, c[3] * esc + oy]
+    r = [c[0] * esc + ox, c[1] * esc + oy, c[2] * esc + ox, c[3] * esc + oy]
+    if fondo:  # toma de atrás agrandada desde el centro y corrida (green screen)
+        s, tx, ty = fondo.get('escala', 1), fondo.get('x', 0), fondo.get('y', 0)
+        cx, cy = z['ancho'] / 2, z['alto'] / 2
+        r = [(r[0] - cx) * s + cx + tx, (r[1] - cy) * s + cy + ty, (r[2] - cx) * s + cx + tx, (r[3] - cy) * s + cy + ty]
+    return r
 
 
 def analizar(b, z):
     enc = b.get('encuadre', z['encuadre'])
+    fondo = (b.get('verde') or {}).get('fondo')
+    _al = a_lienzo
+    a_lienzo_b = lambda c, ws, hs, z, enc: _al(c, ws, hs, z, enc, fondo)
     cuadros = cuadros_de(PUB / b['toma'], (b.get('duracion') or 6) + 0.3)
     if not cuadros:
         return [], None, 0, []  # escena 2D, interfaz, etc.
@@ -161,7 +169,7 @@ def analizar(b, z):
         cs = caras_en(f)
         det_caras += cs
         for c in cs:
-            k = a_lienzo(c['caja'], ws, hs, z, enc)
+            k = a_lienzo_b(c['caja'], ws, hs, z, enc)
             k[3] += (k[3] - k[1]) * 0.06
             caras_t.append((i * 0.33, k))
         if not cs:
@@ -170,15 +178,15 @@ def analizar(b, z):
     obst = []
     boca = None
     for t in agrupar([c['caja'] for c in det_caras], max(1, n // 5)):
-        caja = a_lienzo(t['u'], ws, hs, z, enc)
+        caja = a_lienzo_b(t['u'], ws, hs, z, enc)
         caja[3] += (caja[3] - caja[1]) * 0.06  # la caja de YuNet corta la barbilla
         obst.append({'tipo': 'cara', 'caja': caja})
     if det_caras:
         bocas = [c['boca'] for c in det_caras]
-        boca = a_lienzo([0, max(bocas), 0, max(bocas)], ws, hs, z, enc)[1]
+        boca = a_lienzo_b([0, max(bocas), 0, max(bocas)], ws, hs, z, enc)[1]
     personas_sin_cara = 0
     for t in agrupar(det_personas, max(1, n // 3)):
-        caja = a_lienzo(t['u'], ws, hs, z, enc)
+        caja = a_lienzo_b(t['u'], ws, hs, z, enc)
         # Si ya hay una cara dentro de esa persona, la cara manda.
         if any(o['caja'][0] < caja[2] and o['caja'][2] > caja[0] and o['caja'][1] < caja[3] and o['caja'][3] > caja[1] for o in obst):
             continue
@@ -240,6 +248,19 @@ def dentro(r, z):
     return r[0] >= z['izq'] and r[2] <= z['der'] and r[1] >= z['arriba'] and r[3] <= z['abajo']
 
 
+def panel_angosto(z, h, bloqueos, min_w=480):
+    """Panel de subtítulos más angosto que la zona: el más ancho y más bajo que no toque ninguna cara."""
+    for w in range(int(z['der'] - z['izq']) - 40, min_w - 1, -40):
+        y1 = z['abajo'] - 6
+        while y1 - h >= z['arriba']:
+            for x0 in range(int(z['izq']), int(z['der'] - w) + 1, 20):
+                r = [x0, y1 - h, x0 + w, y1]
+                if not choca(r, bloqueos):
+                    return r
+            y1 -= 20
+    return None
+
+
 def buscar(w, h, pref_x, z, bloqueos, ocupados):
     """Primer lugar libre para un elemento w×h: de abajo hacia arriba, cerca del x preferido."""
     xs = sorted({min(max(px, z['izq'] + w / 2), z['der'] - w / 2) for px in (pref_x, (z['izq'] + z['der']) / 2, z['izq'] + w / 2, z['der'] - w / 2)}, key=lambda v: abs(v - pref_x))
@@ -282,6 +303,10 @@ def maquetar(ad):
         if not choca(r_abajo, duras):
             lay['subtitulo'] = {'base': z['abajo'] - 6}
             ocupados.append(r_abajo)
+        elif (ang := panel_angosto(z, hsub, duras)):
+            lay['subtitulo'] = {'base': round(ang[3]), 'x0': round(ang[0]), 'x1': round(ang[2])}
+            ocupados.append(ang)
+            avisos.append('subtítulos en panel angosto para no tapar ninguna cara (green screen o dos personas)')
         elif not choca(r_abajo, sin_barbilla, 8):
             lay['subtitulo'] = {'base': z['abajo'] - 6}
             ocupados.append(r_abajo)
@@ -338,7 +363,7 @@ def maquetar(ad):
             return res, avisos, malos
         res, av_extras, malos = ubicar(ocupados)
         # Si algo no entra con subtítulos de 2 líneas, se prueba con 1 línea (más aire entre el mentón y el texto).
-        if malos and 'base' in lay['subtitulo']:
+        if malos and 'base' in lay['subtitulo'] and 'x0' not in lay['subtitulo']:
             h1 = alto_subtitulo(z, 1)
             r1 = [z['izq'], z['abajo'] - 2 - h1, z['der'], z['abajo'] - 2]
             res1, av1, malos1 = ubicar([r1 if o is ocupados[0] else o for o in ocupados] if ocupados else [r1])

@@ -8,8 +8,10 @@ cada píxel; el borde se suaviza y se le quita el reflejo verde (despill). Remot
 <OffthreadVideo transparent>. La de .mp4 con verde se conserva: maquetar la usa para ubicar la cara.
 """
 import argparse
+import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 import cv2
@@ -45,18 +47,20 @@ def main():
     w = o.ancho - o.ancho % 2
     h = int(h0 * w / w0) // 2 * 2
     cap.set(cv2.CAP_PROP_POS_MSEC, o.desde * 1000)
-    cmd = ['npx', 'remotion', 'ffmpeg', '-y', '-v', 'error', '-f', 'rawvideo', '-pix_fmt', 'rgba', '-s', f'{w}x{h}', '-r', str(fps), '-i', '-',
-           '-c:v', 'libvpx-vp9', '-pix_fmt', 'yuva420p', '-b:v', '5M', '-auto-alt-ref', '0', o.salida]
-    p = subprocess.Popen(cmd, stdin=subprocess.PIPE, cwd=Path(__file__).resolve().parent.parent)
+    # El ffmpeg de Remotion no lee video crudo por tubería: se escriben PNG con alfa y se codifican.
+    tmp = Path(tempfile.mkdtemp(prefix='croma-'))
     n = 0
     while True:
         ok, f = cap.read()
         if not ok or (o.hasta is not None and n / fps >= o.hasta - o.desde):
             break
-        p.stdin.write(clave(cv2.resize(f, (w, h), interpolation=cv2.INTER_AREA)).tobytes())
+        cv2.imwrite(str(tmp / f'{n:05d}.png'), cv2.cvtColor(clave(cv2.resize(f, (w, h), interpolation=cv2.INTER_AREA)), cv2.COLOR_RGBA2BGRA))
         n += 1
-    p.stdin.close()
-    sys.exit(p.wait())
+    cmd = ['npx', 'remotion', 'ffmpeg', '-y', '-v', 'error', '-framerate', str(fps), '-i', str(tmp / '%05d.png'),
+           '-c:v', 'libvpx-vp9', '-pix_fmt', 'yuva420p', '-b:v', '5M', '-auto-alt-ref', '0', str(Path(o.salida).resolve())]
+    r = subprocess.run(cmd, cwd=Path(__file__).resolve().parent.parent)
+    shutil.rmtree(tmp, ignore_errors=True)
+    sys.exit(r.returncode)
 
 
 if __name__ == '__main__':
