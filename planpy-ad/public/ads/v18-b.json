@@ -201,55 +201,49 @@
       "velocidadToma": 0.56
     },
     {
-      "id": "a",
-      "voz": "voz/v18b/a.wav",
-      "locucion": "Porque el problema no era mi equipo. Era que yo no tenía cómo ver nada. Y así no se crece.",
+      "id": "a1",
+      "voz": "voz/v18b/a1.wav",
+      "locucion": "Porque el problema no era mi equipo.",
       "entrada": 0,
-      "toma": "v18/shot2.mp4",
+      "toma": "v18b/equipo.png",
       "verde": {
         "x": 10,
         "y": 740,
         "ancho": 480,
         "miniatura": "v18b/verde-a.webm",
         "deteccion": "v18b/verde-a.mp4",
-        "desde": 0,
-        "fondo": {
-          "escala": 1.25,
-          "x": 135,
-          "y": 0
-        }
+        "desde": 0
       },
       "lineas": [
-        "Porque el problema no era mi equipo.",
-        "Era que yo no tenía cómo ver nada.",
-        "Y así no se crece."
+        "Porque el problema",
+        "no era mi equipo."
       ],
       "claves": [
         "no era mi equipo"
       ],
-      "cola": 2,
+      "cola": 0,
       "extras": [],
-      "duracion": 6.432,
+      "duracion": 2,
       "cara": {
-        "x0": 262,
-        "y0": 235,
-        "x1": 786,
-        "y1": 850
+        "x0": 659,
+        "y0": 347,
+        "x1": 814,
+        "y1": 557
       },
       "obstaculos": [
         {
           "tipo": "cara",
-          "x0": 262,
-          "y0": 235,
-          "x1": 786,
-          "y1": 850
+          "x0": 659,
+          "y0": 347,
+          "x1": 814,
+          "y1": 557
         },
         {
           "tipo": "cara",
           "x0": 160,
-          "y0": 896,
-          "x1": 317,
-          "y1": 1114
+          "y0": 902,
+          "x1": 308,
+          "y1": 1110
         }
       ],
       "layout": {
@@ -258,9 +252,61 @@
           "subtítulos en panel angosto para no tapar ninguna cara (green screen o dos personas)"
         ],
         "subtitulo": {
-          "base": 1146,
-          "x0": 347,
-          "x1": 898
+          "base": 866,
+          "x0": 87,
+          "x1": 878
+        }
+      }
+    },
+    {
+      "id": "a2",
+      "voz": "voz/v18b/a2.wav",
+      "locucion": "Era que yo no tenía cómo ver nada. Y así no se crece.",
+      "entrada": 0,
+      "toma": "v18b/cuaderno.png",
+      "verde": {
+        "x": 10,
+        "y": 740,
+        "ancho": 480,
+        "miniatura": "v18b/verde-a.webm",
+        "deteccion": "v18b/verde-a.mp4",
+        "desde": 2.45
+      },
+      "lineas": [
+        "Era que yo no tenía",
+        "cómo ver nada.",
+        "Y así no se crece."
+      ],
+      "claves": [
+        "cómo ver nada"
+      ],
+      "cola": 2,
+      "extras": [],
+      "duracion": 3.982,
+      "cara": {
+        "x0": 165,
+        "y0": 896,
+        "x1": 316,
+        "y1": 1111
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 165,
+          "y0": 896,
+          "x1": 316,
+          "y1": 1111
+        }
+      ],
+      "layout": {
+        "extras": [],
+        "avisos": [
+          "subtítulos en panel angosto para no tapar ninguna cara (green screen o dos personas)"
+        ],
+        "subtitulo": {
+          "base": 866,
+          "x0": 87,
+          "x1": 878
         }
       }
     },
