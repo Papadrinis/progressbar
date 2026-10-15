@@ -1,0 +1,447 @@
+{
+  "id": "PLANPY_CO_VIDA_DISTRIBUIDORA_V18_B",
+  "titulo": "V18-B · Esta era yo (green screen: Carolina comenta su propio video)",
+  "formato": "9:16",
+  "velocidadVoz": 1,
+  "musica": null,
+  "cierre": {
+    "voz": "voz/v18/silencio.wav",
+    "locucion": "",
+    "cola": 36,
+    "pantalla": {
+      "titulo": "15 días gratis",
+      "oferta": "y sin poner la tarjeta",
+      "nota": ""
+    },
+    "duracion": 0.4
+  },
+  "fuentes": [],
+  "receta": {
+    "pedido": "v18b-esta-era-yo",
+    "mercado": "CO (usted)",
+    "eje": "VIDA",
+    "estructura": "PAS",
+    "estilo": "Personas reales · hablando a cámara (Seedance 2.5 omni_reference 1080p high, voz nativa de Bogotá)",
+    "avatar": "Carolina · referencia: imagen del avatar (Higgsfield media b7b73501-34ab-4610-bafe-1309b5affdaa)",
+    "fotogramas": [
+      "84271a6d-3d90-4b88-be17-05e1f16731aa",
+      "d93bb5cf-3d6d-4a41-aad8-d75d9fa27360",
+      "b37a320c-0a3b-4a52-bc1b-1419368df569",
+      "d0aa5f01-79a8-435f-a4b0-5c0078d28834"
+    ],
+    "tomas": [
+      "d76d0c81-54f2-4b95-a231-6a2031de3b9f",
+      "e6a9d248-c3a7-4345-a851-9b5eab3836f7",
+      "303a1138-6b94-46da-bad6-ebe4fdc02541",
+      "2277e631-0a19-4c19-8f10-d3343d15b838",
+      "36597c7e-401e-4600-96b9-75fff9b689e2"
+    ],
+    "voz": "Audio propio de cada toma de Seedance; tomas 3 y 4 recortadas al inicio, toma 2 con corte (jump cut) en el suspiro",
+    "cta": "Editado por el dueño (cta_editado): «15 días gratis y sin poner la tarjeta» (claim «sin tarjeta» por confirmar)",
+    "variacion_de": "v18-a",
+    "fotogramas_v18b": [
+      "ea609c10-bd5e-46f0-acbe-74cd4f3cc9e5",
+      "dcff2a24-ce9d-4288-9503-37f049631a57"
+    ],
+    "tomas_v18b": [
+      "e837d603-d2ee-4002-803a-80f69f253613",
+      "959bae48-bb64-414b-b949-067ea3b1a4c4",
+      "3222d944-6732-4883-885e-8d0711f4c572"
+    ],
+    "formato": "green screen: miniatura recortada con scripts/croma.py sobre la toma de atrás"
+  },
+  "bloques": [
+    {
+      "id": "h",
+      "voz": "voz/v18b/h.wav",
+      "locucion": "Soy dueña de una tienda, y esta era yo cada vez que entraba a mi segundo local.",
+      "entrada": 0,
+      "toma": "v18b/furiosa.png",
+      "verde": {
+        "x": 10,
+        "y": 740,
+        "ancho": 480,
+        "miniatura": "v18b/verde-hp.webm",
+        "deteccion": "v18b/verde-hp.mp4",
+        "desde": 0,
+        "fondo": {
+          "escala": 1.3,
+          "x": -100,
+          "y": 288
+        }
+      },
+      "lineas": [
+        "Soy dueña de una tienda,",
+        "y esta era yo cada vez",
+        "que entraba a mi segundo local."
+      ],
+      "claves": [
+        "esta era yo"
+      ],
+      "cola": 0,
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": "35%",
+          "texto": "YO, HACE 3 MESES 😤",
+          "x": 620,
+          "y": 700,
+          "giro": -4,
+          "tamano": 44,
+          "fondo": "#ff4d4d",
+          "color": "#fff"
+        }
+      ],
+      "duracion": 4.45,
+      "cara": {
+        "x0": 539,
+        "y0": 348,
+        "x1": 863,
+        "y1": 768
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 539,
+          "y0": 348,
+          "x1": 863,
+          "y1": 768
+        },
+        {
+          "tipo": "cara",
+          "x0": 174,
+          "y0": 917,
+          "x1": 317,
+          "y1": 1118
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "x": 620,
+            "y": 933
+          }
+        ],
+        "avisos": [
+          "subtítulos en panel angosto para no tapar ninguna cara (green screen o dos personas)"
+        ],
+        "subtitulo": {
+          "base": 1146,
+          "x0": 347,
+          "x1": 898
+        }
+      }
+    },
+    {
+      "id": "p",
+      "voz": "voz/v18b/p.wav",
+      "locucion": "Peleando con mi gente por plata que no cuadraba. Y sin saber si de verdad era culpa de ellos.",
+      "entrada": 0,
+      "toma": "v18b/furiosa.png",
+      "verde": {
+        "x": 10,
+        "y": 740,
+        "ancho": 480,
+        "miniatura": "v18b/verde-hp.webm",
+        "deteccion": "v18b/verde-hp.mp4",
+        "desde": 4.45,
+        "fondo": {
+          "escala": 1.3,
+          "x": -100,
+          "y": 288
+        }
+      },
+      "lineas": [
+        "Peleando con mi gente",
+        "por plata que no cuadraba.",
+        "Y sin saber si de verdad",
+        "era culpa de ellos."
+      ],
+      "claves": [
+        "no cuadraba",
+        "culpa"
+      ],
+      "cola": 2,
+      "extras": [],
+      "duracion": 6.206,
+      "cara": {
+        "x0": 539,
+        "y0": 348,
+        "x1": 863,
+        "y1": 768
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 539,
+          "y0": 348,
+          "x1": 863,
+          "y1": 768
+        },
+        {
+          "tipo": "cara",
+          "x0": 174,
+          "y0": 915,
+          "x1": 320,
+          "y1": 1128
+        }
+      ],
+      "layout": {
+        "extras": [],
+        "avisos": [
+          "subtítulos en panel angosto para no tapar ninguna cara (green screen o dos personas)"
+        ],
+        "subtitulo": {
+          "base": 1146,
+          "x0": 347,
+          "x1": 898
+        }
+      }
+    },
+    {
+      "id": "a",
+      "voz": "voz/v18b/a.wav",
+      "locucion": "Porque el problema no era mi equipo. Era que yo no tenía cómo ver nada. Y así no se crece.",
+      "entrada": 0,
+      "toma": "v18/shot2.mp4",
+      "verde": {
+        "x": 10,
+        "y": 740,
+        "ancho": 480,
+        "miniatura": "v18b/verde-a.webm",
+        "deteccion": "v18b/verde-a.mp4",
+        "desde": 0,
+        "fondo": {
+          "escala": 1.25,
+          "x": 135,
+          "y": 0
+        }
+      },
+      "lineas": [
+        "Porque el problema no era mi equipo.",
+        "Era que yo no tenía cómo ver nada.",
+        "Y así no se crece."
+      ],
+      "claves": [
+        "no era mi equipo"
+      ],
+      "cola": 2,
+      "extras": [],
+      "duracion": 6.432,
+      "cara": {
+        "x0": 262,
+        "y0": 235,
+        "x1": 786,
+        "y1": 850
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 262,
+          "y0": 235,
+          "x1": 786,
+          "y1": 850
+        },
+        {
+          "tipo": "cara",
+          "x0": 160,
+          "y0": 896,
+          "x1": 317,
+          "y1": 1114
+        }
+      ],
+      "layout": {
+        "extras": [],
+        "avisos": [
+          "subtítulos en panel angosto para no tapar ninguna cara (green screen o dos personas)"
+        ],
+        "subtitulo": {
+          "base": 1146,
+          "x0": 347,
+          "x1": 898
+        }
+      }
+    },
+    {
+      "id": "s1",
+      "voz": "voz/v18/s1.wav",
+      "locucion": "Con Planpi cada empleado tiene su acceso y yo veo qué hizo cada uno, desde el celular, sin preguntar.",
+      "entrada": 0,
+      "toma": "v18/shot3.mp4",
+      "lineas": [
+        "Con PlanPy cada empleado",
+        "tiene su acceso y yo veo",
+        "qué hizo cada uno, desde",
+        "el celular, sin preguntar."
+      ],
+      "claves": [
+        "su acceso",
+        "cada uno"
+      ],
+      "cola": 2,
+      "extras": [
+        {
+          "tipo": "tarjeta",
+          "en": "30%",
+          "formato": "celular",
+          "titulo": "Su equipo hoy",
+          "seccion": "Usuarios",
+          "filas": [
+            [
+              "Diana",
+              "Venta · 8:02 a. m."
+            ],
+            [
+              "Jorge",
+              "Inventario · 8:15 a. m."
+            ],
+            [
+              "Luisa · Sede 2",
+              "Pedido · 8:31 a. m."
+            ]
+          ],
+          "resaltar": 0,
+          "listo": "Cada uno con su acceso"
+        }
+      ],
+      "duracion": 6.144,
+      "cara": {
+        "x0": 242,
+        "y0": 370,
+        "x1": 595,
+        "y1": 868
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 242,
+          "y0": 370,
+          "x1": 595,
+          "y1": 868
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "y": 894,
+            "compacta": true
+          }
+        ],
+        "avisos": [
+          "tarjeta «Su equipo hoy» en versión compacta (2 líneas) para no tapar a la persona",
+          "subtítulos de 1 línea para que entren tarjetas/stickers sin tapar la cara"
+        ],
+        "subtitulo": {
+          "base": 1150,
+          "lineas": 1
+        }
+      }
+    },
+    {
+      "id": "s2",
+      "voz": "voz/v18b/s2-corto.wav",
+      "locucion": "Y el cierre de los dos locales, en una sola pantalla.",
+      "entrada": 0,
+      "toma": "v18/shot4.mp4",
+      "lineas": [
+        "Y el cierre de los dos locales,",
+        "en una sola pantalla."
+      ],
+      "claves": [
+        "una sola pantalla"
+      ],
+      "cola": 2,
+      "extras": [
+        {
+          "tipo": "tarjeta",
+          "en": "10%",
+          "formato": "celular",
+          "titulo": "Cierre de hoy",
+          "seccion": "Reportes",
+          "filas": [
+            [
+              "Sede Centro",
+              "$2.340.000"
+            ],
+            [
+              "Sede 2",
+              "$1.870.000"
+            ],
+            [
+              "Total",
+              "$4.210.000"
+            ]
+          ],
+          "resaltar": 2,
+          "listo": "Las dos sedes en una pantalla"
+        }
+      ],
+      "duracion": 5.376,
+      "cara": {
+        "x0": 143,
+        "y0": 220,
+        "x1": 501,
+        "y1": 640
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 143,
+          "y0": 220,
+          "x1": 501,
+          "y1": 640
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "y": 752
+          }
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
+    },
+    {
+      "id": "cta",
+      "voz": "voz/v18/cta.wav",
+      "locucion": "Pruébelo quince días gratis, en planpi punto io.",
+      "entrada": 0,
+      "toma": "v18/shot5.mp4",
+      "lineas": [
+        "Pruébelo 15 días gratis,",
+        "en planpy.io"
+      ],
+      "claves": [
+        "gratis"
+      ],
+      "cola": 4,
+      "extras": [],
+      "duracion": 3.616,
+      "cara": {
+        "x0": 285,
+        "y0": 269,
+        "x1": 584,
+        "y1": 671
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 285,
+          "y0": 269,
+          "x1": 584,
+          "y1": 671
+        }
+      ],
+      "layout": {
+        "extras": [],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
+    }
+  ]
+}
