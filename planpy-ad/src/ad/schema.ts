@@ -76,6 +76,15 @@ export const bloque = z.object({
   texto: z.object({tamano: z.number().positive().optional(), top: z.number().min(0).optional()}).optional(),
   // Encuadre vertical de la toma (object-position y, 0–100 %) si al recortar a otro formato la cara queda fuera.
   encuadre: z.number().min(0).max(100).optional(),
+  // Escritos por scripts/maquetar.py: caja de la cara en el lienzo y ubicación de cada elemento sin taparla.
+  cara: z.object({x0: z.number(), y0: z.number(), x1: z.number(), y1: z.number()}).optional(),
+  layout: z
+    .object({
+      subtitulo: z.object({base: z.number().optional(), tope: z.number().optional()}),
+      extras: z.array(z.object({x: z.number().optional(), y: z.number().optional(), compacta: z.boolean().optional(), omitido: z.string().optional()})),
+      avisos: z.array(z.string()).default([]),
+    })
+    .optional(),
   cola: z.number().int().min(0).optional(),
   // Frames antes de que arranque la voz (3 por defecto). 0 en tomas con labios sincronizados.
   entrada: z.number().int().min(0).optional(),

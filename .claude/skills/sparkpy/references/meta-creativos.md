@@ -164,9 +164,25 @@ FINAL STANDARD: A natural full-frame creative, a clear selling message, protecte
 - **Subtítulos:** frases cortas sincronizadas de 1–2 líneas sobre un panel discreto; en 9:16 van en la franja
   52–60 % (y 998–1152), en 4:5 en la franja baja de su zona. Si un bloque trae 3–4 líneas, se muestran de a 2
   sincronizadas con la voz.
+- **Nada sobre la cara (2026-10-15, corrección del usuario):** la zona protegida no basta: un sticker o una
+  tarjeta dentro de la zona pero sobre la cara del creador está mal. `scripts/maquetar.py` (lo corren solos
+  `revisar`, `muestras` y `render`) detecta la cara en cada toma a lo largo de TODO el bloque (no un cuadro),
+  guarda su caja en `bloque.cara` y ubica cada elemento en el espacio libre (`bloque.layout`):
+  1. subtítulos debajo de la cara; si la toma es muy cerrada, debajo de la boca (sobre la barbilla, con aviso);
+  2. tarjetas y stickers apilados entre la cara y los subtítulos, arriba de la cara, o a un costado si caben;
+  3. la tarjeta celular pasa a versión compacta (2 líneas) si la completa no entra;
+  4. si un elemento no entra sin tapar la cara, **se omite y se avisa**: se arregla reencuadrando la toma o
+     llevándolo a otra toma, nunca tapando la cara ni achicándolo hasta volverlo ilegible.
+  Las muestras de revisión dibujan la caja de la cara; ningún elemento puede cruzarla.
 - **Elementos:** stickers, emojis, tarjetas y llamada se calculan por sus bordes completos (no por el centro) y
-  se mantienen dentro de la zona; `revisar` lo comprueba. Las tarjetas no tapan la boca: van a un costado.
+  se mantienen dentro de la zona; `revisar` lo comprueba.
 - **Cierre:** el contenido del cierre se centra dentro de la zona del formato.
+- **Encuadre que deja lugar:** en 9:16 el mentón no debe pasar de ~46 % del alto (y ≈ 880) y la cara no debe
+  ocupar más de ~45 % del ancho, para que entren tarjeta + subtítulos debajo sin tocarla. En el prompt del
+  fotograma: «medium close-up, head and shoulders, chin around the middle of the frame, space below the
+  chin for captions». Los primerísimos planos dejan solo lugar para subtítulos sobre la barbilla.
+- **Pruebas baratas:** para validar un layout no se renderiza ni se genera nada: `muestras` (cuadros fijos,
+  0 créditos). Se renderiza solo la versión final aprobada.
 - **Prompts de Higgsfield:** se compila por toma (sujeto, lugar, acción, encuadre, espacio para overlays, luz,
   movimiento, exclusiones). 9:16: «eyes and mouth in the upper-middle, slightly left of center (around 25–45 %
   of frame height); lower 40 % free of key details; controlled, minimal camera movement». 4:5: «face in the

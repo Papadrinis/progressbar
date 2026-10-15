@@ -19,7 +19,7 @@ const partir = (texto: string, maxChars: number) => {
   return lineas;
 };
 
-export const Subtitulos: React.FC<{texto: string; claves: string[]; start: number; voFrames: number; zona: Zona}> = ({texto, claves, start, voFrames, zona}) => {
+export const Subtitulos: React.FC<{texto: string; claves: string[]; start: number; voFrames: number; zona: Zona; base?: number; tope?: number}> = ({texto, claves, start, voFrames, zona, base, tope}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const size = zona.subtitulo.tamano;
@@ -82,7 +82,7 @@ export const Subtitulos: React.FC<{texto: string; claves: string[]; start: numbe
   const esClave = (w: string) => claves.some((c) => w.toLowerCase().replace(/[¿?¡!,.:]/g, '').includes(c));
   const entra = spring({frame: frame - a, fps, config: {damping: 14, stiffness: 220}, durationInFrames: 8});
   return (
-    <div style={{position: 'absolute', left: zona.izq, width: ancho, bottom: zona.alto - zona.subtitulo.base, display: 'flex', justifyContent: 'center'}}>
+    <div style={{position: 'absolute', left: zona.izq, width: ancho, ...(tope !== undefined ? {top: tope} : {bottom: zona.alto - (base ?? zona.subtitulo.base)}), display: 'flex', justifyContent: 'center'}}>
       <div style={{background: 'rgba(12,12,14,0.62)', borderRadius: 24, padding: `14px ${padX}px 16px`, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, fontFamily: `${SANS}, ${EMOJI}`, fontWeight: 800, fontSize: size, lineHeight: 1.12, letterSpacing: -1, opacity: Math.min(1, entra * 1.5), transform: `translateY(${(1 - entra) * 12}px)`}}>
         {pag.map((_, li) => (
           <div key={li} style={{display: 'flex', flexWrap: 'nowrap', justifyContent: 'center', gap: `0 ${size * 0.22}px`, whiteSpace: 'nowrap'}}>

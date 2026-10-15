@@ -33,7 +33,25 @@
           "fondo": "#ffffff"
         }
       ],
-      "duracion": 6.75
+      "duracion": 6.75,
+      "cara": {
+        "x0": 189,
+        "y0": 194,
+        "x1": 834,
+        "y1": 895
+      },
+      "layout": {
+        "extras": [
+          {
+            "x": 300,
+            "y": 1054
+          }
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1263
+        }
+      }
     },
     {
       "id": "i",
@@ -67,7 +85,25 @@
           "volumenSfx": 0.3
         }
       ],
-      "duracion": 5.75
+      "duracion": 5.75,
+      "cara": {
+        "x0": 230,
+        "y0": 100,
+        "x1": 715,
+        "y1": 581
+      },
+      "layout": {
+        "extras": [
+          {
+            "x": 690,
+            "y": 1054
+          }
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1263
+        }
+      }
     },
     {
       "id": "d1",
@@ -111,7 +147,24 @@
           "listo": "Reservada a las 12:14 a. m."
         }
       ],
-      "duracion": 5.95
+      "duracion": 5.95,
+      "cara": {
+        "x0": 171,
+        "y0": 133,
+        "x1": 620,
+        "y1": 629
+      },
+      "layout": {
+        "extras": [
+          {
+            "y": 879
+          }
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1263
+        }
+      }
     },
     {
       "id": "d2",
@@ -142,7 +195,25 @@
           "fondo": "#ffd400"
         }
       ],
-      "duracion": 6.75
+      "duracion": 6.75,
+      "cara": {
+        "x0": 316,
+        "y0": 93,
+        "x1": 693,
+        "y1": 527
+      },
+      "layout": {
+        "extras": [
+          {
+            "x": 400,
+            "y": 1054
+          }
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1263
+        }
+      }
     },
     {
       "id": "cta",
@@ -159,7 +230,20 @@
       ],
       "cola": 4,
       "extras": [],
-      "duracion": 3.65
+      "duracion": 3.65,
+      "cara": {
+        "x0": 186,
+        "y0": 149,
+        "x1": 707,
+        "y1": 725
+      },
+      "layout": {
+        "extras": [],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1263
+        }
+      }
     }
   ],
   "cierre": {

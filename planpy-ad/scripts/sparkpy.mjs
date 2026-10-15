@@ -4,7 +4,7 @@
 //   npm run sparkpy -- lista                 anuncios disponibles
 //   npm run sparkpy -- descargar <ad>        baja las "fuentes" que falten (voces y tomas por URL de Higgsfield)
 //   npm run sparkpy -- medir <ad>            escribe en el JSON la "duracion" de cada voz (ffprobe)
-//   npm run sparkpy -- revisar <ad>          archivos, legibilidad de cada tarjeta y reglas de marca
+//   npm run sparkpy -- revisar <ad>          archivos, legibilidad, reglas de marca, zonas y que nada tape la cara
 //   npm run sparkpy -- muestras <ad>         un fotograma por bloque en out/<ad>/, con las zonas seguras de Meta en rojo
 //   npm run sparkpy -- render <ad>           exporta out/<ID>.mp4 (crf 23, avisa si pasa de 30 MB)
 import {execFileSync, spawnSync} from 'node:child_process';
@@ -56,6 +56,13 @@ const medir = (name, forzar = false) => {
     console.log(`ok  ${cambios} duraciones escritas en public/ads/${name}.json`);
   }
   return a;
+};
+
+// Detecta la cara en cada toma y ubica subtítulos, tarjetas y stickers sin taparla (scripts/maquetar.py).
+const maquetar = (name) => {
+  const r = spawnSync('python3', [join(ROOT, 'scripts', 'maquetar.py'), name], {cwd: ROOT, encoding: 'utf8'});
+  if (r.status !== 0) die(`maquetar falló (¿falta opencv? pip install "opencv-python-headless<5"):\n${r.stderr}`);
+  return leer(name);
 };
 
 const remotion = (args, opts = {}) => {
@@ -126,7 +133,8 @@ const comandos = {
       problemas.forEach((p) => console.log(`✗ ${p}`));
       die('faltan archivos: npm run sparkpy -- descargar ' + ad);
     }
-    const a = medir(ad);
+    medir(ad);
+    const a = maquetar(ad);
     const ts = tramos(a);
     let total = 0;
     const contar = (x) => x.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
@@ -149,6 +157,8 @@ const comandos = {
       if (t.locucion && /planpy/i.test(t.locucion)) problemas.push(`${t.id}: en la locución se escribe "Planpi" (así lo pronuncia la voz)`);
       if (t.id !== 'cierre' && t.d / (a.velocidadVoz ?? 1.08) > 7) avisos.push(`${t.id}: la voz dura más de 7 s y las tomas de Seedance son de 5 s; parta el bloque o use un fotograma`);
       const Z = ZONAS[a.formato ?? '9:16'];
+      const bl = a.bloques.find((x) => x.id === t.id);
+      for (const av of bl?.layout?.avisos ?? []) (av.startsWith('✗') ? problemas : avisos).push(`${t.id}: ${av.replace(/^✗ /, '')}`);
       for (const x of t.extras) {
         const caja = x.tipo === 'sticker' ? medidaSticker(x.texto, x.tamano ?? 62) : x.tipo === 'emoji' ? {w: (x.tamano ?? 120) * 1.3, h: (x.tamano ?? 120) * 1.3} : null;
         if (caja && (x.x - caja.w / 2 < Z.izq || x.x + caja.w / 2 > Z.der || x.y - caja.h / 2 < Z.arriba || x.y + caja.h / 2 > Z.abajo)) {
@@ -176,7 +186,8 @@ const comandos = {
   },
 
   muestras() {
-    const a = medir(ad);
+    medir(ad);
+    const a = maquetar(ad);
     const ts = tramos(a);
     const dir = join(ROOT, 'out', ad);
     mkdirSync(dir, {recursive: true});
@@ -190,7 +201,8 @@ const comandos = {
   },
 
   render() {
-    const a = medir(ad);
+    medir(ad);
+    const a = maquetar(ad);
     const out = join('out', `${a.id}.mp4`);
     remotion(['render', 'src/index.ts', 'SPARKPY', out, `--props=${JSON.stringify({ad})}`, '--crf=23']);
     const mb = statSync(join(ROOT, out)).size / 1e6;

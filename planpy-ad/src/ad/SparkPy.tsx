@@ -72,7 +72,10 @@ const Toma: React.FC<{src: string; encuadre: number}> = ({src, encuadre}) => {
 const aFrame = (m: Momento, lead: number, vf: number) => (typeof m === 'number' ? m : Math.round(lead + (vf * parseFloat(m)) / 100));
 
 // Lo que se ubica a mano (stickers, emojis) entra completo en la zona protegida (por sus bordes, no el centro).
-const ExtraEl: React.FC<{x: Extra; lead: number; vf: number; zona: Zona}> = ({x, lead, vf, zona}) => {
+type Ubicacion = {x?: number; y?: number; compacta?: boolean; omitido?: string};
+const ExtraEl: React.FC<{x: Extra; lead: number; vf: number; zona: Zona; u?: Ubicacion}> = ({x, lead, vf, zona, u}) => {
+  // maquetar.py lo omitió porque no entra sin tapar la cara: no se dibuja (el sonido sí suena).
+  if (u?.omitido) return null;
   switch (x.tipo) {
     case 'sfx':
       return <Sfx at={aFrame(x.en, lead, vf)} name={x.nombre} volume={x.volumen ?? 0.4} />;
@@ -82,7 +85,7 @@ const ExtraEl: React.FC<{x: Extra; lead: number; vf: number; zona: Zona}> = ({x,
         <>
           <Sticker at={at} {...(() => {
             const m = medidaSticker(x.texto, x.tamano ?? 62);
-            return encajar(zona, x.x, x.y, m.w + 20, m.h + 20);
+            return encajar(zona, u?.x ?? x.x, u?.y ?? x.y, m.w + 20, m.h + 20);
           })()} rot={x.giro ?? -6} size={x.tamano ?? 62} bg={x.fondo ?? '#fff'} color={x.color ?? '#141414'}>
             {x.texto}
           </Sticker>
@@ -92,7 +95,7 @@ const ExtraEl: React.FC<{x: Extra; lead: number; vf: number; zona: Zona}> = ({x,
     }
     case 'emoji':
       return (
-        <Emoji at={aFrame(x.en, lead, vf)} {...encajar(zona, x.x, x.y, (x.tamano ?? 120) * 1.3, (x.tamano ?? 120) * 1.3)} size={x.tamano ?? 120} spin={x.giro ?? 0}>
+        <Emoji at={aFrame(x.en, lead, vf)} {...encajar(zona, u?.x ?? x.x, u?.y ?? x.y, (x.tamano ?? 120) * 1.3, (x.tamano ?? 120) * 1.3)} size={x.tamano ?? 120} spin={x.giro ?? 0}>
           {x.texto}
         </Emoji>
       );
@@ -102,7 +105,7 @@ const ExtraEl: React.FC<{x: Extra; lead: number; vf: number; zona: Zona}> = ({x,
       const celular = x.formato === 'celular';
       return (
         <>
-          <Tarjeta zona={zona} at={at} formato={x.formato} titulo={x.titulo} seccion={x.seccion} menu={x.menu} filas={x.filas} resaltar={x.resaltar} listo={x.listo} />
+          <Tarjeta zona={zona} y={u?.y} compacta={u?.compacta} at={at} formato={x.formato} titulo={x.titulo} seccion={x.seccion} menu={x.menu} filas={x.filas} resaltar={x.resaltar} listo={x.listo} />
           {sonido ? (
             <>
               <Sfx at={at} name="whoosh" volume={0.35} />
@@ -117,7 +120,7 @@ const ExtraEl: React.FC<{x: Extra; lead: number; vf: number; zona: Zona}> = ({x,
       const at = x.en === undefined ? 4 : aFrame(x.en, lead, vf);
       return (
         <>
-          <Llamada zona={zona} nombre={x.nombre} hora={x.hora} icono={x.icono} at={at} />
+          <Llamada zona={zona} y={u?.y} nombre={x.nombre} hora={x.hora} icono={x.icono} at={at} />
           {x.vibrar === false ? null : [0, 30, 60, 90].map((d) => <Sfx key={d} at={at + d} name="vibrate" volume={0.45} />)}
         </>
       );
@@ -154,9 +157,9 @@ export const SparkPy: React.FC<SparkPyProps> = ({datos, duraciones, guias}) => {
               <Texture strength={0.25} />
             </Whip>
             {b.extras.map((x, k) => (
-              <ExtraEl key={k} x={x} lead={t.lead} vf={t.vf} zona={zona} />
+              <ExtraEl key={k} x={x} lead={t.lead} vf={t.vf} zona={zona} u={b.layout?.extras[k]} />
             ))}
-            <Subtitulos texto={b.lineas.join(' ')} claves={b.claves.map((k) => k.toLowerCase())} start={t.lead} voFrames={t.vf} zona={zona} />
+            <Subtitulos texto={b.lineas.join(' ')} claves={b.claves.map((k) => k.toLowerCase())} start={t.lead} voFrames={t.vf} zona={zona} base={b.layout?.subtitulo.base} tope={b.layout?.subtitulo.tope} />
             <Sfx at={0} name={i === 0 ? 'impact' : 'whoosh'} volume={i === 0 ? 0.6 : 0.35} />
             <Sequence from={t.lead} layout="none">
               <Audio src={staticFile(b.voz)} playbackRate={datos.velocidadVoz} volume={b.volumenVoz ?? 1} />

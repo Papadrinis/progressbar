@@ -206,7 +206,8 @@ personaje para todo lo que sigue.
 Un fotograma por toma con el mismo modelo y el casting aprobado como referencia
 (`generate_image_batch`). **Encuadre según `references/meta-creativos.md`:** el fotograma ya debe venir bien
 compuesto (el video no arregla un mal recorte). 9:16: ojos y boca arriba del centro y algo a la izquierda
-(y ~25–45 % del alto), nada clave en el 40 % de abajo ni en el 18 % de arriba, escena a cuadro completo.
+(y ~25–45 % del alto), mentón como mucho a mitad de cuadro y aire bajo el mentón para tarjeta y subtítulos
+(no primerísimos planos), nada clave en el 40 % de abajo ni en el 18 % de arriba, escena a cuadro completo.
 4:5: cara en la mitad superior. Prompt por toma: sujeto, lugar, acción, encuadre, espacio para overlays,
 luz, estilo, movimiento controlado y exclusiones; nunca parámetros inventados como `safe_zone`. Pantallas: el monitor de espaldas o el celular sin leerse; la interfaz la
 pone Remotion. Muéstralos todos juntos (`show_generation_by_ids`) y espera aprobación; rehaz solo los
@@ -241,9 +242,11 @@ npm run sparkpy -- revisar <ad>    # archivos, legibilidad, "Planpi"/"PlanPy", u
 npm run sparkpy -- muestras <ad>   # out/<ad>/<bloque>.png, un fotograma por bloque
 ```
 Corrige todo lo marcado con ✗ y los avisos de zona. Mira las muestras tú mismo (Read) antes de mostrarlas:
-traen en rojo lo que queda fuera de la zona protegida del formato (las guías nunca van al render) y ahí no
-puede quedar nada esencial; ojos y boca visibles y dentro durante toda la toma, subtítulos de 1–2 líneas
-legibles a tamaño de teléfono, tarjetas sin tapar la boca. Lo que no se revisó se marca NEEDS REVIEW. Envíaselas al
+traen en rojo lo que queda fuera de la zona protegida del formato y en celeste la caja de la cara medida en
+toda la toma (las guías nunca van al render). Ningún sticker, tarjeta ni subtítulo puede cruzar la cara
+(`maquetar.py` los ubica alrededor; si algo se omite por falta de lugar, se reencuadra o se mueve a otra toma).
+Subtítulos de 1–2 líneas legibles a tamaño de teléfono. Para probar layouts se usan muestras (0 créditos),
+no renders ni generaciones. Lo que no se revisó se marca NEEDS REVIEW. Envíaselas al
 usuario y espera el visto bueno antes de renderizar (un render tarda ~3 min).
 
 ## 8 · Render y entrega

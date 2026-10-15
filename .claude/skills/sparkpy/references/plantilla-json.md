@@ -129,6 +129,10 @@ dos, se hacen dos JSON con las mismas tomas (`v18-a.json` y `v18-a-45.json`). Re
 | Cierre | centrado dentro de la zona (automático) | igual |
 | Encuadre de la toma | `"encuadre": 50` (% vertical) | por defecto 30: sube la cara al recortar |
 
+`cara` y `layout` los escribe `scripts/maquetar.py` (no se editan a mano): detecta la cara en cada toma y
+ubica subtítulos, tarjetas y stickers sin taparla. La `"x"`/`"y"` de un sticker es solo una preferencia
+(lado); si choca con la cara, se mueve o se omite con aviso.
+
 Stickers y emojis se comprueban por sus bordes completos: si no entran, el render los mete y `revisar` avisa.
 `texto.top` ya no se usa (los subtítulos se ubican solos). `muestras` dibuja en rojo lo que queda fuera de la
 zona (solo en la revisión, nunca en el render).
