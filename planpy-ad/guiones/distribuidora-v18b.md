@@ -15,12 +15,12 @@ ninguna de las dos caras.
 
 | Bloque | Voz de Carolina (miniatura, a cámara) | Atrás (la «pantalla») | Remotion |
 |---|---|---|---|
-| **H** (0–3,5 s) | "Esta era yo cada vez que entraba a mi segundo local." | Carolina furiosa detrás del mostrador: tira el cuaderno, levanta las manos frente a la caja; dos empleados desenfocados al fondo. Sin audio de diálogo. | Sticker «YO, HACE 3 MESES 😤» · zoom de golpe al entrar el video de atrás |
-| **P** (3,5–9 s) | "Peleando con mi gente por plata que no cuadraba. Y sin saber si de verdad era culpa de ellos." | Sigue el mismo video: cuenta billetes, niega con la cabeza, se lleva las manos a la cabeza. | Palabras clave: *plata que no cuadraba* · *culpa* |
-| **A** (9–14,5 s) | "Porque el problema no era mi equipo. Era que yo no tenía cómo ver nada. Y así no se crece." | Carolina sola en la camioneta, preocupada, mirando el local (toma 2 de V18-A, reutilizada). | Sticker «¿Y si no eran ellos? 🤔» |
-| **S** (14,5–20,5 s) | "Ahora con Planpi cada empleado tiene su acceso, y yo veo qué hizo cada uno. Sin gritar, sin preguntar." | La «pantalla» pasa a PlanPy: tarjeta «Su equipo hoy» a pantalla completa (interfaz dibujada en código, datos de ejemplo). | Tarjeta de actividad del equipo |
-| **S** (20,5–25 s) | "Y el cierre de los dos locales, en una sola pantalla, desde el celular." | Tarjeta «Cierre de hoy · Sede Centro + Sede 2» (código, datos de ejemplo). | Tarjeta de cierre |
-| **CTA** (25–29 s) | "Pruébelo quince días gratis, en planpi punto io." | Carolina tranquila y sonriente (toma 4 de V18-A, reutilizada). | Cierre: «15 días gratis y sin poner la tarjeta» |
+| **H** (0–4,5 s) | "Soy dueña de una tienda, y esta era yo cada vez que entraba a mi segundo local." Mientras lo dice, **señala con el pulgar por encima del hombro la pantalla de atrás**. | Carolina furiosa detrás del mostrador: tira el cuaderno, levanta las manos frente a la caja; dos empleados desenfocados al fondo. Sin audio de diálogo. | Sticker «YO, HACE 3 MESES 😤» · zoom de golpe al entrar el video de atrás |
+| **P** (4,5–10 s) | "Peleando con mi gente por plata que no cuadraba. Y sin saber si de verdad era culpa de ellos." | Sigue el mismo video: cuenta billetes, niega con la cabeza, se lleva las manos a la cabeza. | Palabras clave: *plata que no cuadraba* · *culpa* |
+| **A** (10–15,5 s) | "Porque el problema no era mi equipo. Era que yo no tenía cómo ver nada. Y así no se crece." | Carolina sola en la camioneta, preocupada, mirando el local (toma 2 de V18-A, reutilizada). | Sticker «¿Y si no eran ellos? 🤔» |
+| **S** (15,5–21,5 s) | "Ahora con Planpi cada empleado tiene su acceso, y yo veo qué hizo cada uno. Sin gritar, sin preguntar." | La «pantalla» pasa a PlanPy: tarjeta «Su equipo hoy» a pantalla completa (interfaz dibujada en código, datos de ejemplo). | Tarjeta de actividad del equipo |
+| **S** (21,5–26 s) | "Y el cierre de los dos locales, en una sola pantalla, desde el celular." | Tarjeta «Cierre de hoy · Sede Centro + Sede 2» (código, datos de ejemplo). | Tarjeta de cierre |
+| **CTA** (26–30 s) | "Pruébelo quince días gratis, en planpi punto io." | Carolina tranquila y sonriente (toma 4 de V18-A, reutilizada). | Cierre: «15 días gratis y sin poner la tarjeta» |
 
 **Tono:** el hook es agresivo, pero la rabia es con la situación y no humilla a los empleados. El giro del
 guion es que ella reconoce que el problema era no tener cómo ver. Así la persona «La Desconfiada» se siente
