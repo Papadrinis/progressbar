@@ -136,3 +136,30 @@ ubica subtítulos, tarjetas y stickers sin taparla. La `"x"`/`"y"` de un sticker
 Stickers y emojis se comprueban por sus bordes completos: si no entran, el render los mete y `revisar` avisa.
 `texto.top` ya no se usa (los subtítulos se ubican solos). `muestras` dibuja en rojo lo que queda fuera de la
 zona (solo en la revisión, nunca en el render).
+
+## Green screen (persona en miniatura sobre su propio video) — desde V18-B
+
+Para hooks tipo «reacción»: la persona habla en miniatura (recortada) y atrás va un video o una foto que
+muestra lo que dice. Cada fondo tiene que acompañar la frase (si cambia la idea, se parte el bloque).
+
+1. Toma con voz de la persona sobre **verde croma liso** (Seedance 2.5, fotograma sobre #00B140, plano de la
+   cintura para arriba, cabeza completa en cuadro).
+2. `python3 scripts/croma.py public/vN/verde.mp4 public/vN/verde.webm` → WebM con transparencia. Se guarda
+   también el .mp4 con verde: maquetar lo usa para ubicar la cara.
+3. En el bloque:
+
+```json
+"toma": "vN/fondo.mp4",
+"velocidadToma": 0.56,
+"verde": {"miniatura": "vN/verde.webm", "deteccion": "vN/verde.mp4", "x": 10, "y": 740, "ancho": 480,
+          "desde": 0, "fondo": {"escala": 1.25, "x": 135, "y": 0}}
+```
+
+- `x/y/ancho`: miniatura abajo a la izquierda con la boca dentro de la zona (y ≈ 1000–1100 en 9:16); la
+  parte de abajo se funde sola.
+- `desde`: segundo de la toma verde en que arranca el bloque (una toma larga sirve para varios bloques).
+- `fondo`: agranda y corre la toma de atrás para que su cara quede arriba a la derecha sin franjas negras
+  (con `escala` s, `x` tiene que estar entre ±540·(s−1)).
+- `velocidadToma`: cámara lenta para estirar una toma corta de fondo.
+- maquetar detecta las dos caras y, si no hay franja ancha libre, pone los subtítulos en un panel angosto
+  (`layout.subtitulo.x0/x1`, de 1 o 2 líneas) que nunca se sale de su ancho.
