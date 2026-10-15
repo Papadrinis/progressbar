@@ -33,37 +33,49 @@ export const Subtitulos: React.FC<{texto: string; claves: string[]; start: numbe
   const palabrasTodas = texto.split(/\s+/).filter(Boolean);
   // Con maxLineas = 1 (lo decide maquetar cuando hace falta lugar para una tarjeta sin tapar la cara)
   // cada página es una sola línea, con margen para que el reparto parejo no la pase de largo.
-  const nPag = maxLineas === 1
-    ? Math.max(partir(texto, maxChars).length, Math.ceil(texto.length / (maxChars * 0.85)))
-    : Math.max(1, Math.ceil(partir(texto, maxChars).length / 2));
-  const meta = texto.length / nPag;
-  const partes: string[][] = [[]];
-  let largo = 0;
-  palabrasTodas.forEach((w, i) => {
-    const restantes = palabrasTodas.length - i;
-    if (largo >= meta && partes.length < nPag && restantes >= 2) {
-      partes.push([]);
-      largo = 0;
-    }
-    partes[partes.length - 1].push(w);
-    largo += w.length + 1;
-  });
-  const paginas: string[][] = partes.map((p) => {
-    const t = p.join(' ');
-    if (t.length <= maxChars || maxLineas === 1) return [t];
-    // Corte en dos líneas lo más parejas posible.
-    let mejor = 1;
-    let dif = Infinity;
-    for (let k = 1; k < p.length; k++) {
-      const a = p.slice(0, k).join(' ').length;
-      const b = p.slice(k).join(' ').length;
-      if (a <= maxChars && b <= maxChars && Math.abs(a - b) < dif) {
-        dif = Math.abs(a - b);
-        mejor = k;
+  // Se reparte en nPag partes de largo parecido; si alguna no entra en el ancho (panel angosto), se prueba
+  // con una página más. Ninguna línea puede pasar de maxChars: si no, el panel se sale de su lugar.
+  const repartir = (nPag: number): string[][] | null => {
+    const meta = texto.length / nPag;
+    const partes: string[][] = [[]];
+    let largo = 0;
+    palabrasTodas.forEach((w, i) => {
+      const restantes = palabrasTodas.length - i;
+      if (largo >= meta && partes.length < nPag && restantes >= 2) {
+        partes.push([]);
+        largo = 0;
       }
+      partes[partes.length - 1].push(w);
+      largo += w.length + 1;
+    });
+    const out: string[][] = [];
+    for (const p of partes) {
+      const t = p.join(' ');
+      if (t.length <= maxChars) {
+        out.push([t]);
+        continue;
+      }
+      if (maxLineas === 1) return null;
+      // Corte en dos líneas lo más parejas posible.
+      let mejor = -1;
+      let dif = Infinity;
+      for (let k = 1; k < p.length; k++) {
+        const a = p.slice(0, k).join(' ').length;
+        const b = p.slice(k).join(' ').length;
+        if (a <= maxChars && b <= maxChars && Math.abs(a - b) < dif) {
+          dif = Math.abs(a - b);
+          mejor = k;
+        }
+      }
+      if (mejor < 0) return null;
+      out.push([p.slice(0, mejor).join(' '), p.slice(mejor).join(' ')]);
     }
-    return [p.slice(0, mejor).join(' '), p.slice(mejor).join(' ')];
-  });
+    return out;
+  };
+  const lineasMin = partir(texto, maxChars).length;
+  let paginas: string[][] | null = null;
+  for (let n = Math.max(1, Math.ceil(lineasMin / (maxLineas === 1 ? 1 : 2))); !paginas && n <= palabrasTodas.length; n++) paginas = repartir(n);
+  if (!paginas) paginas = partir(texto, maxChars).map((l) => [l]);
   const pesos = paginas.map((p) => p.join(' ').length + 4);
   const total = pesos.reduce((a, b) => a + b, 0);
   let acc = 0;

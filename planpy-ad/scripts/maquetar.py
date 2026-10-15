@@ -160,7 +160,7 @@ def analizar(b, z):
     fondo = (b.get('verde') or {}).get('fondo')
     _al = a_lienzo
     a_lienzo_b = lambda c, ws, hs, z, enc: _al(c, ws, hs, z, enc, fondo)
-    cuadros = cuadros_de(PUB / b['toma'], (b.get('duracion') or 6) + 0.3)
+    cuadros = cuadros_de(PUB / b['toma'], ((b.get('duracion') or 6) + 0.3) * b.get('velocidadToma', 1))
     if not cuadros:
         return [], None, 0, []  # escena 2D, interfaz, etc.
     hs, ws = cuadros[0].shape[:2]
@@ -307,6 +307,10 @@ def maquetar(ad):
             lay['subtitulo'] = {'base': round(ang[3]), 'x0': round(ang[0]), 'x1': round(ang[2])}
             ocupados.append(ang)
             avisos.append('subtítulos en panel angosto para no tapar ninguna cara (green screen o dos personas)')
+        elif (ang := panel_angosto(z, alto_subtitulo(z, 1), duras)):
+            lay['subtitulo'] = {'base': round(ang[3]), 'x0': round(ang[0]), 'x1': round(ang[2]), 'lineas': 1}
+            ocupados.append(ang)
+            avisos.append('subtítulos de 1 línea en panel angosto para no tapar ninguna cara')
         elif not choca(r_abajo, sin_barbilla, 8):
             lay['subtitulo'] = {'base': z['abajo'] - 6}
             ocupados.append(r_abajo)

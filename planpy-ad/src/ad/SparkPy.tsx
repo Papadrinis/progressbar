@@ -53,7 +53,7 @@ const Sfx: React.FC<{at: number; name: string; volume?: number}> = ({at, name, v
 
 const esFoto = (src: string) => /\.(png|jpe?g|webp)$/i.test(src);
 
-const Toma: React.FC<{src: string; encuadre: number; fondo?: {escala: number; x: number; y: number}}> = ({src, encuadre, fondo}) => {
+const Toma: React.FC<{src: string; encuadre: number; fondo?: {escala: number; x: number; y: number}; velocidad?: number}> = ({src, encuadre, fondo, velocidad}) => {
   const frame = useCurrentFrame();
   const Escena = src.startsWith('escena:') ? ESCENAS[src.slice(7)] : null;
   return (
@@ -63,7 +63,7 @@ const Toma: React.FC<{src: string; encuadre: number; fondo?: {escala: number; x:
       ) : esFoto(src) ? (
         <Img src={staticFile(src)} style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: `50% ${encuadre}%`, transform: `scale(${interpolate(frame, [0, 150], [1.02, 1.1])})`}} />
       ) : (
-        <OffthreadVideo src={staticFile(src)} muted style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: `50% ${encuadre}%`}} />
+        <OffthreadVideo src={staticFile(src)} muted playbackRate={velocidad ?? 1} style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: `50% ${encuadre}%`}} />
       )}
     </AbsoluteFill>
   );
@@ -171,7 +171,7 @@ export const SparkPy: React.FC<SparkPyProps> = ({datos, duraciones, guias}) => {
         return (
           <Sequence key={b.id} name={b.id} from={t.from} durationInFrames={t.len}>
             <Whip dir={i % 2 ? -1 : 1} flash={i === 0}>
-              <Toma src={b.toma} encuadre={b.encuadre ?? zona.encuadre} fondo={b.verde?.fondo} />
+              <Toma src={b.toma} encuadre={b.encuadre ?? zona.encuadre} fondo={b.verde?.fondo} velocidad={b.velocidadToma} />
               <Texture strength={0.25} />
               {b.verde ? <Miniatura v={b.verde} /> : null}
             </Whip>

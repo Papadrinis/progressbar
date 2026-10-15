@@ -56,7 +56,7 @@
       "voz": "voz/v18b/h.wav",
       "locucion": "Soy dueña de una tienda, y esta era yo cada vez que entraba a mi segundo local.",
       "entrada": 0,
-      "toma": "v18b/furiosa.png",
+      "toma": "v18b/furiosa.mp4",
       "verde": {
         "x": 10,
         "y": 740,
@@ -82,30 +82,30 @@
       "extras": [
         {
           "tipo": "sticker",
-          "en": "35%",
-          "texto": "YO, HACE 3 MESES 😤",
-          "x": 620,
-          "y": 700,
-          "giro": -4,
-          "tamano": 44,
+          "en": "30%",
+          "texto": "HACE 3 MESES 😤",
+          "x": 270,
+          "y": 620,
+          "giro": -5,
+          "tamano": 38,
           "fondo": "#ff4d4d",
           "color": "#fff"
         }
       ],
       "duracion": 4.45,
       "cara": {
-        "x0": 539,
-        "y0": 348,
-        "x1": 863,
-        "y1": 768
+        "x0": 486,
+        "y0": 346,
+        "x1": 947,
+        "y1": 907
       },
       "obstaculos": [
         {
           "tipo": "cara",
-          "x0": 539,
-          "y0": 348,
-          "x1": 863,
-          "y1": 768
+          "x0": 486,
+          "y0": 346,
+          "x1": 947,
+          "y1": 907
         },
         {
           "tipo": "cara",
@@ -118,8 +118,8 @@
       "layout": {
         "extras": [
           {
-            "x": 620,
-            "y": 933
+            "x": 270,
+            "y": 850
           }
         ],
         "avisos": [
@@ -137,7 +137,7 @@
       "voz": "voz/v18b/p.wav",
       "locucion": "Peleando con mi gente por plata que no cuadraba. Y sin saber si de verdad era culpa de ellos.",
       "entrada": 0,
-      "toma": "v18b/furiosa.png",
+      "toma": "v18b/furiosa-p.mp4",
       "verde": {
         "x": 10,
         "y": 740,
@@ -165,18 +165,18 @@
       "extras": [],
       "duracion": 6.206,
       "cara": {
-        "x0": 539,
-        "y0": 348,
-        "x1": 863,
-        "y1": 768
+        "x0": 352,
+        "y0": 305,
+        "x1": 925,
+        "y1": 999
       },
       "obstaculos": [
         {
           "tipo": "cara",
-          "x0": 539,
-          "y0": 348,
-          "x1": 863,
-          "y1": 768
+          "x0": 352,
+          "y0": 305,
+          "x1": 925,
+          "y1": 999
         },
         {
           "tipo": "cara",
@@ -189,14 +189,16 @@
       "layout": {
         "extras": [],
         "avisos": [
-          "subtítulos en panel angosto para no tapar ninguna cara (green screen o dos personas)"
+          "subtítulos de 1 línea en panel angosto para no tapar ninguna cara"
         ],
         "subtitulo": {
           "base": 1146,
           "x0": 347,
-          "x1": 898
+          "x1": 898,
+          "lineas": 1
         }
-      }
+      },
+      "velocidadToma": 0.56
     },
     {
       "id": "a",
@@ -376,20 +378,19 @@
           "listo": "Las dos sedes en una pantalla"
         }
       ],
-      "duracion": 5.376,
       "cara": {
-        "x0": 143,
+        "x0": 220,
         "y0": 220,
         "x1": 501,
-        "y1": 640
+        "y1": 631
       },
       "obstaculos": [
         {
           "tipo": "cara",
-          "x0": 143,
+          "x0": 220,
           "y0": 220,
           "x1": 501,
-          "y1": 640
+          "y1": 631
         }
       ],
       "layout": {
@@ -402,7 +403,8 @@
         "subtitulo": {
           "base": 1146
         }
-      }
+      },
+      "duracion": 2.85
     },
     {
       "id": "cta",
