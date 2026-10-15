@@ -38,7 +38,35 @@
           "volumen": 0.35
         }
       ],
-      "duracion": 5.878
+      "duracion": 5.878,
+      "cara": {
+        "x0": 382,
+        "y0": 503,
+        "x1": 593,
+        "y1": 758
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 382,
+          "y0": 503,
+          "x1": 593,
+          "y1": 758
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "x": 674,
+            "y": 916
+          },
+          {}
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     },
     {
       "id": "p",
@@ -69,7 +97,34 @@
           "volumenSfx": 0.35
         }
       ],
-      "duracion": 3.709
+      "duracion": 3.709,
+      "cara": {
+        "x0": 9,
+        "y0": 19,
+        "x1": 483,
+        "y1": 694
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 9,
+          "y0": 19,
+          "x1": 483,
+          "y1": 694
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "x": 540,
+            "y": 920
+          }
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     },
     {
       "id": "a",
@@ -102,7 +157,35 @@
           "volumen": 0.3
         }
       ],
-      "duracion": 2.351
+      "duracion": 2.351,
+      "cara": {
+        "x0": 433,
+        "y0": 469,
+        "x1": 586,
+        "y1": 671
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 433,
+          "y0": 469,
+          "x1": 586,
+          "y1": 671
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "x": 731,
+            "y": 916
+          },
+          {}
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     },
     {
       "id": "s1",
@@ -146,7 +229,36 @@
           "resaltar": 1
         }
       ],
-      "duracion": 5.564
+      "duracion": 5.564,
+      "cara": {
+        "x0": 307,
+        "y0": 402,
+        "x1": 539,
+        "y1": 705
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 307,
+          "y0": 402,
+          "x1": 539,
+          "y1": 705
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "inserto": true,
+            "y": 356
+          }
+        ],
+        "avisos": [
+          "tarjeta «Blusa verde de lino» como corte a pantalla (la toma se desenfoca detrás): no entraba sin tapar a la persona"
+        ],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     },
     {
       "id": "s2",
@@ -187,7 +299,36 @@
           "resaltar": 0
         }
       ],
-      "duracion": 3.161
+      "duracion": 3.161,
+      "cara": {
+        "x0": 390,
+        "y0": 502,
+        "x1": 730,
+        "y1": 970
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 390,
+          "y0": 502,
+          "x1": 730,
+          "y1": 970
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "inserto": true,
+            "y": 356
+          }
+        ],
+        "avisos": [
+          "tarjeta «Blusa verde de lino» como corte a pantalla (la toma se desenfoca detrás): no entraba sin tapar a la persona"
+        ],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     }
   ],
   "cierre": {

@@ -36,6 +36,33 @@
       "texto": {
         "tamano": 58,
         "top": 1240
+      },
+      "cara": {
+        "x0": 366,
+        "y0": 290,
+        "x1": 701,
+        "y1": 772
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 366,
+          "y0": 290,
+          "x1": 701,
+          "y1": 772
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "x": 588,
+            "y": 918
+          }
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
       }
     },
     {
@@ -79,7 +106,38 @@
           "volumenSfx": 0.35
         }
       ],
-      "duracion": 4.989
+      "duracion": 4.989,
+      "cara": {
+        "x0": 397,
+        "y0": 291,
+        "x1": 727,
+        "y1": 756
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 397,
+          "y0": 291,
+          "x1": 727,
+          "y1": 756
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "x": 300,
+            "y": 916
+          },
+          {
+            "x": 780,
+            "y": 914
+          }
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     },
     {
       "id": "a",
@@ -133,6 +191,35 @@
       "duracion": 5.486,
       "texto": {
         "tamano": 58
+      },
+      "cara": {
+        "x0": 379,
+        "y0": 364,
+        "x1": 693,
+        "y1": 732
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 379,
+          "y0": 364,
+          "x1": 693,
+          "y1": 732
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "inserto": true,
+            "y": 356
+          }
+        ],
+        "avisos": [
+          "tarjeta «Compras a proveedores» como corte a pantalla (la toma se desenfoca detrás): no entraba sin tapar a la persona"
+        ],
+        "subtitulo": {
+          "base": 1146
+        }
       }
     },
     {
@@ -173,7 +260,36 @@
           "resaltar": 2
         }
       ],
-      "duracion": 4.284
+      "duracion": 4.284,
+      "cara": {
+        "x0": 296,
+        "y0": 272,
+        "x1": 785,
+        "y1": 965
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 296,
+          "y0": 272,
+          "x1": 785,
+          "y1": 965
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "inserto": true,
+            "y": 356
+          }
+        ],
+        "avisos": [
+          "tarjeta «Así le fue este mes» como corte a pantalla (la toma se desenfoca detrás): no entraba sin tapar a la persona"
+        ],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     },
     {
       "id": "br2",
@@ -205,7 +321,36 @@
           "volumenSfx": 0.35
         }
       ],
-      "duracion": 3.788
+      "duracion": 3.788,
+      "cara": {
+        "x0": 78,
+        "y0": 337,
+        "x1": 689,
+        "y1": 1031
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 78,
+          "y0": 337,
+          "x1": 689,
+          "y1": 1031
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "omitido": "no entra sin tapar (412×119 px)"
+          }
+        ],
+        "avisos": [
+          "subtítulos sobre la barbilla (debajo de la boca): toma muy cerrada; para la próxima, encuadre con aire bajo el mentón",
+          "sticker «✔ Ya sabe» omitido: no hay lugar libre sin tapar a la persona o el producto; muévalo a otra toma o reencuadre"
+        ],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     }
   ],
   "cierre": {

@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
-"""SparkPy · maquetar: ubica subtítulos, tarjetas y stickers sin tapar la cara del que habla.
+"""SparkPy · maquetar: ubica subtítulos, tarjetas y stickers sin tapar a las personas ni el producto.
 
-Lee public/ads/<ad>.json, detecta la cara en cada toma a lo largo de todo el bloque (no solo un cuadro)
-y escribe en cada bloque:
-  "cara":   {"x0","y0","x1","y1"}  caja de la cara en el lienzo (unión de los cuadros, px)
+Lee public/ads/<ad>.json y, en cada bloque, mira la toma a lo largo de TODO el bloque (no un solo cuadro):
+  - caras (YuNet, con ojos y boca; todas las caras, no solo la más grande),
+  - personas sin cara visible (de espaldas, de perfil fuerte, cuerpo entero: detector HOG de OpenCV),
+  - zonas que el JSON marca a mano en "proteger" (el detalle del producto en una demo o un try-on).
+Con eso escribe en el bloque:
+  "cara":   caja de la cara principal en el lienzo (px)
+  "obstaculos": [{"tipo": "cara"|"persona"|"producto", "x0","y0","x1","y1"}]
   "layout": {"subtitulo": {"base"|"tope"}, "extras": [{"x","y"} | {"omitido": "motivo"}], "avisos": [...]}
 
-Reglas (references/meta-creativos.md): todo dentro de la zona protegida del formato y nunca sobre la cara
-(ojos, boca, rostro). Los subtítulos van debajo de la boca; tarjetas y stickers en el espacio libre alrededor
-de la cara (abajo apilados sobre los subtítulos, arriba, o a un costado). Si un elemento no entra sin tapar
-la cara, se omite y se avisa: la solución es reencuadrar la toma, no achicar ni tapar.
+Reglas (references/meta-creativos.md): todo dentro de la zona protegida del formato y nada sobre una cara, una
+persona ni el producto. Subtítulos debajo de la boca; tarjetas y stickers donde haya lugar libre. Si algo no
+entra sin tapar, se omite y se avisa; si hay una persona pero no se ve su cara, el bloque queda NEEDS REVIEW
+(✗ en revisar) hasta que alguien marque a mano qué proteger.
 
 Uso: python3 scripts/maquetar.py <ad>
 """
@@ -18,24 +22,27 @@ import sys
 from pathlib import Path
 
 import cv2
+import numpy as np
 
 ROOT = Path(__file__).resolve().parent.parent
 PUB = ROOT / 'public'
+MODELO_CARAS = ROOT / 'scripts' / 'modelos' / 'yunet.onnx'
 
 # Mismos números que src/ad/zonas.ts.
 ZONAS = {
     '9:16': {'ancho': 1080, 'alto': 1920, 'arriba': 346, 'abajo': 1152, 'izq': 87, 'der': 918, 'sub': 52, 'encuadre': 50},
     '4:5': {'ancho': 1080, 'alto': 1350, 'arriba': 81, 'abajo': 1269, 'izq': 65, 'der': 1015, 'sub': 50, 'encuadre': 30},
 }
-MARGEN = 24  # aire entre la cara y cualquier elemento
-SEP = 14  # aire entre elementos apilados
+MARGEN = 24  # aire alrededor de caras, personas y producto
+SEP = 14  # aire entre elementos
 
 
+# ---------- medidas de los elementos (mismas fórmulas que la composición) ----------
 def medida_sticker(texto, tamano):
     return len(texto) * tamano * 0.58 + tamano * 0.72 + 20, tamano * 1.5 + 20
 
 
-def medida_extra(x, z):
+def medida_extra(x, z, compacta=False):
     t = x['tipo']
     if t == 'sticker':
         return medida_sticker(x['texto'], x.get('tamano', 62))
@@ -44,68 +51,147 @@ def medida_extra(x, z):
         return s, s
     if t == 'tarjeta':
         if x['formato'] == 'celular':
-            h = 20 + 34 + 10 + 44 + 18
-            if len(x['filas']) > 1:
-                h += 36
-            if x.get('listo'):
-                h += 62
+            if compacta:
+                return z['der'] - z['izq'], 146
+            h = 20 + 34 + 10 + 44 + 18 + (36 if len(x['filas']) > 1 else 0) + (62 if x.get('listo') else 0)
             return z['der'] - z['izq'], h
-        return z['der'] - z['izq'], 520  # computador: grande, casi siempre se omite en tomas a cámara
+        return z['der'] - z['izq'], 520
     if t == 'llamada':
         return z['der'] - z['izq'], 136
     return None
 
 
 def alto_subtitulo(z):
-    s = z['sub']
-    return 2 * s * 1.12 + 4 + 30
+    return 2 * z['sub'] * 1.12 + 4 + 30
 
 
-def caras_en_toma(ruta, inicio, dur, z, encuadre):
-    """Caja de la cara (unión robusta de los cuadros) en coordenadas del lienzo."""
-    if not ruta.suffix.lower() in ('.mp4', '.mov', '.webm', '.png', '.jpg', '.jpeg', '.webp'):
-        return None
-    casc = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-    cuadros = []
-    if ruta.suffix.lower() in ('.png', '.jpg', '.jpeg', '.webp'):
+# ---------- detección ----------
+def cuadros_de(ruta, dur):
+    suf = ruta.suffix.lower()
+    if suf in ('.png', '.jpg', '.jpeg', '.webp'):
         img = cv2.imread(str(ruta))
-        cuadros = [img] if img is not None else []
-    else:
-        cap = cv2.VideoCapture(str(ruta))
-        t = inicio
-        while t < inicio + dur:
-            cap.set(cv2.CAP_PROP_POS_MSEC, t * 1000)
-            ok, f = cap.read()
-            if ok:
-                cuadros.append(f)
-            t += 0.33
-    if not cuadros:
-        return None
-    hs, ws = cuadros[0].shape[:2]
-    cajas = []
-    for f in cuadros:
-        g = cv2.cvtColor(f, cv2.COLOR_BGR2GRAY)
-        fs = casc.detectMultiScale(g, 1.1, 6, minSize=(int(ws * 0.15), int(ws * 0.15)))
-        if len(fs):
-            cajas.append(max(fs, key=lambda r: r[2] * r[3]))
-    if len(cajas) < max(1, len(cuadros) // 4):
-        return None
-    # Descarta detecciones sueltas: se queda con las cercanas a la mediana.
-    med = sorted(cajas, key=lambda r: r[2] * r[3])[len(cajas) // 2]
-    mcx, mcy = med[0] + med[2] / 2, med[1] + med[3] / 2
-    buenas = [r for r in cajas if abs(r[0] + r[2] / 2 - mcx) < med[2] * 0.35 and abs(r[1] + r[3] / 2 - mcy) < med[3] * 0.35 and 0.6 < (r[2] * r[3]) / (med[2] * med[3]) < 1.6]
-    x0 = min(r[0] for r in buenas)
-    y0 = min(r[1] for r in buenas)
-    x1 = max(r[0] + r[2] for r in buenas)
-    y1 = max(r[1] + r[3] for r in buenas)
-    # Fuente → lienzo (object-fit: cover, object-position 50% encuadre%).
+        return [img] if img is not None else []
+    if suf not in ('.mp4', '.mov', '.webm'):
+        return []
+    cap = cv2.VideoCapture(str(ruta))
+    out, t = [], 0.0
+    while t < dur:
+        cap.set(cv2.CAP_PROP_POS_MSEC, t * 1000)
+        ok, f = cap.read()
+        if ok:
+            out.append(f)
+        t += 0.33
+    return out
+
+
+def caras_en(f):
+    h, w = f.shape[:2]
+    esc = 640 / max(w, h)
+    p = cv2.resize(f, (int(w * esc), int(h * esc)))
+    det = cv2.FaceDetectorYN.create(str(MODELO_CARAS), '', (p.shape[1], p.shape[0]), 0.7, 0.3, 50)
+    _, res = det.detect(p)
+    out = []
+    for r in res if res is not None else []:
+        x, y, ww, hh = r[:4] / esc
+        if ww < w * 0.05:
+            continue  # caras diminutas del fondo
+        boca_y = max(r[11], r[13]) / esc  # comisuras
+        out.append({'caja': [x, y, x + ww, y + hh], 'boca': boca_y})
+    return out
+
+
+HOG = cv2.HOGDescriptor()
+HOG.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
+
+
+def personas_en(f):
+    h, w = f.shape[:2]
+    esc = 480 / max(w, h)
+    p = cv2.resize(f, (int(w * esc), int(h * esc)))
+    rects, pesos = HOG.detectMultiScale(p, winStride=(8, 8), padding=(8, 8), scale=1.05)
+    return [[x / esc, y / esc, (x + rw) / esc, (y + rh) / esc] for (x, y, rw, rh), s in zip(rects, np.ravel(pesos)) if s > 0.6]
+
+
+def agrupar(cajas, min_frac):
+    """Junta detecciones de la misma persona a lo largo de la toma (tracks por solapamiento)."""
+    tracks = []
+    for c in cajas:
+        for t in tracks:
+            u = t['u']
+            ix = max(0, min(u[2], c[2]) - max(u[0], c[0]))
+            iy = max(0, min(u[3], c[3]) - max(u[1], c[1]))
+            if ix * iy > 0.3 * min((c[2] - c[0]) * (c[3] - c[1]), (u[2] - u[0]) * (u[3] - u[1])):
+                t['n'] += 1
+                t['u'] = [min(u[0], c[0]), min(u[1], c[1]), max(u[2], c[2]), max(u[3], c[3])]
+                break
+        else:
+            tracks.append({'u': list(c), 'n': 1})
+    return [t for t in tracks if t['n'] >= min_frac]
+
+
+def a_lienzo(c, ws, hs, z, enc):
     esc = max(z['ancho'] / ws, z['alto'] / hs)
     ox = (z['ancho'] - ws * esc) * 0.5
-    oy = (z['alto'] - hs * esc) * (encuadre / 100)
-    caja = [x0 * esc + ox, y0 * esc + oy, x1 * esc + ox, y1 * esc + oy]
-    # El detector corta la barbilla: se extiende un 8 % hacia abajo.
-    caja[3] += (caja[3] - caja[1]) * 0.08
-    return [round(v) for v in caja]
+    oy = (z['alto'] - hs * esc) * (enc / 100)
+    return [c[0] * esc + ox, c[1] * esc + oy, c[2] * esc + ox, c[3] * esc + oy]
+
+
+def analizar(b, z):
+    enc = b.get('encuadre', z['encuadre'])
+    cuadros = cuadros_de(PUB / b['toma'], (b.get('duracion') or 6) + 0.3)
+    if not cuadros:
+        return [], None, 0  # escena 2D, interfaz, etc.
+    hs, ws = cuadros[0].shape[:2]
+    det_caras, det_personas = [], []
+    for f in cuadros:
+        cs = caras_en(f)
+        det_caras += cs
+        if not cs:
+            det_personas += personas_en(f)
+    n = len(cuadros)
+    obst = []
+    boca = None
+    for t in agrupar([c['caja'] for c in det_caras], max(1, n // 5)):
+        caja = a_lienzo(t['u'], ws, hs, z, enc)
+        caja[3] += (caja[3] - caja[1]) * 0.06  # la caja de YuNet corta la barbilla
+        obst.append({'tipo': 'cara', 'caja': caja})
+    if det_caras:
+        bocas = [c['boca'] for c in det_caras]
+        boca = a_lienzo([0, max(bocas), 0, max(bocas)], ws, hs, z, enc)[1]
+    personas_sin_cara = 0
+    for t in agrupar(det_personas, max(1, n // 3)):
+        caja = a_lienzo(t['u'], ws, hs, z, enc)
+        # Si ya hay una cara dentro de esa persona, la cara manda.
+        if any(o['caja'][0] < caja[2] and o['caja'][2] > caja[0] and o['caja'][1] < caja[3] and o['caja'][3] > caja[1] for o in obst):
+            continue
+        personas_sin_cara += 1
+        # Se protege la mitad de arriba del cuerpo (cabeza y torso).
+        obst.append({'tipo': 'persona', 'caja': [caja[0], caja[1], caja[2], caja[1] + (caja[3] - caja[1]) * 0.55]})
+    for p in b.get('proteger', []):
+        obst.append({'tipo': 'producto', 'caja': [p['x0'], p['y0'], p['x1'], p['y1']]})
+    return obst, boca, personas_sin_cara
+
+
+# ---------- ubicación ----------
+def choca(r, cajas, margen=MARGEN):
+    return any(r[0] < c[2] + margen and r[2] > c[0] - margen and r[1] < c[3] + margen and r[3] > c[1] - margen for c in cajas)
+
+
+def dentro(r, z):
+    return r[0] >= z['izq'] and r[2] <= z['der'] and r[1] >= z['arriba'] and r[3] <= z['abajo']
+
+
+def buscar(w, h, pref_x, z, bloqueos, ocupados):
+    """Primer lugar libre para un elemento w×h: de abajo hacia arriba, cerca del x preferido."""
+    xs = sorted({min(max(px, z['izq'] + w / 2), z['der'] - w / 2) for px in (pref_x, (z['izq'] + z['der']) / 2, z['izq'] + w / 2, z['der'] - w / 2)}, key=lambda v: abs(v - pref_x))
+    y = z['abajo'] - h / 2
+    while y >= z['arriba'] + h / 2:
+        for cx in xs:
+            r = [cx - w / 2, y - h / 2, cx + w / 2, y + h / 2]
+            if dentro(r, z) and not choca(r, bloqueos) and not choca(r, ocupados, SEP):
+                return cx, y, r
+        y -= 8
+    return None
 
 
 def maquetar(ad):
@@ -113,98 +199,83 @@ def maquetar(ad):
     a = json.loads(ruta.read_text())
     z = ZONAS[a.get('formato', '9:16')]
     hsub = alto_subtitulo(z)
+    anchosub = z['der'] - z['izq']
     for b in a['bloques']:
-        enc = b.get('encuadre', z['encuadre'])
-        inicio = 0
-        dur = (b.get('duracion') or 6) + 0.3
-        cara = caras_en_toma(PUB / b['toma'], inicio, dur, z, enc)
+        obst, boca, sin_cara = analizar(b, z)
         avisos = []
         lay = {'extras': [], 'avisos': avisos}
-        if cara:
-            b['cara'] = dict(zip(('x0', 'y0', 'x1', 'y1'), cara))
-            fx0, fy0, fx1, fy1 = cara[0] - MARGEN, cara[1] - MARGEN, cara[2] + MARGEN, cara[3] + MARGEN
-            boca = cara[1] + (cara[3] - cara[1]) * 0.86  # parte baja de la boca
+        caras = [o for o in obst if o['tipo'] == 'cara']
+        principal = max(caras, key=lambda o: (o['caja'][2] - o['caja'][0]) * (o['caja'][3] - o['caja'][1])) if caras else None
+        if principal:
+            b['cara'] = dict(zip(('x0', 'y0', 'x1', 'y1'), [round(v) for v in principal['caja']]))
         else:
             b.pop('cara', None)
-            fx0 = fy0 = fx1 = fy1 = None
-        # 1. Subtítulos: debajo de la cara; si no hay lugar, debajo de la boca (sobre la barbilla); si no, arriba.
-        libre_abajo_tope = max(z['arriba'], fy1) if cara else z['arriba']
-        if not cara or z['abajo'] - libre_abajo_tope >= hsub:
+        b['obstaculos'] = [{'tipo': o['tipo'], **dict(zip(('x0', 'y0', 'x1', 'y1'), [round(v) for v in o['caja']]))} for o in obst]
+        if sin_cara:
+            avisos.append(f'✗ NEEDS REVIEW: hay {sin_cara} persona(s) sin cara visible; se protegió la cabeza y el torso detectados. Revise la muestra y, si hace falta, marque "proteger" en el bloque')
+        duras = [o['caja'] for o in obst]
+        # 1. Subtítulos: abajo de la zona sin tocar ninguna cara/persona/producto…
+        ocupados = []
+        r_abajo = [z['izq'], z['abajo'] - 6 - hsub, z['der'], z['abajo'] - 6]
+        r_arriba = [z['izq'], z['arriba'] + 6, z['der'], z['arriba'] + 6 + hsub]
+        # …o tapando solo la barbilla (debajo de la boca) en primeros planos.
+        sin_barbilla = [[c[0], c[1], c[2], min(c[3], boca + 12)] if (o['tipo'] == 'cara' and boca) else c for o, c in zip(obst, duras)]
+        if not choca(r_abajo, duras):
             lay['subtitulo'] = {'base': z['abajo'] - 6}
-            tope_abajo = z['abajo'] - 6 - hsub - SEP  # lo que queda libre sobre los subtítulos
-        elif z['abajo'] - (boca + 12) >= hsub:
+            ocupados.append(r_abajo)
+        elif not choca(r_abajo, sin_barbilla, 8):
             lay['subtitulo'] = {'base': z['abajo'] - 6}
-            tope_abajo = None
-            avisos.append('subtítulos sobre la barbilla (debajo de la boca): toma muy cerrada; reencuadre para dejar aire bajo la cara')
-        elif fy0 - z['arriba'] >= hsub:
+            ocupados.append(r_abajo)
+            avisos.append('subtítulos sobre la barbilla (debajo de la boca): toma muy cerrada; para la próxima, encuadre con aire bajo el mentón')
+        elif not choca(r_arriba, duras):
             lay['subtitulo'] = {'tope': z['arriba'] + 6}
-            tope_abajo = None
+            ocupados.append(r_arriba)
         else:
             lay['subtitulo'] = {'base': z['abajo'] - 6}
-            tope_abajo = None
-            avisos.append('✗ no hay lugar para los subtítulos sin tapar la boca: reencuadre la toma (cara más arriba o más chica)')
-        # Espacios libres para el resto.
-        abajo = [libre_abajo_tope, tope_abajo] if (tope_abajo is not None and cara) else ([z['arriba'], tope_abajo] if tope_abajo is not None else None)
-        arriba = [z['arriba'], fy0] if cara else None
-        if arriba and 'tope' in lay['subtitulo']:
-            arriba[0] = z['arriba'] + 6 + hsub + SEP
-        izq = [z['izq'], fx0] if cara else None
-        der = [fx1, z['der']] if cara else None
-        orden = sorted(range(len(b.get('extras', []))), key=lambda i: 0 if b['extras'][i]['tipo'] in ('tarjeta', 'llamada') else 1)
-        res = [None] * len(b.get('extras', []))
-        for i in orden:
-            x = b['extras'][i]
+            ocupados.append(r_abajo)
+            avisos.append('✗ no hay lugar para los subtítulos sin tapar la boca o el producto: reencuadre la toma')
+        # 2. Tarjetas y llamadas primero (llevan información), después stickers y emojis.
+        extras = b.get('extras', [])
+        res = [{} for _ in extras]
+        for i in sorted(range(len(extras)), key=lambda i: 0 if extras[i]['tipo'] in ('tarjeta', 'llamada') else 1):
+            x = extras[i]
             m = medida_extra(x, z)
             if m is None:
-                continue  # sfx
-            w, h = m
-            compacta = False
-            # La tarjeta celular tiene versión compacta (2 líneas) si la completa no entra.
-            if x['tipo'] == 'tarjeta' and x['formato'] == 'celular':
-                cabe = lambda hh: (abajo and abajo[1] - abajo[0] >= hh) or (arriba and arriba[1] - arriba[0] >= hh)
-                if not cabe(h) and cabe(146):
-                    h, compacta = 146, True
-            pos = None
-            # a) abajo, apilado sobre los subtítulos (crece hacia arriba)
-            if abajo and abajo[1] - abajo[0] >= h:
-                cy = abajo[1] - h / 2
-                abajo[1] -= h + SEP
-                pos = (cy, 'abajo')
-            # b) arriba de la cara (crece hacia abajo)
-            elif arriba and arriba[1] - arriba[0] >= h:
-                cy = arriba[0] + h / 2
-                arriba[0] += h + SEP
-                pos = (cy, 'arriba')
-            # c) a un costado de la cara (solo elementos angostos)
-            else:
-                for lado in (izq, der) if x.get('x', 540) < 540 else (der, izq):
-                    if lado and lado[1] - lado[0] >= w:
-                        cy = min(max(x.get('y', 700), z['arriba'] + h / 2), z['abajo'] - hsub - SEP - h / 2)
-                        pos = (cy, 'costado', (lado[0] + lado[1]) / 2)
-                        break
-            if pos is None:
-                res[i] = {'omitido': f'no entra sin tapar la cara ({round(w)}×{round(h)} px)'}
-                avisos.append(f'{x["tipo"]} «{x.get("texto") or x.get("titulo") or x.get("nombre")}» omitido: no hay espacio libre sin tapar la cara; muévalo a otra toma o reencuadre')
                 continue
-            cy = pos[0]
+            w, h = m
+            hallado = buscar(w, h, x.get('x', 540), z, duras, ocupados)
+            compacta = False
+            if not hallado and x['tipo'] == 'tarjeta' and x['formato'] == 'celular':
+                w, h = medida_extra(x, z, compacta=True)
+                hallado = buscar(w, h, 540, z, duras, ocupados)
+                compacta = bool(hallado)
+            a_camara = b.get('a_camara', b.get('entrada') == 0)
+            if not hallado and x['tipo'] == 'tarjeta' and not a_camara:
+                # Toma de apoyo (nadie habla a cámara): corte a pantalla. La tarjeta ocupa la zona sobre la toma
+                # desenfocada, así no tapa una cara y la demo del producto se ve completa.
+                res[i] = {'inserto': True, 'y': z['arriba'] + 10}
+                avisos.append(f'tarjeta «{x["titulo"]}» como corte a pantalla (la toma se desenfoca detrás): no entraba sin tapar a la persona')
+                continue
+            if not hallado:
+                nombre = x.get('texto') or x.get('titulo') or x.get('nombre')
+                res[i] = {'omitido': f'no entra sin tapar ({round(w)}×{round(h)} px)'}
+                avisos.append(f'{x["tipo"]} «{nombre}» omitido: no hay lugar libre sin tapar a la persona o el producto; muévalo a otra toma o reencuadre')
+                continue
+            cx, cy, r = hallado
+            ocupados.append(r)
             if x['tipo'] in ('tarjeta', 'llamada'):
-                res[i] = {'y': round(cy - h / 2)}
+                res[i] = {'y': round(r[1])}
                 if compacta:
                     res[i]['compacta'] = True
-                    avisos.append(f'tarjeta «{x["titulo"]}» en versión compacta (2 líneas) para no tapar la cara')
+                    avisos.append(f'tarjeta «{x["titulo"]}» en versión compacta (2 líneas) para no tapar a la persona')
             else:
-                if pos[1] == 'costado':
-                    cx = pos[2]
-                else:
-                    pref = x.get('x', 540)
-                    cx = min(max(pref, z['izq'] + w / 2), z['der'] - w / 2)
                 res[i] = {'x': round(cx), 'y': round(cy)}
-        lay['extras'] = [r or {} for r in res]
+        lay['extras'] = res
         b['layout'] = lay
     ruta.write_text(json.dumps(a, ensure_ascii=False, indent=2) + '\n')
     for b in a['bloques']:
-        c = b.get('cara')
-        print(f"{b['id']:<6} cara {'—' if not c else (c['x0'], c['y0'], c['x1'], c['y1'])}  subt {b['layout']['subtitulo']}")
+        ob = ', '.join(f"{o['tipo']} ({o['x0']},{o['y0']},{o['x1']},{o['y1']})" for o in b['obstaculos']) or 'sin personas'
+        print(f"{b['id']:<6} {ob}  subt {b['layout']['subtitulo']}")
         for av in b['layout']['avisos']:
             print(f'       ! {av}')
 

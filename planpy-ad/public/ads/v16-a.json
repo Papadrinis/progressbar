@@ -17,7 +17,15 @@
       ],
       "cola": 6,
       "extras": [],
-      "duracion": 3.474
+      "duracion": 3.474,
+      "obstaculos": [],
+      "layout": {
+        "extras": [],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     },
     {
       "id": "b2",
@@ -41,7 +49,17 @@
           "volumen": 0.3
         }
       ],
-      "duracion": 4.598
+      "duracion": 4.598,
+      "obstaculos": [],
+      "layout": {
+        "extras": [
+          {}
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     },
     {
       "id": "a",
@@ -86,7 +104,19 @@
           "resaltar": 0
         }
       ],
-      "duracion": 5.068
+      "duracion": 5.068,
+      "obstaculos": [],
+      "layout": {
+        "extras": [
+          {
+            "y": 814
+          }
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     },
     {
       "id": "br",
@@ -116,7 +146,20 @@
           "volumenSfx": 0.3
         }
       ],
-      "duracion": 2.769
+      "duracion": 2.769,
+      "obstaculos": [],
+      "layout": {
+        "extras": [
+          {
+            "x": 760,
+            "y": 906
+          }
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     }
   ],
   "cierre": {

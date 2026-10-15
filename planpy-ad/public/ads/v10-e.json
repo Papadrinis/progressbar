@@ -37,7 +37,37 @@
           "volumen": 0.45
         }
       ],
-      "duracion": 5.721
+      "duracion": 5.721,
+      "cara": {
+        "x0": 334,
+        "y0": 389,
+        "x1": 746,
+        "y1": 1022
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 334,
+          "y0": 389,
+          "x1": 746,
+          "y1": 1022
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "omitido": "no entra sin tapar (680×119 px)"
+          },
+          {}
+        ],
+        "avisos": [
+          "subtítulos sobre la barbilla (debajo de la boca): toma muy cerrada; para la próxima, encuadre con aire bajo el mentón",
+          "sticker «🕗 Sábado 8 p. m.» omitido: no hay lugar libre sin tapar a la persona o el producto; muévalo a otra toma o reencuadre"
+        ],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     },
     {
       "id": "p",
@@ -92,7 +122,43 @@
           "volumenSfx": 0.45
         }
       ],
-      "duracion": 4.284
+      "duracion": 4.284,
+      "cara": {
+        "x0": 338,
+        "y0": 379,
+        "x1": 666,
+        "y1": 798
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 338,
+          "y0": 379,
+          "x1": 666,
+          "y1": 798
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "x": 300,
+            "y": 926
+          },
+          {
+            "omitido": "no entra sin tapar (560×101 px)"
+          },
+          {
+            "omitido": "no entra sin tapar (517×125 px)"
+          }
+        ],
+        "avisos": [
+          "sticker «📲 Transferencias» omitido: no hay lugar libre sin tapar a la persona o el producto; muévalo a otra toma o reencuadre",
+          "sticker «≠ No cuadra» omitido: no hay lugar libre sin tapar a la persona o el producto; muévalo a otra toma o reencuadre"
+        ],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     },
     {
       "id": "a",
@@ -122,7 +188,34 @@
           "volumenSfx": 0.45
         }
       ],
-      "duracion": 3.004
+      "duracion": 3.004,
+      "cara": {
+        "x0": 385,
+        "y0": 476,
+        "x1": 596,
+        "y1": 745
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 385,
+          "y0": 476,
+          "x1": 596,
+          "y1": 745
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "x": 540,
+            "y": 928
+          }
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     },
     {
       "id": "s1",
@@ -166,7 +259,36 @@
           "resaltar": 3
         }
       ],
-      "duracion": 3.239
+      "duracion": 3.239,
+      "cara": {
+        "x0": 372,
+        "y0": 470,
+        "x1": 539,
+        "y1": 699
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 372,
+          "y0": 470,
+          "x1": 539,
+          "y1": 699
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "inserto": true,
+            "y": 356
+          }
+        ],
+        "avisos": [
+          "tarjeta «Ventas de hoy» como corte a pantalla (la toma se desenfoca detrás): no entraba sin tapar a la persona"
+        ],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     },
     {
       "id": "s2",
@@ -206,7 +328,37 @@
           "listo": "Caja cerrada ✓"
         }
       ],
-      "duracion": 3.161
+      "duracion": 3.161,
+      "cara": {
+        "x0": 312,
+        "y0": 338,
+        "x1": 624,
+        "y1": 1036
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 312,
+          "y0": 338,
+          "x1": 624,
+          "y1": 1036
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "inserto": true,
+            "y": 356
+          }
+        ],
+        "avisos": [
+          "subtítulos sobre la barbilla (debajo de la boca): toma muy cerrada; para la próxima, encuadre con aire bajo el mentón",
+          "tarjeta «Cierre del sábado» como corte a pantalla (la toma se desenfoca detrás): no entraba sin tapar a la persona"
+        ],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     }
   ],
   "cierre": {

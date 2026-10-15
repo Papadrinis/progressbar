@@ -72,7 +72,15 @@ const Toma: React.FC<{src: string; encuadre: number}> = ({src, encuadre}) => {
 const aFrame = (m: Momento, lead: number, vf: number) => (typeof m === 'number' ? m : Math.round(lead + (vf * parseFloat(m)) / 100));
 
 // Lo que se ubica a mano (stickers, emojis) entra completo en la zona protegida (por sus bordes, no el centro).
-type Ubicacion = {x?: number; y?: number; compacta?: boolean; omitido?: string};
+type Ubicacion = {x?: number; y?: number; compacta?: boolean; inserto?: boolean; omitido?: string};
+
+// Corte a pantalla: desde que entra la tarjeta, la toma queda desenfocada detrás (solo en tomas de apoyo).
+const Inserto: React.FC<{at: number}> = ({at}) => {
+  const frame = useCurrentFrame();
+  if (frame < at) return null;
+  const k = interpolate(frame, [at, at + 8], [0, 1], {extrapolateRight: 'clamp'});
+  return <AbsoluteFill style={{backdropFilter: `blur(${26 * k}px) brightness(${1 - 0.4 * k})`, WebkitBackdropFilter: `blur(${26 * k}px) brightness(${1 - 0.4 * k})`}} />;
+};
 const ExtraEl: React.FC<{x: Extra; lead: number; vf: number; zona: Zona; u?: Ubicacion}> = ({x, lead, vf, zona, u}) => {
   // maquetar.py lo omitió porque no entra sin tapar la cara: no se dibuja (el sonido sí suena).
   if (u?.omitido) return null;
@@ -105,6 +113,7 @@ const ExtraEl: React.FC<{x: Extra; lead: number; vf: number; zona: Zona; u?: Ubi
       const celular = x.formato === 'celular';
       return (
         <>
+          {u?.inserto ? <Inserto at={at} /> : null}
           <Tarjeta zona={zona} y={u?.y} compacta={u?.compacta} at={at} formato={x.formato} titulo={x.titulo} seccion={x.seccion} menu={x.menu} filas={x.filas} resaltar={x.resaltar} listo={x.listo} />
           {sonido ? (
             <>

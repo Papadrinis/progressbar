@@ -78,10 +78,15 @@ export const bloque = z.object({
   encuadre: z.number().min(0).max(100).optional(),
   // Escritos por scripts/maquetar.py: caja de la cara en el lienzo y ubicación de cada elemento sin taparla.
   cara: z.object({x0: z.number(), y0: z.number(), x1: z.number(), y1: z.number()}).optional(),
+  obstaculos: z.array(z.object({tipo: z.string(), x0: z.number(), y0: z.number(), x1: z.number(), y1: z.number()})).optional(),
+  // true si la persona habla a cámara en este bloque (por defecto: entrada 0, labios sincronizados).
+  a_camara: z.boolean().optional(),
+  // A mano: lo que no se puede tapar y el detector no ve (el detalle del producto en una demo), en px del lienzo.
+  proteger: z.array(z.object({x0: z.number(), y0: z.number(), x1: z.number(), y1: z.number(), nota: z.string().optional()})).optional(),
   layout: z
     .object({
       subtitulo: z.object({base: z.number().optional(), tope: z.number().optional()}),
-      extras: z.array(z.object({x: z.number().optional(), y: z.number().optional(), compacta: z.boolean().optional(), omitido: z.string().optional()})),
+      extras: z.array(z.object({x: z.number().optional(), y: z.number().optional(), compacta: z.boolean().optional(), inserto: z.boolean().optional(), omitido: z.string().optional()})),
       avisos: z.array(z.string()).default([]),
     })
     .optional(),

@@ -35,25 +35,34 @@
       ],
       "duracion": 6.75,
       "cara": {
-        "x0": 189,
-        "y0": 365,
-        "x1": 834,
-        "y1": 1066
+        "x0": 250,
+        "y0": 315,
+        "x1": 796,
+        "y1": 1086
       },
       "layout": {
         "extras": [
           {
-            "omitido": "no entra sin tapar la cara (419×98 px)"
+            "omitido": "no entra sin tapar (419×98 px)"
           }
         ],
         "avisos": [
-          "subtítulos sobre la barbilla (debajo de la boca): toma muy cerrada; reencuadre para dejar aire bajo la cara",
-          "sticker «7:00 a. m. ⏰» omitido: no hay espacio libre sin tapar la cara; muévalo a otra toma o reencuadre"
+          "subtítulos sobre la barbilla (debajo de la boca): toma muy cerrada; para la próxima, encuadre con aire bajo el mentón",
+          "sticker «7:00 a. m. ⏰» omitido: no hay lugar libre sin tapar a la persona o el producto; muévalo a otra toma o reencuadre"
         ],
         "subtitulo": {
           "base": 1146
         }
-      }
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 250,
+          "y0": 315,
+          "x1": 796,
+          "y1": 1086
+        }
+      ]
     },
     {
       "id": "i",
@@ -89,23 +98,32 @@
       ],
       "duracion": 5.75,
       "cara": {
-        "x0": 230,
-        "y0": 271,
-        "x1": 715,
-        "y1": 752
+        "x0": 272,
+        "y0": 243,
+        "x1": 703,
+        "y1": 773
       },
       "layout": {
         "extras": [
           {
             "x": 700,
-            "y": 933
+            "y": 927
           }
         ],
         "avisos": [],
         "subtitulo": {
           "base": 1146
         }
-      }
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 272,
+          "y0": 243,
+          "x1": 703,
+          "y1": 773
+        }
+      ]
     },
     {
       "id": "d1",
@@ -151,25 +169,34 @@
       ],
       "duracion": 5.95,
       "cara": {
-        "x0": 171,
-        "y0": 304,
-        "x1": 620,
-        "y1": 800
+        "x0": 216,
+        "y0": 294,
+        "x1": 598,
+        "y1": 804
       },
       "layout": {
         "extras": [
           {
-            "y": 836,
+            "y": 830,
             "compacta": true
           }
         ],
         "avisos": [
-          "tarjeta «Nueva reserva» en versión compacta (2 líneas) para no tapar la cara"
+          "tarjeta «Nueva reserva» en versión compacta (2 líneas) para no tapar a la persona"
         ],
         "subtitulo": {
           "base": 1146
         }
-      }
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 216,
+          "y0": 294,
+          "x1": 598,
+          "y1": 804
+        }
+      ]
     },
     {
       "id": "d2",
@@ -202,23 +229,32 @@
       ],
       "duracion": 6.75,
       "cara": {
-        "x0": 316,
+        "x0": 346,
         "y0": 264,
-        "x1": 693,
-        "y1": 698
+        "x1": 676,
+        "y1": 695
       },
       "layout": {
         "extras": [
           {
             "x": 440,
-            "y": 933
+            "y": 927
           }
         ],
         "avisos": [],
         "subtitulo": {
           "base": 1146
         }
-      }
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 346,
+          "y0": 264,
+          "x1": 676,
+          "y1": 695
+        }
+      ]
     },
     {
       "id": "cta",
@@ -237,10 +273,10 @@
       "extras": [],
       "duracion": 3.65,
       "cara": {
-        "x0": 186,
-        "y0": 320,
-        "x1": 707,
-        "y1": 896
+        "x0": 230,
+        "y0": 305,
+        "x1": 718,
+        "y1": 925
       },
       "layout": {
         "extras": [],
@@ -248,7 +284,16 @@
         "subtitulo": {
           "base": 1146
         }
-      }
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 230,
+          "y0": 305,
+          "x1": 718,
+          "y1": 925
+        }
+      ]
     }
   ],
   "cierre": {

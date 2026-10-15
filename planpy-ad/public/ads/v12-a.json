@@ -37,7 +37,35 @@
           "volumen": 0.35
         }
       ],
-      "duracion": 4.049
+      "duracion": 4.049,
+      "cara": {
+        "x0": 382,
+        "y0": 503,
+        "x1": 578,
+        "y1": 758
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 382,
+          "y0": 503,
+          "x1": 578,
+          "y1": 758
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "x": 635,
+            "y": 916
+          },
+          {}
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     },
     {
       "id": "b2",
@@ -73,7 +101,35 @@
           "volumen": 0.3
         }
       ],
-      "duracion": 4.598
+      "duracion": 4.598,
+      "cara": {
+        "x0": 433,
+        "y0": 465,
+        "x1": 593,
+        "y1": 676
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 433,
+          "y0": 465,
+          "x1": 593,
+          "y1": 676
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "x": 731,
+            "y": 916
+          },
+          {}
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     },
     {
       "id": "a",
@@ -113,7 +169,36 @@
           "resaltar": 0
         }
       ],
-      "duracion": 3.971
+      "duracion": 3.971,
+      "cara": {
+        "x0": 356,
+        "y0": 435,
+        "x1": 539,
+        "y1": 702
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 356,
+          "y0": 435,
+          "x1": 539,
+          "y1": 702
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "inserto": true,
+            "y": 356
+          }
+        ],
+        "avisos": [
+          "tarjeta «Blusa verde de lino» como corte a pantalla (la toma se desenfoca detrás): no entraba sin tapar a la persona"
+        ],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     },
     {
       "id": "br",
@@ -155,7 +240,37 @@
           "listo": "Caja cuadrada ✓"
         }
       ],
-      "duracion": 3.788
+      "duracion": 3.788,
+      "cara": {
+        "x0": 312,
+        "y0": 338,
+        "x1": 624,
+        "y1": 1036
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 312,
+          "y0": 338,
+          "x1": 624,
+          "y1": 1036
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "inserto": true,
+            "y": 356
+          }
+        ],
+        "avisos": [
+          "subtítulos sobre la barbilla (debajo de la boca): toma muy cerrada; para la próxima, encuadre con aire bajo el mentón",
+          "tarjeta «Cierre de hoy» como corte a pantalla (la toma se desenfoca detrás): no entraba sin tapar a la persona"
+        ],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     }
   ],
   "cierre": {

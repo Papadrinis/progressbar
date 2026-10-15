@@ -31,7 +31,34 @@
           "volumenSfx": 0.4
         }
       ],
-      "duracion": 4.598
+      "duracion": 4.598,
+      "cara": {
+        "x0": 303,
+        "y0": 194,
+        "x1": 722,
+        "y1": 808
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 303,
+          "y0": 194,
+          "x1": 722,
+          "y1": 808
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "x": 616,
+            "y": 920
+          }
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     },
     {
       "id": "n1",
@@ -64,7 +91,34 @@
           "fondo": "#ffffff"
         }
       ],
-      "duracion": 6.844
+      "duracion": 6.844,
+      "cara": {
+        "x0": 342,
+        "y0": 278,
+        "x1": 577,
+        "y1": 606
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 342,
+          "y0": 278,
+          "x1": 577,
+          "y1": 606
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "x": 300,
+            "y": 921
+          }
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     },
     {
       "id": "n2",
@@ -98,7 +152,20 @@
           "volumenSfx": 0.35
         }
       ],
-      "duracion": 4.754
+      "duracion": 4.754,
+      "obstaculos": [],
+      "layout": {
+        "extras": [
+          {
+            "x": 760,
+            "y": 916
+          }
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     },
     {
       "id": "o1",
@@ -149,7 +216,36 @@
           "resaltar": 2
         }
       ],
-      "duracion": 6.922
+      "duracion": 6.922,
+      "cara": {
+        "x0": 411,
+        "y0": 243,
+        "x1": 694,
+        "y1": 640
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 411,
+          "y0": 243,
+          "x1": 694,
+          "y1": 640
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "inserto": true,
+            "y": 356
+          }
+        ],
+        "avisos": [
+          "tarjeta «Usuarios y permisos» como corte a pantalla (la toma se desenfoca detrás): no entraba sin tapar a la persona"
+        ],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     },
     {
       "id": "o2",
@@ -188,7 +284,47 @@
           "resaltar": 2
         }
       ],
-      "duracion": 2.769
+      "duracion": 2.769,
+      "cara": {
+        "x0": 373,
+        "y0": 245,
+        "x1": 644,
+        "y1": 547
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 373,
+          "y0": 245,
+          "x1": 644,
+          "y1": 547
+        },
+        {
+          "tipo": "cara",
+          "x0": 71,
+          "y0": 498,
+          "x1": 158,
+          "y1": 579
+        },
+        {
+          "tipo": "cara",
+          "x0": 168,
+          "y0": 494,
+          "x1": 245,
+          "y1": 571
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "y": 814
+          }
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     }
   ],
   "cierre": {

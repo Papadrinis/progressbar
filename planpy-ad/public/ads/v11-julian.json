@@ -24,7 +24,29 @@
       ],
       "cola": 6,
       "extras": [],
-      "duracion": 3.57
+      "duracion": 3.57,
+      "cara": {
+        "x0": 358,
+        "y0": 291,
+        "x1": 726,
+        "y1": 842
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 358,
+          "y0": 291,
+          "x1": 726,
+          "y1": 842
+        }
+      ],
+      "layout": {
+        "extras": [],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     },
     {
       "id": "i",
@@ -57,7 +79,34 @@
           "volumenSfx": 0.35
         }
       ],
-      "duracion": 5.84
+      "duracion": 5.84,
+      "cara": {
+        "x0": 340,
+        "y0": 282,
+        "x1": 748,
+        "y1": 839
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 340,
+          "y0": 282,
+          "x1": 748,
+          "y1": 839
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "x": 668,
+            "y": 922
+          }
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     },
     {
       "id": "d1",
@@ -98,7 +147,36 @@
           "resaltar": 2
         }
       ],
-      "duracion": 4.8
+      "duracion": 4.8,
+      "cara": {
+        "x0": 409,
+        "y0": 214,
+        "x1": 620,
+        "y1": 492
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 409,
+          "y0": 214,
+          "x1": 620,
+          "y1": 492
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "inserto": true,
+            "y": 356
+          }
+        ],
+        "avisos": [
+          "tarjeta «Camisa de lino blanca» como corte a pantalla (la toma se desenfoca detrás): no entraba sin tapar a la persona"
+        ],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     },
     {
       "id": "d2",
@@ -116,7 +194,29 @@
       ],
       "cola": 14,
       "extras": [],
-      "duracion": 3.26
+      "duracion": 3.26,
+      "cara": {
+        "x0": 365,
+        "y0": 283,
+        "x1": 742,
+        "y1": 850
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 365,
+          "y0": 283,
+          "x1": 742,
+          "y1": 850
+        }
+      ],
+      "layout": {
+        "extras": [],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     }
   ],
   "cierre": {

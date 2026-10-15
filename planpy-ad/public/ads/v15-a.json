@@ -37,7 +37,34 @@
           "fondo": "#ffffff"
         }
       ],
-      "duracion": 5
+      "duracion": 5,
+      "cara": {
+        "x0": 318,
+        "y0": 203,
+        "x1": 784,
+        "y1": 764
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 318,
+          "y0": 203,
+          "x1": 784,
+          "y1": 764
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "x": 540,
+            "y": 924
+          }
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     },
     {
       "id": "n1",
@@ -75,7 +102,34 @@
           "volumenSfx": 0.3
         }
       ],
-      "duracion": 5.2
+      "duracion": 5.2,
+      "cara": {
+        "x0": 345,
+        "y0": 199,
+        "x1": 725,
+        "y1": 737
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 345,
+          "y0": 199,
+          "x1": 725,
+          "y1": 737
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "x": 760,
+            "y": 916
+          }
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     },
     {
       "id": "n2",
@@ -109,7 +163,34 @@
           "fondo": "#ffd400"
         }
       ],
-      "duracion": 4.3
+      "duracion": 4.3,
+      "cara": {
+        "x0": 300,
+        "y0": 203,
+        "x1": 812,
+        "y1": 818
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 300,
+          "y0": 203,
+          "x1": 812,
+          "y1": 818
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "x": 540,
+            "y": 924
+          }
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     },
     {
       "id": "o1",
@@ -157,7 +238,36 @@
           "listo": "Recordatorio enviado"
         }
       ],
-      "duracion": 6.3
+      "duracion": 6.3,
+      "cara": {
+        "x0": 363,
+        "y0": 279,
+        "x1": 696,
+        "y1": 739
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 363,
+          "y0": 279,
+          "x1": 696,
+          "y1": 739
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "y": 830,
+            "compacta": true
+          }
+        ],
+        "avisos": [
+          "tarjeta «Agenda de hoy» en versión compacta (2 líneas) para no tapar a la persona"
+        ],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     },
     {
       "id": "cta",
@@ -174,7 +284,29 @@
       ],
       "cola": 4,
       "extras": [],
-      "duracion": 4
+      "duracion": 4,
+      "cara": {
+        "x0": 317,
+        "y0": 219,
+        "x1": 727,
+        "y1": 816
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 317,
+          "y0": 219,
+          "x1": 727,
+          "y1": 816
+        }
+      ],
+      "layout": {
+        "extras": [],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     }
   ],
   "cierre": {
