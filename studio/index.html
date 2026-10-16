@@ -65,6 +65,7 @@ main{padding-block:24px 80px;padding-inline:28px;min-width:0}
 .btn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 14px;font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:6px;color:var(--ink)}
 .btn:hover{border-color:var(--ink-2)}
 .btn.primary{background:var(--mustard);border-color:var(--mustard);color:var(--mustard-ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
 .btn.small{padding:5px 10px;font-size:13px}
 .btn.ghost{background:transparent}
 .btn.danger{color:var(--bad)}
@@ -149,6 +150,12 @@ textarea{resize:vertical;min-height:60px}
 .steps span{font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:var(--surface-2)}
 .steps span.done{background:var(--good);color:var(--surface)}
 .steps span.now{background:var(--mustard);color:var(--mustard-ink)}
+.frame img.kf{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.gen{display:flex;flex-direction:column;gap:4px;border-top:1px solid var(--line);padding-top:6px;font-size:12px}
+.gen .r{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.gen a{color:var(--ink);font-weight:600}
+.gen .err{color:var(--bad);overflow-wrap:anywhere}
+.hf-err{color:var(--bad);font-size:13px;flex-basis:100%}
 
 /* ship */
 .ship{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px;align-items:start}
@@ -364,13 +371,22 @@ pre.out{font-family:var(--mono);font-size:12px;background:var(--surface-2);borde
     <!-- STORYBOARD -->
     <section data-screen="story" hidden>
       <div class="top">
-        <div><h1 data-bind-title>Storyboard</h1><p>One 9:16 frame per beat. Say what Nugget does and how the camera sees it. Claude turns each shot into a keyframe in Higgsfield once you approve.</p></div>
+        <div><h1 data-bind-title>Storyboard</h1><p>One 9:16 frame per beat. Say what Nugget does and how the camera sees it. Once you approve, generate each shot's keyframe and clip in Higgsfield right here, or hand the brief to Claude.</p></div>
         <div class="picker"><select class="piece-select" aria-label="Video"></select><button class="btn" id="build-sb">Build from script</button><button class="btn small" id="add-shot">Add shot</button></div>
       </div>
       <div data-needs-piece>
         <div class="gate">
           <div class="steps" id="steps"></div>
           <div class="row"><span class="note" id="gate-note"></span><button class="btn primary" id="approve-sb">Approve storyboard</button></div>
+        </div>
+        <div class="gate" id="hf-bar">
+          <div class="stack" style="gap:2px;min-width:0"><span class="label">Generate in Higgsfield</span><span class="note" id="hf-note">Checking for your Higgsfield connector…</span></div>
+          <div class="row" id="hf-actions" hidden>
+            <button class="btn" id="gen-kf">Generate keyframes</button>
+            <button class="btn" id="approve-kf">Approve keyframes</button>
+            <button class="btn primary" id="gen-vid">Generate video</button>
+          </div>
+          <span class="hf-err" id="hf-err" hidden></span>
         </div>
         <div class="sb" id="sb"></div>
       </div>
@@ -462,7 +478,7 @@ function blank(extra) {
     id: uid(), title: 'Untitled video', date: today(), status: 'idea', pillar: 'Campaigns',
     format: 'Talking head', platform: 'TikTok + Reels', length: 20,
     hooks: [{ text: '' }], hookIdx: 0, tip: '', metaphor: '', cta: '',
-    beats: [], shots: [], approved: false,
+    beats: [], shots: [], approved: false, kfApproved: false,
     swipe: { source: '', why: '', keep: '', change: '', beats: [] },
     genIds: '', caption: '', links: { tiktok: '', reels: '' }, sponsored: false
   }, extra || {});
@@ -722,11 +738,12 @@ function renderSwipeOut(p) {
 
 /* storyboard */
 function renderGate(p) {
-  const steps = [['Script', true], ['Storyboard', p.approved], ['Keyframes', ['render', 'ready', 'posted'].includes(p.status)], ['Video', ['ready', 'posted'].includes(p.status)]];
+  const steps = [['Script', true], ['Storyboard', p.approved], ['Keyframes', p.kfApproved || ['ready', 'posted'].includes(p.status)], ['Video', allDone(p, 'vid') || ['ready', 'posted'].includes(p.status)]];
   let nowSet = false;
   $('#steps').replaceChildren(...steps.map(([n, done]) => { const cls = done ? 'done' : (nowSet ? '' : (nowSet = true, 'now')); return el('span', { class: cls, text: n }); }));
   $('#approve-sb').textContent = p.approved ? 'Unapprove' : 'Approve storyboard';
-  $('#gate-note').textContent = p.approved ? 'Approved. Ship the brief to Claude to generate keyframes.' : `${p.shots.length} shots. Nothing is generated until you approve.`;
+  $('#gate-note').textContent = p.approved ? (mcp ? 'Approved. Generate the keyframes below, or ship the brief to Claude.' : 'Approved. Ship the brief to Claude to generate keyframes.') : `${p.shots.length} shots. Nothing is generated until you approve.`;
+  renderHf(p);
 }
 function renderStory(p) {
   renderGate(p);
@@ -736,25 +753,27 @@ function renderStory(p) {
     const frame = el('div', { class: 'frame' }, el('span', { class: 'tc', text: s.t || '' }), el('div', { class: 'safe' }),
       s.ost ? el('div', { class: 'ost' }, el('span', { text: s.ost })) : null,
       el('div', { class: 'dog', style: `bottom:${10 + (i * 7) % 20}%;left:${8 + (i * 11) % 18}%` }, svgDog()));
+    if (s.kf && s.kf.url) frame.prepend(el('img', { class: 'kf', src: s.kf.url, alt: `Keyframe for shot ${i + 1}`, onerror: e => e.target.remove() }));
     const flag = el('span', { class: 'flag', text: 'Back-safety: remove jumping, stairs or lifting' });
     flag.hidden = !BACK.test(s.action || '');
     const up = k => e => {
       s[k] = e.target.value; save();
-      if (p.approved) { p.approved = false; renderGate(p); }
+      if (p.approved || p.kfApproved) { p.approved = false; p.kfApproved = false; renderGate(p); }
       if (k === 'action') flag.hidden = !BACK.test(s.action);
       if (k === 'ost') { let o = frame.querySelector('.ost'); if (!o) { o = el('div', { class: 'ost' }, el('span')); frame.append(o); } o.firstChild.textContent = s.ost; o.hidden = !s.ost; }
     };
     sb.append(el('div', { class: 'shot' }, frame, el('div', { class: 'fields' },
       el('div', { class: 'head' }, el('b', { text: `${i + 1}. ${s.beat || 'Shot'}` }),
         el('span', { class: 'row' },
-          i > 0 ? el('button', { class: 'x-btn', 'aria-label': 'Move shot earlier', text: '↑', onclick: () => { p.shots.splice(i - 1, 0, p.shots.splice(i, 1)[0]); p.approved = false; save(); renderStory(p); } }) : null,
-          el('button', { class: 'x-btn', 'aria-label': 'Remove shot', text: '×', onclick: () => { p.shots.splice(i, 1); p.approved = false; save(); renderStory(p); } }))),
+          i > 0 ? el('button', { class: 'x-btn', 'aria-label': 'Move shot earlier', text: '↑', onclick: () => { p.shots.splice(i - 1, 0, p.shots.splice(i, 1)[0]); p.approved = false; p.kfApproved = false; save(); renderStory(p); } }) : null,
+          el('button', { class: 'x-btn', 'aria-label': 'Remove shot', text: '×', onclick: () => { p.shots.splice(i, 1); p.approved = false; p.kfApproved = false; save(); renderStory(p); } }))),
       el('input', { type: 'text', value: s.framing, placeholder: 'Framing', 'aria-label': 'Framing', oninput: up('framing') }),
       el('textarea', { rows: 2, placeholder: 'What Nugget does', 'aria-label': 'Action', oninput: up('action') }, s.action),
       el('textarea', { rows: 2, placeholder: 'Voiceover', 'aria-label': 'Voiceover', oninput: up('vo') }, s.vo),
       el('input', { type: 'text', value: s.ost, placeholder: 'On-screen text', 'aria-label': 'On-screen text', oninput: up('ost') }),
       el('input', { type: 'text', value: s.camera, placeholder: 'Camera', 'aria-label': 'Camera', oninput: up('camera') }),
-      flag)));
+      flag, el('div', { class: 'gen', id: 'gen-' + i }))));
+    fillGen(p, i);
   });
 }
 function svgDog() {
@@ -766,7 +785,168 @@ function buildStory(p) {
     t: b.t, beat: b.beat, framing: FRAMING[b.beat] || 'Medium, desk set', action: '', vo: b.line, ost: b.ost,
     camera: b.beat === 'Hook' ? 'Slow push in' : 'Static'
   }));
-  p.approved = false;
+  p.approved = false; p.kfApproved = false;
+}
+
+/* higgsfield, called from the page through the viewer's claude.ai connector */
+const HF = 'Higgsfield';
+const NUGGET = '458854c8-7af2-46db-8dea-690e5a35b773'; // brand/dogs/nugget.md
+const LOGO = '94733eac-4eb2-47fb-95bb-9cce7e65e90a';
+const IMG_MODEL = 'nano_banana_pro', VID_MODEL = 'seedance_2_0';
+const ACTIVE = ['pending', 'queued', 'submitted', 'in_progress', 'processing'];
+let mcp = null, hfChecked = false, hfBusy = false, pollT = null;
+
+const job = (s, k) => s[k] || {};
+const isActive = j => !!j.job && ACTIVE.includes(j.status);
+const allDone = (p, k) => p.shots.length > 0 && p.shots.every(s => job(s, k).status === 'completed');
+const shotSecs = s => { const m = (s.t || '').match(/([\d.]+)\s*-\s*([\d.]+)/); const d = m ? Math.round(m[2] - m[1]) : 5; return Math.min(15, Math.max(4, d || 5)); };
+function kfPrompt(s) {
+  return [`Vertical 9:16 photoreal shot of <<<${NUGGET}>>> in a tight black t-shirt with the <<<${LOGO}>>> logo printed small and centred on the chest.`,
+    s.framing ? s.framing + '.' : '', s.action ? s.action + '.' : 'He talks straight to camera.',
+    'Dark minimalist studio, black seamless background, hard side light, deadpan and slightly unimpressed, looking into the lens.',
+    'He keeps his red leather collar with the grey collar underneath. He stays seated or lying down, never jumping, climbing or being lifted.',
+    'Real dog, not a cartoon. No captions or text besides the shirt logo, no human hands. Headroom for captions.'].filter(Boolean).join(' ');
+}
+function vidPrompt(s) {
+  return [`<<<${NUGGET}>>> ${s.action || 'talks to camera with small, deadpan head movements'}.`, `Camera: ${s.camera || 'static'}.`,
+    'Keep his face, coat, collars and logo t-shirt exactly as in the start frame. Deadpan, slightly smug. He stays seated, no jumping.'].join(' ');
+}
+function hfErr(e) {
+  const c = e && e.code;
+  if (c === 'server_not_connected' || c === 'server_not_found') return 'Higgsfield is not connected to your claude.ai account. Add it in Settings → Connectors, then reload this page.';
+  if (c === 'needs_reauth') return 'Your Higgsfield sign-in expired. Reconnect it in claude.ai Settings → Connectors.';
+  if (c === 'selection_required') return 'You have more than one Higgsfield connector. Pick one when claude.ai asks.';
+  if (['not_in_manifest', 'approval_required', 'consent_required'].includes(c)) return "This page isn't allowed to use Higgsfield yet. Allow it when claude.ai asks, or turn it on in this artifact's Permissions.";
+  if (c === 'blocked_by_policy') return 'Your organization blocks this Higgsfield tool.';
+  if (c === 'tool_error') return 'Higgsfield refused it: ' + (e.message || 'no reason given');
+  if (['not_granted', 'capability_disabled', 'capability_removed'].includes(c)) return 'Generating is not available in this view. Use Ship to hand the brief to Claude.';
+  return 'Higgsfield did not answer (' + (c || 'error') + ').';
+}
+const AMBIGUOUS = 'Some jobs may have started anyway, so check Higgsfield before you try again.';
+function showErr(m) { const n = $('#hf-err'); n.textContent = m || ''; n.hidden = !m; }
+
+function fillGen(p, i) {
+  const box = document.getElementById('gen-' + i); const s = p.shots[i]; if (!box || !s) return;
+  const row = (label, k) => {
+    const j = job(s, k); const kids = [el('b', { text: label })];
+    if (!j.job && !j.error) kids.push(el('span', { class: 'note', text: 'not generated' }));
+    else if (j.status === 'completed') { kids.push(el('span', { class: 'chip good', text: 'ready' })); if (j.url) kids.push(el('a', { href: j.url, target: '_blank', rel: 'noopener', text: k === 'kf' ? 'Open image' : 'Open video' })); }
+    else if (isActive(j)) kids.push(el('span', { class: 'chip warn', text: 'generating…' }));
+    else kids.push(el('span', { class: 'chip bad', text: j.status || 'failed' }));
+    if (mcp && k === 'kf' && p.approved && !hfBusy && !isActive(j) && (j.job || j.error)) kids.push(el('button', { class: 'btn small ghost', text: 'Redo', onclick: () => genKeyframes(p, [i]) }));
+    const r = el('div', { class: 'r' }, kids);
+    return j.error ? [r, el('span', { class: 'err', text: j.error })] : [r];
+  };
+  box.replaceChildren(...row('Keyframe', 'kf'), ...row('Video', 'vid'));
+}
+function renderHf(p) {
+  const note = $('#hf-note'), acts = $('#hf-actions');
+  if (!hfChecked) return;
+  if (!mcp) { acts.hidden = true; note.textContent = "Open this page as the Nuggeting Studio artifact in claude.ai, with Higgsfield connected, to generate here. Until then, Ship hands the brief to Claude."; return; }
+  acts.hidden = false;
+  const kfAll = allDone(p, 'kf'), vidAll = allDone(p, 'vid');
+  const missingKf = p.shots.filter(s => !isActive(job(s, 'kf')) && job(s, 'kf').status !== 'completed').length;
+  const running = p.shots.some(s => isActive(job(s, 'kf')) || isActive(job(s, 'vid')));
+  $('#gen-kf').disabled = hfBusy || running || !p.approved || !missingKf;
+  $('#gen-kf').textContent = missingKf && p.shots.some(s => job(s, 'kf').job) ? `Generate ${missingKf} missing keyframe${missingKf > 1 ? 's' : ''}` : 'Generate keyframes';
+  $('#approve-kf').disabled = hfBusy || running || !kfAll || !p.approved;
+  $('#approve-kf').textContent = p.kfApproved ? 'Unapprove keyframes' : 'Approve keyframes';
+  $('#gen-vid').disabled = hfBusy || running || !p.kfApproved;
+  $('#gen-vid').textContent = p.shots.some(s => job(s, 'vid').job) ? 'Regenerate video' : 'Generate video';
+  note.textContent = hfBusy ? 'Talking to Higgsfield…'
+    : running ? 'Generating. You can keep working; results land on each shot.'
+    : !p.approved ? 'Approve the storyboard first. Nothing is generated or charged before that.'
+    : !kfAll ? 'Step 1: one keyframe per shot with Nugget and his logo tee. You confirm the credits first.'
+    : !p.kfApproved ? 'Check every keyframe, redo the weak ones, then approve them.'
+    : vidAll ? 'Video clips are ready on each shot. Their IDs are saved in the brief.'
+    : 'Step 2: animate each approved keyframe into a clip. You confirm the credits first.';
+}
+function refreshGen(p) {
+  if (state.screen !== 'story' || cur() !== p) return;
+  renderGate(p); p.shots.forEach((s, i) => fillGen(p, i));
+}
+const confirmSpend = (title, note, ok) => new Promise(res => {
+  openSheet({ title, note, text: '', ok, readonly: true, onOk: () => res(true) });
+  const cancel = () => { if ($('#sheet').hidden) { res(false); clearInterval(w); } };
+  const w = setInterval(cancel, 300);
+});
+async function balance() { try { const r = await mcp.callTool(HF, 'balance', {}); return r.payload && r.payload.credits; } catch (e) { return null; } }
+function recordIds(p) {
+  const ids = p.shots.flatMap((s, i) => [['kf', 'keyframe'], ['vid', 'video']].filter(([k]) => job(s, k).status === 'completed').map(([k, w]) => `- Shot ${i + 1} ${w}: ${job(s, k).job}`));
+  const keep = (p.genIds || '').split('\n').filter(l => l.trim() && !/^- Shot \d+ (keyframe|video):/.test(l));
+  p.genIds = keep.concat(ids).join('\n');
+}
+async function submit(p, k, idxs, tool, paramsFor) {
+  hfBusy = true; showErr(''); refreshGen(p);
+  try {
+    const r = await mcp.callTool(HF, tool, { context: 'Nuggeting Studio storyboard generation', requests: idxs.map(i => ({ index: i, params: paramsFor(p.shots[i]) })) });
+    const pay = r.payload;
+    if (!pay || !Array.isArray(pay.jobs)) { showErr('Higgsfield did not start the jobs: ' + (typeof pay === 'string' ? pay : 'unexpected reply')); return; }
+    pay.jobs.forEach(j => { const s = p.shots[j.index]; if (!s) return; s[k] = j.job_id ? { job: j.job_id, status: j.status || 'pending' } : { status: 'failed', error: j.error || 'Not submitted' }; });
+    if (['idea', 'script', 'storyboard'].includes(p.status)) p.status = 'render';
+    save();
+  } catch (e) {
+    showErr(hfErr(e) + (['server_unavailable', 'upstream_error', 'cancelled'].includes(e && e.code) ? ' ' + AMBIGUOUS : ''));
+  } finally { hfBusy = false; refreshGen(p); poll(); }
+}
+async function genKeyframes(p, only) {
+  if (!mcp || hfBusy || !p.approved) return;
+  const idxs = only || p.shots.map((s, i) => i).filter(i => !isActive(job(p.shots[i], 'kf')) && job(p.shots[i], 'kf').status !== 'completed');
+  if (!idxs.length) return;
+  hfBusy = true; refreshGen(p);
+  let each = null, bal = null;
+  try { const r = await mcp.callTool(HF, 'generate_image', { params: { model: IMG_MODEL, aspect_ratio: '9:16', prompt: kfPrompt(p.shots[idxs[0]]), get_cost: true } }); each = r.payload && r.payload.cost && r.payload.cost.credits; bal = await balance(); }
+  catch (e) { hfBusy = false; showErr(hfErr(e)); refreshGen(p); return; }
+  hfBusy = false; refreshGen(p);
+  const total = each != null ? Math.round(each * idxs.length * 100) / 100 : null;
+  const ok = await confirmSpend(`Generate ${idxs.length} keyframe${idxs.length > 1 ? 's' : ''}?`,
+    `${total != null ? `About ${total} credits` : 'Cost unknown'} from your Higgsfield balance${bal != null ? ` (you have ${bal})` : ''}. One 9:16 still per shot with Nugget in his logo tee.`,
+    total != null ? `Generate for ${total} credits` : 'Generate');
+  if (!ok) return;
+  idxs.forEach(i => { delete p.shots[i].kf; delete p.shots[i].vid; }); p.kfApproved = false;
+  submit(p, 'kf', idxs, 'generate_image_batch', s => ({ model: IMG_MODEL, aspect_ratio: '9:16', prompt: kfPrompt(s), use_unlim: false }));
+}
+const vidParams = s => ({ model: VID_MODEL, aspect_ratio: '9:16', duration: shotSecs(s), generate_audio: false, prompt: vidPrompt(s), medias: [{ role: 'start_image', value: s.kf.job }], use_unlim: false });
+async function genVideo(p) {
+  if (!mcp || hfBusy || !p.kfApproved) return;
+  const idxs = p.shots.map((s, i) => i);
+  hfBusy = true; refreshGen(p);
+  let total = 0, bal = null;
+  try {
+    const costs = await Promise.all(idxs.map(i => mcp.callTool(HF, 'generate_video', { params: Object.assign(vidParams(p.shots[i]), { get_cost: true }) })));
+    costs.forEach(r => { const c = r.payload && r.payload.cost && r.payload.cost.credits; total = c == null || total == null ? null : total + c; });
+    bal = await balance();
+  } catch (e) { hfBusy = false; showErr(hfErr(e)); refreshGen(p); return; }
+  hfBusy = false; refreshGen(p);
+  if (total != null) total = Math.round(total * 100) / 100;
+  const secs = idxs.reduce((a, i) => a + shotSecs(p.shots[i]), 0);
+  const ok = await confirmSpend(`Animate ${idxs.length} shot${idxs.length > 1 ? 's' : ''}?`,
+    `${total != null ? `About ${total} credits` : 'Cost unknown'} from your Higgsfield balance${bal != null ? ` (you have ${bal})` : ''}. ${secs}s of 9:16 video in total, each shot starting from its approved keyframe. No audio yet: Nugget's voice isn't set up.`,
+    total != null ? `Generate for ${total} credits` : 'Generate');
+  if (!ok) return;
+  idxs.forEach(i => delete p.shots[i].vid);
+  submit(p, 'vid', idxs, 'generate_video_batch', vidParams);
+}
+async function poll() {
+  clearTimeout(pollT); if (!mcp) return;
+  const watch = [];
+  state.pieces.forEach(p => p.shots.forEach(s => ['kf', 'vid'].forEach(k => { if (isActive(job(s, k))) watch.push([p, s, k]); })));
+  if (!watch.length) return;
+  let wait = 10;
+  for (let o = 0; o < watch.length; o += 12) {
+    const group = watch.slice(o, o + 12);
+    try {
+      const r = await mcp.callTool(HF, 'jobs_wait', { jobs: group.map(([, s, k], n) => ({ index: n, job_id: s[k].job })), timeout_seconds: 15 }, { cache: false });
+      const pay = r.payload || {};
+      (pay.jobs || []).forEach(j => { const g = group[j.index]; if (!g) return; const [p, s, k] = g; s[k] = Object.assign({}, s[k], { status: j.status, url: j.result_url || s[k].url, error: j.error || undefined }); if (j.status === 'completed' || !ACTIVE.includes(j.status)) { recordIds(p); if (k === 'vid' && allDone(p, 'vid') && p.status === 'render') p.status = 'ready'; } });
+      if (pay.poll_after_seconds) wait = pay.poll_after_seconds;
+    } catch (e) {
+      if (!(e && e.retryable)) { showErr(hfErr(e) + ' Reload the page to check again.'); return; }
+      wait = Math.max(wait, ((e.retryAfterMs || 15000) / 1000));
+    }
+  }
+  save(); const p = cur(); if (p) refreshGen(p);
+  pollT = setTimeout(poll, wait * 1000);
 }
 
 /* ship */
@@ -844,9 +1024,9 @@ function parseBrief(md) {
 let sheetOk = null;
 function openSheet({ title, note, text, ok, onOk, readonly }) {
   $('#sheet-title').textContent = title; $('#sheet-note').textContent = note || '';
-  const ta = $('#sheet-text'); ta.value = text || ''; ta.readOnly = !!readonly;
+  const ta = $('#sheet-text'); ta.value = text || ''; ta.readOnly = !!readonly; ta.hidden = !!readonly && !text;
   $('#sheet-ok').textContent = ok; sheetOk = onOk || null; $('#sheet').hidden = false;
-  setTimeout(() => { ta.focus(); if (readonly) ta.select(); }, 30);
+  setTimeout(() => { if (ta.hidden) { $('#sheet-ok').focus(); return; } ta.focus(); if (readonly) ta.select(); }, 30);
 }
 function closeSheet() { $('#sheet').hidden = true; sheetOk = null; }
 $('#sheet-cancel').addEventListener('click', closeSheet);
@@ -904,13 +1084,16 @@ $('#build-sb').addEventListener('click', () => {
   const go2 = () => { buildStory(p); if (['idea', 'script'].includes(p.status)) p.status = 'storyboard'; save(); renderStory(p); toast(`${p.shots.length} shots built from the script`); };
   if (p.shots.length) openSheet({ title: 'Rebuild the storyboard?', note: 'This replaces the current shots with one per script beat.', text: '', ok: 'Rebuild', onOk: go2, readonly: true }); else go2();
 });
-$('#add-shot').addEventListener('click', () => { const p = cur(); p.shots.push({ t: '', beat: '', framing: '', action: '', vo: '', ost: '', camera: '' }); p.approved = false; save(); renderStory(p); });
+$('#add-shot').addEventListener('click', () => { const p = cur(); p.shots.push({ t: '', beat: '', framing: '', action: '', vo: '', ost: '', camera: '' }); p.approved = false; p.kfApproved = false; save(); renderStory(p); });
 $('#approve-sb').addEventListener('click', () => {
   const p = cur(); if (!p.shots.length) { toast('Build the storyboard first'); return; }
   const bad = p.shots.findIndex(s => BACK.test(s.action || ''));
   if (!p.approved && bad >= 0) { toast(`Shot ${bad + 1} breaks the back-safety rule`); return; }
-  p.approved = !p.approved; save(); renderStory(p); if (p.approved) toast('Approved. Next: Ship the brief to Claude.');
+  p.approved = !p.approved; if (!p.approved) p.kfApproved = false; save(); renderStory(p); if (p.approved) toast('Approved. Next: Ship the brief to Claude.');
 });
+$('#gen-kf').addEventListener('click', () => genKeyframes(cur()));
+$('#gen-vid').addEventListener('click', () => genVideo(cur()));
+$('#approve-kf').addEventListener('click', () => { const p = cur(); if (!p.kfApproved && !allDone(p, 'kf')) return; p.kfApproved = !p.kfApproved; save(); refreshGen(p); if (p.kfApproved) toast('Keyframes approved. Next: generate the video.'); });
 $('#mark-posted').addEventListener('click', () => { const p = cur(); p.status = 'posted'; save(); toast('Marked as posted. Copy the log line for content/published.md.'); fillFields(p); });
 $('#delete-piece').addEventListener('click', () => {
   const p = cur();
@@ -930,6 +1113,10 @@ $('#backup-btn').addEventListener('click', () => copy(JSON.stringify({ pieces: s
 load();
 const h = (location.hash || '').slice(1);
 go(['board', 'write', 'swipe', 'story', 'ship'].includes(h) ? h : (state.screen || 'board'));
+(async () => {
+  try { mcp = window.claude && window.claude.use ? await window.claude.use('mcp') : null; } catch (e) { mcp = null; }
+  hfChecked = true; const p = cur(); if (p && state.screen === 'story') refreshGen(p); poll();
+})();
 })();
 </script>
 </body>
