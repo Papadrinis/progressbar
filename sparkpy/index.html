@@ -1382,7 +1382,7 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
   // La IA (Higgsfield, vía el conector del usuario) solo hace la foto, sin texto; el texto lo dibuja el
   // código en un canvas, para que precio, tildes y «PlanPy» salgan exactos. Los templates de código no gastan créditos.
   let mcp = null;
-  const TRIGGER_PRODUCIR = 'trig_01Fy4KcLPn2UReKhCEfWYs1k';
+  const TRIGGER_PRODUCIR = 'trig_01LHvG6P9Y9k9fKp1L9di1TF'; // despierta la sesión de Claude Code que tiene el proyecto
   const LOGO = 'f41973544407a14867c3957ce486da3b';
   const TAM = { '1:1': [1080, 1080], '4:5': [1080, 1350], '9:16': [1080, 1920], '1.91:1': [1200, 628] };
   const AR_IA = { '1:1': '1:1', '4:5': '4:5', '9:16': '9:16', '1.91:1': '16:9' };
@@ -1970,7 +1970,17 @@ Responde SOLO con un objeto JSON con exactamente esas claves.`;
     const sinResp = (pr.revisiones || []).filter((r) => !p.respuestas?.[r.id]);
     const act = pr.actualizado;
     if (p.disparoError && (!p.disparado || p.disparoError.fecha > p.disparado.fecha) && (!act || p.disparoError.fecha > act)) return { pct, tono: 'bad', titulo: 'No se pudo avisar a Claude', detalle: p.disparoError.mensaje || 'El botón falló.', accion: 'Escriba «arranca» en el chat de Claude Code (o pulse el botón otra vez).' };
-    if (pr.bloqueo?.motivo) return { pct, tono: 'bad', titulo: 'Frenado', detalle: pr.bloqueo.motivo + (pr.bloqueo.desde ? ` · desde hace ${fmtMin(minDesde(pr.bloqueo.desde))}` : ''), accion: pr.bloqueo.accion };
+    // El bloqueo puede venir como texto suelto (sesiones viejas) o como {motivo, accion, desde}.
+    const bl = typeof pr.bloqueo === 'string' ? { motivo: pr.bloqueo } : pr.bloqueo;
+    if (bl?.motivo) return { pct, tono: 'bad', titulo: 'Frenado', detalle: bl.motivo + (bl.desde ? ` · desde hace ${fmtMin(minDesde(bl.desde))}` : ''), accion: bl.accion || 'Escriba en el chat de Claude Code para destrabarlo.' };
+    // Enviado pero nadie lo tomó todavía: sin pasos, o el envío es más nuevo que el último «recibido».
+    const tomado = pasos.length && (!p.disparado || !pr.recibido || pr.recibido >= p.disparado.fecha);
+    if (p.disparado && !tomado && p.estado !== 'listo') {
+      const m = minDesde(p.disparado.fecha);
+      return m >= 4
+        ? { pct: 2, tono: 'bad', titulo: 'Frenado: Claude no lo ha tomado', detalle: `Lo envió hace ${fmtMin(m)} y nadie confirmó que lo recibió.`, accion: 'Escriba «arranca» en el chat de Claude Code.' }
+        : { pct: 2, tono: 'run', titulo: 'Enviado · esperando que Claude lo reciba', detalle: 'Cuando lo tome, aquí aparece «Recibido por Claude» (1–2 min).' };
+    }
     if (!p.produccion) {
       if (p.disparado) {
         const m = minDesde(p.disparado.fecha);
