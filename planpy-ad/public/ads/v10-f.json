@@ -1,0 +1,353 @@
+{
+  "id": "PLANPY_CO_VIDA_ROPA_V10_F",
+  "titulo": "V10-F · Descuadre 3 · hook original + cuerpo nuevo",
+  "musica": null,
+  "bloques": [
+    {
+      "id": "h",
+      "voz": "voz/v10/e-h.mp3",
+      "locucion": "Sábado, ocho de la noche. Cerró la tienda… y ahora le toca sumar el cuaderno.",
+      "toma": "v10/shot6.mp4",
+      "lineas": [
+        "Sábado, 8 de la noche.",
+        "Cerró la tienda…",
+        "y ahora le toca",
+        "sumar el cuaderno."
+      ],
+      "claves": [
+        "sábado",
+        "sumar"
+      ],
+      "cola": 8,
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": "25%",
+          "texto": "🕗 Sábado 8 p. m.",
+          "x": 500,
+          "y": 1090,
+          "giro": 6,
+          "tamano": 48,
+          "fondo": "#ff4d4d",
+          "color": "#fff"
+        },
+        {
+          "tipo": "sfx",
+          "en": 2,
+          "nombre": "tick",
+          "volumen": 0.45
+        }
+      ],
+      "duracion": 5.721,
+      "cara": {
+        "x0": 334,
+        "y0": 389,
+        "x1": 746,
+        "y1": 1022
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 334,
+          "y0": 389,
+          "x1": 746,
+          "y1": 1022
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "omitido": "no entra sin tapar (500×92 px)"
+          },
+          {}
+        ],
+        "avisos": [
+          "subtítulos de 1 línea en panel angosto para no tapar ninguna cara",
+          "sticker «🕗 Sábado 8 p. m.» omitido: no hay lugar libre sin tapar a la persona o el producto; muévalo a otra toma o reencuadre"
+        ],
+        "subtitulo": {
+          "base": 1146,
+          "x0": 87,
+          "x1": 878,
+          "lineas": 1
+        }
+      }
+    },
+    {
+      "id": "p2",
+      "voz": "voz/v10e2/pagina.mp3",
+      "locucion": "Página por página, buscando dónde se le fue la plata.",
+      "toma": "v10/shot2.mp4",
+      "lineas": [
+        "Página por página,",
+        "buscando dónde",
+        "se le fue la plata."
+      ],
+      "claves": [
+        "plata"
+      ],
+      "cola": 8,
+      "extras": [
+        {
+          "tipo": "sfx",
+          "en": "10%",
+          "nombre": "scribble",
+          "volumen": 0.3
+        }
+      ],
+      "duracion": 3.474,
+      "cara": {
+        "x0": 10,
+        "y0": 27,
+        "x1": 483,
+        "y1": 693
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 10,
+          "y0": 27,
+          "x1": 483,
+          "y1": 693
+        }
+      ],
+      "layout": {
+        "extras": [
+          {}
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
+    },
+    {
+      "id": "a",
+      "voz": "voz/v10/e-a.mp3",
+      "locucion": "Mientras sus amigas ya salieron, usted sigue sumando.",
+      "toma": "v10/shot8.mp4",
+      "lineas": [
+        "Mientras sus amigas ya salieron,",
+        "usted sigue sumando."
+      ],
+      "claves": [
+        "amigas",
+        "sumando"
+      ],
+      "cola": 10,
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": 4,
+          "texto": "💬 Las amigas: ¿Vienes? 🎉",
+          "x": 500,
+          "y": 1080,
+          "giro": -2,
+          "tamano": 46,
+          "fondo": "#ffffff",
+          "sfx": "ping",
+          "volumenSfx": 0.45
+        }
+      ],
+      "duracion": 3.004,
+      "cara": {
+        "x0": 385,
+        "y0": 476,
+        "x1": 596,
+        "y1": 745
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 385,
+          "y0": 476,
+          "x1": 596,
+          "y1": 745
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "x": 500,
+            "y": 932
+          }
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
+    },
+    {
+      "id": "s1",
+      "voz": "voz/v10/e-s1.mp3",
+      "locucion": "Con Planpi, cada venta queda registrada en el momento.",
+      "toma": "v10/shot4.mp4",
+      "lineas": [
+        "Con PlanPy, cada venta",
+        "queda registrada",
+        "en el momento."
+      ],
+      "claves": [
+        "venta",
+        "momento"
+      ],
+      "extras": [
+        {
+          "tipo": "tarjeta",
+          "en": 4,
+          "formato": "computador",
+          "titulo": "Ventas de hoy",
+          "seccion": "Ventas",
+          "filas": [
+            [
+              "10:42 a. m. · Blusa verde M",
+              "$89.900"
+            ],
+            [
+              "12:15 p. m. · Jean azul 30",
+              "$119.900"
+            ],
+            [
+              "3:08 p. m. · Vestido flores S",
+              "$134.500"
+            ],
+            [
+              "Total",
+              "$344.300"
+            ]
+          ],
+          "resaltar": 3
+        }
+      ],
+      "duracion": 3.239,
+      "cara": {
+        "x0": 372,
+        "y0": 470,
+        "x1": 539,
+        "y1": 699
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 372,
+          "y0": 470,
+          "x1": 539,
+          "y1": 699
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "inserto": true,
+            "y": 356
+          }
+        ],
+        "avisos": [
+          "tarjeta «Ventas de hoy» como corte a pantalla (la toma se desenfoca detrás): no entraba sin tapar a la persona"
+        ],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
+    },
+    {
+      "id": "s2",
+      "voz": "voz/v10e2/casa.mp3",
+      "locucion": "Y el cierre lo revisa desde la casa, en unos diez minutos.",
+      "toma": "v10/shot5.mp4",
+      "lineas": [
+        "Y el cierre lo revisa",
+        "desde la casa,",
+        "en unos diez minutos."
+      ],
+      "claves": [
+        "casa",
+        "diez minutos"
+      ],
+      "cola": 10,
+      "extras": [
+        {
+          "tipo": "tarjeta",
+          "en": 8,
+          "formato": "celular",
+          "titulo": "Cierre del sábado",
+          "seccion": "Caja",
+          "filas": [
+            [
+              "Efectivo",
+              "$212.400"
+            ],
+            [
+              "Transferencias",
+              "$131.900"
+            ],
+            [
+              "Total del día",
+              "$344.300"
+            ]
+          ],
+          "resaltar": 2,
+          "listo": "Caja cerrada ✓"
+        }
+      ],
+      "duracion": 3.474,
+      "cara": {
+        "x0": 390,
+        "y0": 502,
+        "x1": 730,
+        "y1": 970
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 390,
+          "y0": 502,
+          "x1": 730,
+          "y1": 970
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "inserto": true,
+            "y": 356
+          }
+        ],
+        "avisos": [
+          "tarjeta «Cierre del sábado» como corte a pantalla (la toma se desenfoca detrás): no entraba sin tapar a la persona"
+        ],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
+    }
+  ],
+  "cierre": {
+    "voz": "voz/cta.mp3",
+    "cola": 50,
+    "locucion": "Pruébelo quince días gratis, en planpi punto io.",
+    "duracion": 3.474
+  },
+  "fuentes": [
+    {
+      "ruta": "voz/v10e2/pagina.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261115_214427_0bcd1d48-9e32-4abb-b2aa-ce3d8e5b0fb5.mp3",
+      "job": "0bcd1d48-9e32-4abb-b2aa-ce3d8e5b0fb5",
+      "nota": "Xavier"
+    },
+    {
+      "ruta": "voz/v10e2/casa.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261115_214428_ca698904-fe99-449a-b5d8-7fa3170e8e85.mp3",
+      "job": "ca698904-fe99-449a-b5d8-7fa3170e8e85",
+      "nota": "Xavier"
+    }
+  ],
+  "receta": {
+    "origen": "V10-E (Meta: PLANPY_26WK39_VID_ANGDescuadre_3)",
+    "pedido": "descuadre3-iteraciones",
+    "hook": "el de V10-E, sin cambios",
+    "tomas": "reutilizadas de V10 (biblioteca), 0 créditos de video",
+    "voz": "Xavier"
+  }
+}

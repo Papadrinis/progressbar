@@ -1,0 +1,237 @@
+{
+  "id": "PLANPY_CO_VIDA_ROPA_V10_G",
+  "titulo": "V10-G · Descuadre 3 · corta",
+  "musica": null,
+  "bloques": [
+    {
+      "id": "h",
+      "voz": "voz/v10/e-h.mp3",
+      "locucion": "Sábado, ocho de la noche. Cerró la tienda… y ahora le toca sumar el cuaderno.",
+      "toma": "v10/shot6.mp4",
+      "lineas": [
+        "Sábado, 8 de la noche.",
+        "Cerró la tienda…",
+        "y ahora le toca",
+        "sumar el cuaderno."
+      ],
+      "claves": [
+        "sábado",
+        "sumar"
+      ],
+      "cola": 8,
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": "25%",
+          "texto": "🕗 Sábado 8 p. m.",
+          "x": 500,
+          "y": 1090,
+          "giro": 6,
+          "tamano": 48,
+          "fondo": "#ff4d4d",
+          "color": "#fff"
+        },
+        {
+          "tipo": "sfx",
+          "en": 2,
+          "nombre": "tick",
+          "volumen": 0.45
+        }
+      ],
+      "duracion": 5.721,
+      "cara": {
+        "x0": 334,
+        "y0": 389,
+        "x1": 746,
+        "y1": 1022
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 334,
+          "y0": 389,
+          "x1": 746,
+          "y1": 1022
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "omitido": "no entra sin tapar (500×92 px)"
+          },
+          {}
+        ],
+        "avisos": [
+          "subtítulos de 1 línea en panel angosto para no tapar ninguna cara",
+          "sticker «🕗 Sábado 8 p. m.» omitido: no hay lugar libre sin tapar a la persona o el producto; muévalo a otra toma o reencuadre"
+        ],
+        "subtitulo": {
+          "base": 1146,
+          "x0": 87,
+          "x1": 878,
+          "lineas": 1
+        }
+      }
+    },
+    {
+      "id": "p",
+      "voz": "voz/v10/e-p.mp3",
+      "locucion": "Efectivo, transferencias, lo que fió… y la cuenta no le da.",
+      "toma": "v10/shot7.mp4",
+      "lineas": [
+        "Efectivo, transferencias,",
+        "lo que fió…",
+        "y la cuenta no le da."
+      ],
+      "claves": [
+        "cuenta"
+      ],
+      "cola": 8,
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": "30%",
+          "texto": "💵 Efectivo",
+          "x": 300,
+          "y": 1000,
+          "giro": -6,
+          "tamano": 46,
+          "fondo": "#ffffff",
+          "sfx": "pop",
+          "volumenSfx": 0.35
+        },
+        {
+          "tipo": "sticker",
+          "en": "45%",
+          "texto": "📲 Transferencias",
+          "x": 650,
+          "y": 1070,
+          "giro": 5,
+          "tamano": 46,
+          "fondo": "#ffffff",
+          "sfx": "pop",
+          "volumenSfx": 0.35
+        }
+      ],
+      "duracion": 4.284,
+      "cara": {
+        "x0": 338,
+        "y0": 379,
+        "x1": 666,
+        "y1": 798
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 338,
+          "y0": 379,
+          "x1": 666,
+          "y1": 798
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "x": 300,
+            "y": 996
+          },
+          {
+            "x": 650,
+            "y": 892
+          }
+        ],
+        "avisos": [
+          "subtítulos de 1 línea para que entren tarjetas/stickers sin tapar la cara"
+        ],
+        "subtitulo": {
+          "base": 1150,
+          "lineas": 1
+        }
+      }
+    },
+    {
+      "id": "s2",
+      "voz": "voz/v10/e-s2.mp3",
+      "locucion": "Y el cierre lo ve en el celular, en unos diez minutos.",
+      "toma": "v10/shot9.mp4",
+      "lineas": [
+        "Y el cierre lo ve en el celular,",
+        "en unos 10 minutos."
+      ],
+      "claves": [
+        "10"
+      ],
+      "cola": 16,
+      "extras": [
+        {
+          "tipo": "tarjeta",
+          "en": 8,
+          "formato": "celular",
+          "titulo": "Cierre del sábado",
+          "seccion": "Caja",
+          "filas": [
+            [
+              "Efectivo",
+              "$212.400"
+            ],
+            [
+              "Transferencias",
+              "$131.900"
+            ],
+            [
+              "Total del día",
+              "$344.300"
+            ]
+          ],
+          "resaltar": 2,
+          "listo": "Caja cerrada ✓"
+        }
+      ],
+      "duracion": 3.161,
+      "cara": {
+        "x0": 312,
+        "y0": 338,
+        "x1": 624,
+        "y1": 1036
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 312,
+          "y0": 338,
+          "x1": 624,
+          "y1": 1036
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "inserto": true,
+            "y": 356
+          }
+        ],
+        "avisos": [
+          "subtítulos sobre la barbilla (debajo de la boca): toma muy cerrada; para la próxima, encuadre con aire bajo el mentón",
+          "tarjeta «Cierre del sábado» como corte a pantalla (la toma se desenfoca detrás): no entraba sin tapar a la persona"
+        ],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
+    }
+  ],
+  "cierre": {
+    "voz": "voz/cta.mp3",
+    "cola": 36,
+    "locucion": "Pruébelo quince días gratis, en planpi punto io.",
+    "duracion": 3.474
+  },
+  "fuentes": [],
+  "receta": {
+    "origen": "V10-E (Meta: PLANPY_26WK39_VID_ANGDescuadre_3)",
+    "pedido": "descuadre3-iteraciones",
+    "hook": "el de V10-E, sin cambios",
+    "tomas": "reutilizadas de V10 (biblioteca), 0 créditos de video",
+    "voz": "Xavier"
+  }
+}
