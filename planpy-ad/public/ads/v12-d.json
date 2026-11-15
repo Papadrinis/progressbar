@@ -1,0 +1,341 @@
+{
+  "id": "PLANPY_CO_ESCALA_ROPA_V12_D",
+  "titulo": "V12-D · Descuadre 3 · multi-hook",
+  "bloques": [
+    {
+      "id": "h1",
+      "voz": "voz/v12b/mh1.mp3",
+      "locucion": "¿Cuánto le ha faltado en la caja este mes?",
+      "toma": "v10/shot1.mp4",
+      "lineas": [
+        "¿Cuánto le ha faltado",
+        "en la caja este mes?"
+      ],
+      "claves": [
+        "faltado"
+      ],
+      "cola": 2,
+      "extras": [
+        {
+          "tipo": "sfx",
+          "en": 2,
+          "nombre": "scribble",
+          "volumen": 0.3
+        }
+      ],
+      "duracion": 2.273,
+      "cara": {
+        "x0": 382,
+        "y0": 503,
+        "x1": 553,
+        "y1": 735
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 382,
+          "y0": 503,
+          "x1": 553,
+          "y1": 735
+        }
+      ],
+      "layout": {
+        "extras": [
+          {}
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
+    },
+    {
+      "id": "h2",
+      "voz": "voz/v12b/mh2.mp3",
+      "locucion": "¿Cuánto vendió hoy, de verdad?",
+      "toma": "v10/shot6.mp4",
+      "lineas": [
+        "¿Cuánto vendió hoy,",
+        "de verdad?"
+      ],
+      "claves": [
+        "de verdad"
+      ],
+      "cola": 2,
+      "extras": [],
+      "duracion": 2.194,
+      "cara": {
+        "x0": 374,
+        "y0": 488,
+        "x1": 590,
+        "y1": 768
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 374,
+          "y0": 488,
+          "x1": 590,
+          "y1": 768
+        }
+      ],
+      "layout": {
+        "extras": [],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
+    },
+    {
+      "id": "h3",
+      "voz": "voz/v12b/mh3.mp3",
+      "locucion": "¿Cuánto le debe al proveedor? Ni usted lo sabe.",
+      "toma": "v10/shot7.mp4",
+      "lineas": [
+        "¿Cuánto le debe al proveedor?",
+        "Ni usted lo sabe."
+      ],
+      "claves": [
+        "proveedor",
+        "sabe"
+      ],
+      "cola": 6,
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": "55%",
+          "texto": "Caja: $ ??? 🤔",
+          "x": 500,
+          "y": 1040,
+          "giro": 6,
+          "tamano": 66,
+          "fondo": "#ffd400",
+          "sfx": "boing",
+          "volumenSfx": 0.35
+        }
+      ],
+      "duracion": 3.318,
+      "cara": {
+        "x0": 344,
+        "y0": 406,
+        "x1": 666,
+        "y1": 796
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 344,
+          "y0": 406,
+          "x1": 666,
+          "y1": 796
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "x": 500,
+            "y": 916
+          }
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
+    },
+    {
+      "id": "s1",
+      "voz": "voz/v12b/reune.mp3",
+      "locucion": "Planpi reúne sus ventas, su caja y su mercancía en un solo lugar.",
+      "toma": "v10/shot4.mp4",
+      "lineas": [
+        "PlanPy reúne sus ventas,",
+        "su caja y su mercancía",
+        "en un solo lugar."
+      ],
+      "claves": [
+        "un solo lugar"
+      ],
+      "cola": 8,
+      "extras": [
+        {
+          "tipo": "tarjeta",
+          "en": "30%",
+          "formato": "computador",
+          "titulo": "Cierre de caja",
+          "seccion": "Caja",
+          "menu": [
+            "Ventas",
+            "Caja",
+            "Inventario",
+            "Reportes"
+          ],
+          "filas": [
+            [
+              "Ventas en efectivo",
+              "$1.240.000"
+            ],
+            [
+              "Transferencias",
+              "$860.000"
+            ],
+            [
+              "Gastos del día",
+              "$180.000"
+            ],
+            [
+              "Diferencia",
+              "Cuadra ✓"
+            ]
+          ],
+          "resaltar": 3
+        }
+      ],
+      "duracion": 4.284,
+      "cara": {
+        "x0": 353,
+        "y0": 435,
+        "x1": 539,
+        "y1": 703
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 353,
+          "y0": 435,
+          "x1": 539,
+          "y1": 703
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "inserto": true,
+            "y": 356
+          }
+        ],
+        "avisos": [
+          "tarjeta «Cierre de caja» como corte a pantalla (la toma se desenfoca detrás): no entraba sin tapar a la persona"
+        ],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
+    },
+    {
+      "id": "s2",
+      "voz": "voz/v12b/cierra.mp3",
+      "locucion": "Cierra, mira el celular, y ahora sí lo sabe.",
+      "toma": "v10/shot9.mp4",
+      "lineas": [
+        "Cierra, mira el celular,",
+        "y ahora sí lo sabe."
+      ],
+      "claves": [
+        "ahora sí"
+      ],
+      "cola": 10,
+      "extras": [
+        {
+          "tipo": "tarjeta",
+          "en": "15%",
+          "formato": "celular",
+          "titulo": "Cierre de hoy",
+          "seccion": "Caja",
+          "filas": [
+            [
+              "Efectivo",
+              "$212.400"
+            ],
+            [
+              "Transferencias",
+              "$131.900"
+            ],
+            [
+              "Total del día",
+              "$344.300"
+            ]
+          ],
+          "resaltar": 2,
+          "listo": "Caja cuadrada ✓"
+        }
+      ],
+      "duracion": 2.926,
+      "cara": {
+        "x0": 312,
+        "y0": 338,
+        "x1": 624,
+        "y1": 1036
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 312,
+          "y0": 338,
+          "x1": 624,
+          "y1": 1036
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "inserto": true,
+            "y": 356
+          }
+        ],
+        "avisos": [
+          "subtítulos sobre la barbilla (debajo de la boca): toma muy cerrada; para la próxima, encuadre con aire bajo el mentón",
+          "tarjeta «Cierre de hoy» como corte a pantalla (la toma se desenfoca detrás): no entraba sin tapar a la persona"
+        ],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
+    }
+  ],
+  "cierre": {
+    "voz": "voz/cta.mp3",
+    "cola": 50,
+    "locucion": "Pruébelo quince días gratis, en planpi punto io.",
+    "duracion": 3.474
+  },
+  "fuentes": [
+    {
+      "ruta": "voz/v12b/mh1.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261115_205632_614902ae-7918-4b2a-bf74-a91c7c8457ab.mp3",
+      "job": "614902ae-7918-4b2a-bf74-a91c7c8457ab",
+      "nota": "Xavier"
+    },
+    {
+      "ruta": "voz/v12b/mh2.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261115_205632_ac0194c3-67a0-4c6c-84f6-99583baaa182.mp3",
+      "job": "ac0194c3-67a0-4c6c-84f6-99583baaa182",
+      "nota": "Xavier"
+    },
+    {
+      "ruta": "voz/v12b/mh3.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261115_205632_29f50131-c258-430d-a90d-c86054ab3424.mp3",
+      "job": "29f50131-c258-430d-a90d-c86054ab3424",
+      "nota": "Xavier"
+    },
+    {
+      "ruta": "voz/v12b/reune.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261115_205643_7613667b-bf73-4b87-bce3-43b75149f293.mp3",
+      "job": "7613667b-bf73-4b87-bce3-43b75149f293",
+      "nota": "Xavier"
+    },
+    {
+      "ruta": "voz/v12b/cierra.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261115_205632_64557b60-002f-4a6f-82ba-a23a4fee9b8a.mp3",
+      "job": "64557b60-002f-4a6f-82ba-a23a4fee9b8a",
+      "nota": "Xavier"
+    }
+  ],
+  "receta": {
+    "origen": "V12-A (Meta: PLANPY_26WK39_VID_ANGDescuadre_3)",
+    "pedido": "descuadre3-iteraciones",
+    "tomas": "reutilizadas de V10 (biblioteca), 0 créditos de video",
+    "voz": "Xavier"
+  }
+}

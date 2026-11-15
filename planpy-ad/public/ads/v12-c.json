@@ -1,0 +1,251 @@
+{
+  "id": "PLANPY_CO_ESCALA_ROPA_V12_C",
+  "titulo": "V12-C · Descuadre 3 · corta (15 s)",
+  "bloques": [
+    {
+      "id": "b1",
+      "voz": "voz/v12/b1.mp3",
+      "locucion": "¿Cuánto le ha faltado en la caja este mes? Ni usted lo sabe.",
+      "toma": "v10/shot1.mp4",
+      "lineas": [
+        "¿Cuánto le ha faltado",
+        "en la caja este mes?",
+        "Ni usted lo sabe."
+      ],
+      "claves": [
+        "faltado",
+        "sabe"
+      ],
+      "cola": 8,
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": "40%",
+          "texto": "Caja: $ ??? 🤔",
+          "x": 500,
+          "y": 1040,
+          "giro": 6,
+          "tamano": 66,
+          "fondo": "#ffd400",
+          "sfx": "boing",
+          "volumenSfx": 0.4
+        },
+        {
+          "tipo": "sfx",
+          "en": 4,
+          "nombre": "scribble",
+          "volumen": 0.35
+        }
+      ],
+      "duracion": 4.049,
+      "cara": {
+        "x0": 382,
+        "y0": 503,
+        "x1": 578,
+        "y1": 758
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 382,
+          "y0": 503,
+          "x1": 578,
+          "y1": 758
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "x": 500,
+            "y": 916
+          },
+          {}
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
+    },
+    {
+      "id": "d2",
+      "voz": "voz/v12b/lista.mp3",
+      "locucion": "Lo que vendió sin anotar, lo que sacó para el almuerzo, lo que le debe al proveedor.",
+      "toma": "v10/shot7.mp4",
+      "lineas": [
+        "Lo que vendió sin anotar,",
+        "lo que sacó para el almuerzo,",
+        "lo que le debe al proveedor."
+      ],
+      "claves": [
+        "sin anotar",
+        "proveedor"
+      ],
+      "cola": 6,
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": "20%",
+          "texto": "🧾 sin anotar",
+          "x": 600,
+          "y": 980,
+          "giro": -5,
+          "tamano": 56,
+          "fondo": "#ffffff"
+        },
+        {
+          "tipo": "sticker",
+          "en": "55%",
+          "texto": "🍽️ almuerzo",
+          "x": 300,
+          "y": 1080,
+          "giro": 4,
+          "tamano": 56,
+          "fondo": "#ffd400"
+        }
+      ],
+      "duracion": 4.676,
+      "cara": {
+        "x0": 338,
+        "y0": 379,
+        "x1": 667,
+        "y1": 798
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 338,
+          "y0": 379,
+          "x1": 667,
+          "y1": 798
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "x": 600,
+            "y": 988
+          },
+          {
+            "x": 300,
+            "y": 868
+          }
+        ],
+        "avisos": [
+          "subtítulos de 1 línea para que entren tarjetas/stickers sin tapar la cara"
+        ],
+        "subtitulo": {
+          "base": 1150,
+          "lineas": 1
+        }
+      }
+    },
+    {
+      "id": "s1",
+      "voz": "voz/v12b/solucion.mp3",
+      "locucion": "Con Planpi, cada venta queda anotada, y la caja cuadra en unos diez minutos.",
+      "toma": "v10/shot4.mp4",
+      "lineas": [
+        "Con PlanPy, cada venta",
+        "queda anotada,",
+        "y la caja cuadra",
+        "en unos diez minutos."
+      ],
+      "claves": [
+        "anotada",
+        "diez minutos"
+      ],
+      "cola": 8,
+      "extras": [
+        {
+          "tipo": "tarjeta",
+          "en": "30%",
+          "formato": "computador",
+          "titulo": "Cierre de caja",
+          "seccion": "Caja",
+          "menu": [
+            "Ventas",
+            "Caja",
+            "Inventario",
+            "Reportes"
+          ],
+          "filas": [
+            [
+              "Ventas en efectivo",
+              "$1.240.000"
+            ],
+            [
+              "Transferencias",
+              "$860.000"
+            ],
+            [
+              "Gastos del día",
+              "$180.000"
+            ],
+            [
+              "Diferencia",
+              "Cuadra ✓"
+            ]
+          ],
+          "resaltar": 3
+        }
+      ],
+      "duracion": 5.146,
+      "cara": {
+        "x0": 307,
+        "y0": 402,
+        "x1": 539,
+        "y1": 705
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 307,
+          "y0": 402,
+          "x1": 539,
+          "y1": 705
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "inserto": true,
+            "y": 356
+          }
+        ],
+        "avisos": [
+          "tarjeta «Cierre de caja» como corte a pantalla (la toma se desenfoca detrás): no entraba sin tapar a la persona"
+        ],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
+    }
+  ],
+  "cierre": {
+    "voz": "voz/cta.mp3",
+    "cola": 36,
+    "locucion": "Pruébelo quince días gratis, en planpi punto io.",
+    "duracion": 3.474
+  },
+  "fuentes": [
+    {
+      "ruta": "voz/v12b/lista.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261115_205632_fe30a2af-2c08-4b56-9513-8827793e0b54.mp3",
+      "job": "fe30a2af-2c08-4b56-9513-8827793e0b54",
+      "nota": "Xavier"
+    },
+    {
+      "ruta": "voz/v12b/solucion.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261115_205632_f87d9a82-c1f4-452b-9c13-408138fdf2ef.mp3",
+      "job": "f87d9a82-c1f4-452b-9c13-408138fdf2ef",
+      "nota": "Xavier"
+    }
+  ],
+  "receta": {
+    "origen": "V12-A (Meta: PLANPY_26WK39_VID_ANGDescuadre_3)",
+    "pedido": "descuadre3-iteraciones",
+    "tomas": "reutilizadas de V10 (biblioteca), 0 créditos de video",
+    "voz": "Xavier"
+  }
+}
