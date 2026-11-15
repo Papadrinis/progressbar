@@ -11,7 +11,7 @@
       "locucion": "Seis de la mañana. Llegó el pedido y la factura trae precios nuevos. ¿Y usted a cuánto vende?",
       "entrada": 0,
       "toma": "v19/shot1.mp4",
-      "tomaDesde": 0.35,
+      "tomaDesde": 0,
       "lineas": [
         "Seis de la mañana.",
         "Llegó el pedido y la factura",
@@ -35,7 +35,8 @@
           "fondo": "#ffffff"
         }
       ],
-      "duracion": 7.5,
+      "velocidadToma": 1.1,
+      "duracion": 8.06,
       "cara": {
         "x0": 185,
         "y0": 489,
@@ -67,8 +68,7 @@
           "x1": 878,
           "lineas": 1
         }
-      },
-      "velocidadToma": 1.1
+      }
     },
     {
       "id": "a",
@@ -76,7 +76,7 @@
       "locucion": "Ayer vendí harto. Pero si vendía al precio de la semana pasada, cada venta me costó plata.",
       "entrada": 0,
       "toma": "v19/shot2.mp4",
-      "tomaDesde": 0.6,
+      "tomaDesde": 0.09,
       "lineas": [
         "Ayer vendí harto.",
         "Pero si vendía al precio",
@@ -102,20 +102,21 @@
           "volumenSfx": 0.3
         }
       ],
-      "duracion": 6.85,
+      "velocidadToma": 1.1,
+      "duracion": 7.56,
       "cara": {
-        "x0": 316,
-        "y0": 383,
-        "x1": 654,
-        "y1": 879
+        "x0": 310,
+        "y0": 384,
+        "x1": 676,
+        "y1": 888
       },
       "obstaculos": [
         {
           "tipo": "cara",
-          "x0": 316,
-          "y0": 383,
-          "x1": 654,
-          "y1": 879
+          "x0": 310,
+          "y0": 384,
+          "x1": 676,
+          "y1": 888
         }
       ],
       "layout": {
@@ -129,8 +130,7 @@
         "subtitulo": {
           "base": 1146
         }
-      },
-      "velocidadToma": 1.1
+      }
     },
     {
       "id": "d",
@@ -138,7 +138,7 @@
       "locucion": "Mi cuaderno guarda todo, pero no me contesta nada. No me dice a cuánto me quedó el aceite.",
       "entrada": 0,
       "toma": "v19/shot3.mp4",
-      "tomaDesde": 1.25,
+      "tomaDesde": 1.19,
       "lineas": [
         "Mi cuaderno guarda todo,",
         "pero no me contesta nada.",
@@ -151,20 +151,21 @@
       ],
       "cola": 1,
       "extras": [],
-      "duracion": 6.5,
+      "velocidadToma": 1.1,
+      "duracion": 6.87,
       "cara": {
-        "x0": 341,
+        "x0": 340,
         "y0": 308,
-        "x1": 699,
-        "y1": 758
+        "x1": 701,
+        "y1": 754
       },
       "obstaculos": [
         {
           "tipo": "cara",
-          "x0": 341,
+          "x0": 340,
           "y0": 308,
-          "x1": 699,
-          "y1": 758
+          "x1": 701,
+          "y1": 754
         }
       ],
       "layout": {
@@ -173,8 +174,7 @@
         "subtitulo": {
           "base": 1146
         }
-      },
-      "velocidadToma": 1.1
+      }
     },
     {
       "id": "s",
@@ -182,7 +182,7 @@
       "locucion": "Con Planpi tengo proveedores y pedidos en el computador. Y desde el celular veo cómo me fue, sin sumar.",
       "entrada": 0,
       "toma": "v19/shot4.mp4",
-      "tomaDesde": 1.35,
+      "tomaDesde": 1.31,
       "lineas": [
         "Con PlanPy tengo proveedores",
         "y pedidos en el computador.",
@@ -214,20 +214,21 @@
           "resaltar": 1
         }
       ],
-      "duracion": 6.45,
+      "velocidadToma": 1.1,
+      "duracion": 6.7,
       "cara": {
         "x0": 340,
         "y0": 299,
-        "x1": 704,
-        "y1": 814
+        "x1": 702,
+        "y1": 816
       },
       "obstaculos": [
         {
           "tipo": "cara",
           "x0": 340,
           "y0": 299,
-          "x1": 704,
-          "y1": 814
+          "x1": 702,
+          "y1": 816
         }
       ],
       "layout": {
@@ -243,8 +244,7 @@
           "base": 1150,
           "lineas": 1
         }
-      },
-      "velocidadToma": 1.1
+      }
     },
     {
       "id": "cta",
@@ -252,7 +252,7 @@
       "locucion": "Pruébelo quince días gratis, en planpi punto io.",
       "entrada": 0,
       "toma": "v19/shot5.mp4",
-      "tomaDesde": 0.45,
+      "tomaDesde": 0.37,
       "lineas": [
         "Pruébelo 15 días gratis,",
         "en planpy.io"
@@ -262,20 +262,21 @@
       ],
       "cola": 4,
       "extras": [],
-      "duracion": 4.05,
+      "velocidadToma": 1.1,
+      "duracion": 4.34,
       "cara": {
-        "x0": 337,
-        "y0": 315,
-        "x1": 762,
-        "y1": 948
+        "x0": 339,
+        "y0": 325,
+        "x1": 761,
+        "y1": 949
       },
       "obstaculos": [
         {
           "tipo": "cara",
-          "x0": 337,
-          "y0": 315,
-          "x1": 762,
-          "y1": 948
+          "x0": 339,
+          "y0": 325,
+          "x1": 761,
+          "y1": 949
         }
       ],
       "layout": {
@@ -284,8 +285,7 @@
         "subtitulo": {
           "base": 1146
         }
-      },
-      "velocidadToma": 1.1
+      }
     }
   ],
   "cierre": {

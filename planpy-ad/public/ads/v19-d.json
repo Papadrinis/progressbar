@@ -65,7 +65,7 @@
       "locucion": "¿Y usted a cuánto vende?",
       "entrada": 0,
       "toma": "v19/shot1.mp4",
-      "tomaDesde": 6.7,
+      "tomaDesde": 6.67,
       "velocidadToma": 1.1,
       "lineas": [
         "¿Y usted a cuánto vende?"
@@ -91,39 +91,7 @@
           "volumenSfx": 0.3
         }
       ],
-      "duracion": 1.2,
-      "cara": {
-        "x0": 196,
-        "y0": 487,
-        "x1": 572,
-        "y1": 1006
-      },
-      "obstaculos": [
-        {
-          "tipo": "cara",
-          "x0": 196,
-          "y0": 487,
-          "x1": 572,
-          "y1": 1006
-        }
-      ],
-      "layout": {
-        "extras": [
-          {
-            "x": 500,
-            "y": 423
-          }
-        ],
-        "avisos": [
-          "subtítulos de 1 línea en panel angosto para no tapar ninguna cara"
-        ],
-        "subtitulo": {
-          "base": 1146,
-          "x0": 87,
-          "x1": 878,
-          "lineas": 1
-        }
-      }
+      "duracion": 1.39
     },
     {
       "id": "a",
@@ -131,7 +99,7 @@
       "locucion": "Ayer vendí harto. Pero si vendía al precio de la semana pasada, cada venta me costó plata.",
       "entrada": 0,
       "toma": "v19/shot2.mp4",
-      "tomaDesde": 0.6,
+      "tomaDesde": 0.09,
       "lineas": [
         "Ayer vendí harto.",
         "Pero si vendía al precio",
@@ -158,34 +126,7 @@
         }
       ],
       "velocidadToma": 1.1,
-      "duracion": 6.85,
-      "cara": {
-        "x0": 316,
-        "y0": 383,
-        "x1": 654,
-        "y1": 879
-      },
-      "obstaculos": [
-        {
-          "tipo": "cara",
-          "x0": 316,
-          "y0": 383,
-          "x1": 654,
-          "y1": 879
-        }
-      ],
-      "layout": {
-        "extras": [
-          {
-            "x": 520,
-            "y": 927
-          }
-        ],
-        "avisos": [],
-        "subtitulo": {
-          "base": 1146
-        }
-      }
+      "duracion": 7.56
     },
     {
       "id": "d",
@@ -193,7 +134,7 @@
       "locucion": "Mi cuaderno guarda todo, pero no me contesta nada. No me dice a cuánto me quedó el aceite.",
       "entrada": 0,
       "toma": "v19/shot3.mp4",
-      "tomaDesde": 1.25,
+      "tomaDesde": 1.19,
       "lineas": [
         "Mi cuaderno guarda todo,",
         "pero no me contesta nada.",
@@ -207,29 +148,7 @@
       "cola": 1,
       "extras": [],
       "velocidadToma": 1.1,
-      "duracion": 6.5,
-      "cara": {
-        "x0": 341,
-        "y0": 308,
-        "x1": 699,
-        "y1": 758
-      },
-      "obstaculos": [
-        {
-          "tipo": "cara",
-          "x0": 341,
-          "y0": 308,
-          "x1": 699,
-          "y1": 758
-        }
-      ],
-      "layout": {
-        "extras": [],
-        "avisos": [],
-        "subtitulo": {
-          "base": 1146
-        }
-      }
+      "duracion": 6.87
     },
     {
       "id": "s",
@@ -237,7 +156,7 @@
       "locucion": "Con Planpi tengo proveedores y pedidos en el computador. Y desde el celular veo cómo me fue, sin sumar.",
       "entrada": 0,
       "toma": "v19/shot4.mp4",
-      "tomaDesde": 1.35,
+      "tomaDesde": 1.31,
       "lineas": [
         "Con PlanPy tengo proveedores",
         "y pedidos en el computador.",
@@ -270,36 +189,7 @@
         }
       ],
       "velocidadToma": 1.1,
-      "duracion": 6.45,
-      "cara": {
-        "x0": 340,
-        "y0": 299,
-        "x1": 704,
-        "y1": 814
-      },
-      "obstaculos": [
-        {
-          "tipo": "cara",
-          "x0": 340,
-          "y0": 299,
-          "x1": 704,
-          "y1": 814
-        }
-      ],
-      "layout": {
-        "extras": [
-          {
-            "y": 878
-          }
-        ],
-        "avisos": [
-          "subtítulos de 1 línea para que entren tarjetas/stickers sin tapar la cara"
-        ],
-        "subtitulo": {
-          "base": 1150,
-          "lineas": 1
-        }
-      }
+      "duracion": 6.7
     },
     {
       "id": "cta",
@@ -307,7 +197,7 @@
       "locucion": "Pruébelo quince días gratis, en planpi punto io.",
       "entrada": 0,
       "toma": "v19/shot5.mp4",
-      "tomaDesde": 0.45,
+      "tomaDesde": 0.37,
       "lineas": [
         "Pruébelo 15 días gratis,",
         "en planpy.io"
@@ -318,29 +208,7 @@
       "cola": 4,
       "extras": [],
       "velocidadToma": 1.1,
-      "duracion": 4.05,
-      "cara": {
-        "x0": 337,
-        "y0": 315,
-        "x1": 762,
-        "y1": 948
-      },
-      "obstaculos": [
-        {
-          "tipo": "cara",
-          "x0": 337,
-          "y0": 315,
-          "x1": 762,
-          "y1": 948
-        }
-      ],
-      "layout": {
-        "extras": [],
-        "avisos": [],
-        "subtitulo": {
-          "base": 1146
-        }
-      }
+      "duracion": 4.34
     }
   ]
 }

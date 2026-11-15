@@ -204,6 +204,12 @@ Ejemplo del usuario (el tono que buscamos):
 - El CTA lo dice el avatar a cámara en su última toma (mismo prompt); el cierre de marca de Remotion
   va sin voz en off encima.
 
+**Recortar la voz de una toma: siempre con `python3 scripts/voz_toma.py <toma.mp4> <salida.wav> [--desde S]`**,
+nunca a ojo. Busca el inicio y el final reales de la voz cada 20 ms y deja margen (150 ms antes, 250 ms
+después); imprime el `tomaDesde` que va en el bloque para que el video arranque en el mismo punto. En V19
+los cortes a ojo se comieron el inicio de «Ayer» y el final de «aceite» (el usuario lo notó). Si el
+anuncio pasa de 30 s por los márgenes, se acorta otra cosa (cierre, colas, una frase), nunca la voz.
+
 **Montaje:** el audio de Veo ya está en sincronía. En el JSON, el bloque usa la toma como video y su
 propio audio como `voz` (extráelo con `npx remotion ffmpeg -i shotN.mp4 -vn -c:a aac voz/<ad>/N.m4a`),
 con `entrada: 0` y `velocidadVoz: 1` (no acelerar: cambia los labios). Recorta silencios del final si
