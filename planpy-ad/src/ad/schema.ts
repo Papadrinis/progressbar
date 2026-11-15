@@ -72,6 +72,8 @@ export const bloque = z.object({
   toma: z.string(),
   // Velocidad de la toma de video (1 = normal; < 1 = cámara lenta para estirar una toma corta).
   velocidadToma: z.number().min(0.25).max(2).optional(),
+  // Segundo de la toma desde el que arranca (recorta aire muerto al inicio). La voz extraída debe empezar en el mismo punto.
+  tomaDesde: z.number().min(0).optional(),
   // Green screen: la toma de arriba es la «pantalla» de atrás y encima va la persona recortada (WebM con
   // transparencia hecho con scripts/croma.py). x, y = esquina superior izquierda y ancho en px del lienzo;
   // desde = segundo de la toma recortada en que arranca este bloque. «deteccion» es la toma con el verde

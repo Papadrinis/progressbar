@@ -66,7 +66,7 @@ def alto_subtitulo(z, lineas=2):
 
 
 # ---------- detección ----------
-def cuadros_de(ruta, dur):
+def cuadros_de(ruta, dur, desde=0.0):
     suf = ruta.suffix.lower()
     if suf in ('.png', '.jpg', '.jpeg', '.webp'):
         img = cv2.imread(str(ruta))
@@ -74,8 +74,8 @@ def cuadros_de(ruta, dur):
     if suf not in ('.mp4', '.mov', '.webm'):
         return []
     cap = cv2.VideoCapture(str(ruta))
-    out, t = [], 0.0
-    while t < dur:
+    out, t = [], desde
+    while t < desde + dur:
         cap.set(cv2.CAP_PROP_POS_MSEC, t * 1000)
         ok, f = cap.read()
         if ok:
@@ -160,7 +160,7 @@ def analizar(b, z):
     fondo = (b.get('verde') or {}).get('fondo')
     _al = a_lienzo
     a_lienzo_b = lambda c, ws, hs, z, enc: _al(c, ws, hs, z, enc, fondo)
-    cuadros = cuadros_de(PUB / b['toma'], ((b.get('duracion') or 6) + 0.3) * b.get('velocidadToma', 1))
+    cuadros = cuadros_de(PUB / b['toma'], ((b.get('duracion') or 6) + 0.3) * b.get('velocidadToma', 1), b.get('tomaDesde', 0.0))
     if not cuadros:
         return [], None, 0, []  # escena 2D, interfaz, etc.
     hs, ws = cuadros[0].shape[:2]
