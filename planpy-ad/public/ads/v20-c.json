@@ -1,0 +1,298 @@
+{
+  "id": "PLANPY_CO_VIDA_SERVICIOS_V20_C",
+  "titulo": "V20-C · Servicios · pregunta directa (hook C)",
+  "formato": "9:16",
+  "velocidadVoz": 1.08,
+  "bloques": [
+    {
+      "id": "h",
+      "voz": "voz/v20/c1.mp3",
+      "locucion": "¿Barbería, salón o peluquería canina?",
+      "toma": "v7/shot6.mp4",
+      "lineas": [
+        "¿Barbería, salón",
+        "o peluquería canina?"
+      ],
+      "claves": [
+        "peluquería canina"
+      ],
+      "cola": 2,
+      "extras": [],
+      "duracion": 3.082
+    },
+    {
+      "id": "h2",
+      "voz": "voz/v20/c2.mp3",
+      "locucion": "Si su agenda vive en el WhatsApp, esto es para usted.",
+      "toma": "v8/shot6.mp4",
+      "lineas": [
+        "Si su agenda vive en el WhatsApp,",
+        "esto es para usted."
+      ],
+      "claves": [
+        "WhatsApp",
+        "para usted"
+      ],
+      "cola": 4,
+      "extras": [],
+      "duracion": 3.161
+    },
+    {
+      "id": "b2",
+      "voz": "voz/v20/x2.mp3",
+      "locucion": "Mientras atiende a uno, otro le está pidiendo cita.",
+      "toma": "v7/shot2.mp4",
+      "lineas": [
+        "Mientras atiende a uno,",
+        "otro le está pidiendo cita."
+      ],
+      "claves": [
+        "pidiendo cita"
+      ],
+      "cola": 6,
+      "extras": [],
+      "duracion": 3.082
+    },
+    {
+      "id": "b3",
+      "voz": "voz/v20/x3.mp3",
+      "locucion": "Contesta tarde, y se le cruzan las citas...",
+      "toma": "v8/shot3.mp4",
+      "lineas": [
+        "Contesta tarde,",
+        "y se le cruzan las citas…"
+      ],
+      "claves": [
+        "se le cruzan"
+      ],
+      "cola": 2,
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": "40%",
+          "texto": "⚠️ 10:00 a. m. × 2",
+          "x": 520,
+          "y": 1000,
+          "giro": -4,
+          "tamano": 54,
+          "fondo": "#ffd400",
+          "sfx": "boing",
+          "volumenSfx": 0.3
+        }
+      ],
+      "duracion": 3.082
+    },
+    {
+      "id": "b4",
+      "voz": "voz/v20/x4.mp3",
+      "locucion": "...o le queda la silla vacía. Y esa hora no vuelve.",
+      "toma": "v7/shot1.mp4",
+      "lineas": [
+        "…o le queda la silla vacía.",
+        "Y esa hora no vuelve."
+      ],
+      "claves": [
+        "silla vacía",
+        "no vuelve"
+      ],
+      "cola": 6,
+      "extras": [
+        {
+          "tipo": "sticker",
+          "en": "30%",
+          "texto": "🕓 4:00 p. m. · libre",
+          "x": 520,
+          "y": 1040,
+          "giro": 3,
+          "tamano": 52,
+          "fondo": "#ffffff"
+        }
+      ],
+      "duracion": 3.474
+    },
+    {
+      "id": "b5",
+      "voz": "voz/v20/val-d1.wav",
+      "locucion": "Con Planpi la agenda se llena sola, a cualquier hora. Yo duermo y las citas entran.",
+      "entrada": 0,
+      "toma": "v17/shot3.mp4",
+      "tomaDesde": 0.07,
+      "velocidadToma": 1.08,
+      "lineas": [
+        "Con PlanPy la agenda",
+        "se llena sola, a cualquier hora.",
+        "Yo duermo y las citas entran."
+      ],
+      "claves": [
+        "se llena sola",
+        "entran"
+      ],
+      "cola": 4,
+      "extras": [],
+      "duracion": 5.9
+    },
+    {
+      "id": "b6",
+      "voz": "voz/v20/x5.mp3",
+      "locucion": "Y a cada cliente le llega su recordatorio, solo.",
+      "toma": "v8/shot5.mp4",
+      "lineas": [
+        "Y a cada cliente",
+        "le llega su recordatorio, solo."
+      ],
+      "claves": [
+        "recordatorio"
+      ],
+      "cola": 6,
+      "extras": [
+        {
+          "tipo": "tarjeta",
+          "en": "30%",
+          "formato": "celular",
+          "titulo": "Recordatorio de su cita",
+          "seccion": "Citas",
+          "filas": [
+            [
+              "Mañana",
+              "10:00 a. m."
+            ],
+            [
+              "Servicio",
+              "Baño y corte"
+            ]
+          ],
+          "resaltar": 0,
+          "listo": "Cita confirmada ✓"
+        }
+      ],
+      "duracion": 3.318
+    },
+    {
+      "id": "b7",
+      "voz": "voz/v20/x6.mp3",
+      "locucion": "Barbería, salón o peluquería canina: su agenda en orden, en el computador y en el celular.",
+      "toma": "v8/shot4.mp4",
+      "lineas": [
+        "Barbería, salón o peluquería canina:",
+        "su agenda en orden,",
+        "en el computador y en el celular."
+      ],
+      "claves": [
+        "en orden"
+      ],
+      "cola": 8,
+      "extras": [
+        {
+          "tipo": "tarjeta",
+          "en": "35%",
+          "formato": "computador",
+          "titulo": "Agenda de hoy",
+          "seccion": "Agenda",
+          "menu": [
+            "Agenda",
+            "Clientes",
+            "Ventas",
+            "Reportes"
+          ],
+          "filas": [
+            [
+              "9:00 · Corte · Andrés",
+              "Confirmada"
+            ],
+            [
+              "10:00 · Baño · Toby",
+              "Confirmada"
+            ],
+            [
+              "4:00 p. m. · Tinte · Laura",
+              "Confirmada"
+            ]
+          ],
+          "resaltar": 2
+        }
+      ],
+      "duracion": 5.799
+    },
+    {
+      "id": "cta",
+      "voz": "voz/v20/val-cta.wav",
+      "locucion": "Pruébelo quince días gratis, en planpi punto io.",
+      "entrada": 0,
+      "toma": "v17/shot5.mp4",
+      "tomaDesde": 0.01,
+      "velocidadToma": 1.08,
+      "lineas": [
+        "Pruébelo 15 días gratis,",
+        "en planpy.io"
+      ],
+      "claves": [
+        "gratis"
+      ],
+      "cola": 6,
+      "extras": [],
+      "duracion": 3.7
+    }
+  ],
+  "cierre": {
+    "voz": "voz/v20/silencio.wav",
+    "locucion": "",
+    "cola": 46,
+    "pantalla": {
+      "titulo": "15 días gratis",
+      "oferta": "",
+      "nota": ""
+    },
+    "duracion": 0.4
+  },
+  "fuentes": [
+    {
+      "ruta": "voz/v20/c1.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261119_151737_9ccdc201-9e56-4b48-a82e-df03c197bcf4.mp3",
+      "job": "9ccdc201-9e56-4b48-a82e-df03c197bcf4",
+      "nota": "Xavier"
+    },
+    {
+      "ruta": "voz/v20/c2.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261119_151737_9660eebe-f8c8-45ff-9c5d-c668661c08f6.mp3",
+      "job": "9660eebe-f8c8-45ff-9c5d-c668661c08f6",
+      "nota": "Xavier"
+    },
+    {
+      "ruta": "voz/v20/x2.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261119_151735_1b417c6c-4b8e-4c6d-87d7-45f845e88bb4.mp3",
+      "job": "1b417c6c-4b8e-4c6d-87d7-45f845e88bb4",
+      "nota": "Xavier"
+    },
+    {
+      "ruta": "voz/v20/x3.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261119_151738_dfe67358-f5ac-4182-ad2c-db7ada0b9db0.mp3",
+      "job": "dfe67358-f5ac-4182-ad2c-db7ada0b9db0",
+      "nota": "Xavier"
+    },
+    {
+      "ruta": "voz/v20/x4.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261119_151738_753df7fb-eb33-4e9b-83b5-d016a93d9ddd.mp3",
+      "job": "753df7fb-eb33-4e9b-83b5-d016a93d9ddd",
+      "nota": "Xavier"
+    },
+    {
+      "ruta": "voz/v20/x5.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261119_151736_145bd7ea-b0c8-443d-9896-e6068d3c2ad3.mp3",
+      "job": "145bd7ea-b0c8-443d-9896-e6068d3c2ad3",
+      "nota": "Xavier"
+    },
+    {
+      "ruta": "voz/v20/x6.mp3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3HEgcD5GC4CwhaagP0Q7DMWmCz8/hf_20261119_151737_53768c72-4619-496e-808b-9f99736eb3ea.mp3",
+      "job": "53768c72-4619-496e-808b-9f99736eb3ea",
+      "nota": "Xavier"
+    }
+  ],
+  "receta": {
+    "pedido": "servicios-mashup",
+    "concepto": "Las manos ocupadas: la agenda es el inventario",
+    "tomas": "V7 barbería, V8 peluquería canina, V17 Valentina (voz propia, recortada con voz_toma.py); 0 créditos de video",
+    "voz": "Xavier + testimonio de Valentina",
+    "nota": "Mash-up con varias personas a propósito (pedido del usuario)"
+  }
+}
