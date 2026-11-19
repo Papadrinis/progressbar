@@ -26,7 +26,42 @@
           "volumen": 0.5
         }
       ],
-      "duracion": 3.474
+      "duracion": 3.474,
+      "cara": {
+        "x0": 541,
+        "y0": 424,
+        "x1": 796,
+        "y1": 731
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 541,
+          "y0": 424,
+          "x1": 796,
+          "y1": 731
+        },
+        {
+          "tipo": "cara",
+          "x0": 251,
+          "y0": 944,
+          "x1": 491,
+          "y1": 1259
+        }
+      ],
+      "layout": {
+        "extras": [
+          {}
+        ],
+        "avisos": [
+          "subtítulos en panel angosto para no tapar ninguna cara (green screen o dos personas)"
+        ],
+        "subtitulo": {
+          "base": 906,
+          "x0": 87,
+          "x1": 878
+        }
+      }
     },
     {
       "id": "b3",
@@ -55,7 +90,55 @@
           "volumenSfx": 0.3
         }
       ],
-      "duracion": 3.082
+      "duracion": 3.082,
+      "cara": {
+        "x0": 777,
+        "y0": 433,
+        "x1": 935,
+        "y1": 580
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 777,
+          "y0": 433,
+          "x1": 935,
+          "y1": 580
+        },
+        {
+          "tipo": "cara",
+          "x0": 68,
+          "y0": 540,
+          "x1": 181,
+          "y1": 721
+        },
+        {
+          "tipo": "cara",
+          "x0": 170,
+          "y0": 431,
+          "x1": 276,
+          "y1": 562
+        },
+        {
+          "tipo": "cara",
+          "x0": 510,
+          "y0": 475,
+          "x1": 605,
+          "y1": 635
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "x": 520,
+            "y": 926
+          }
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     },
     {
       "id": "b4",
@@ -83,7 +166,34 @@
           "fondo": "#ffffff"
         }
       ],
-      "duracion": 3.474
+      "duracion": 3.474,
+      "cara": {
+        "x0": 462,
+        "y0": 500,
+        "x1": 545,
+        "y1": 677
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 462,
+          "y0": 500,
+          "x1": 545,
+          "y1": 677
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "x": 520,
+            "y": 927
+          }
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     },
     {
       "id": "b5",
@@ -104,7 +214,29 @@
       ],
       "cola": 4,
       "extras": [],
-      "duracion": 5.9
+      "duracion": 5.9,
+      "cara": {
+        "x0": 216,
+        "y0": 294,
+        "x1": 610,
+        "y1": 800
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 216,
+          "y0": 294,
+          "x1": 610,
+          "y1": 800
+        }
+      ],
+      "layout": {
+        "extras": [],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     },
     {
       "id": "b6",
@@ -140,7 +272,40 @@
           "listo": "Cita confirmada ✓"
         }
       ],
-      "duracion": 3.318
+      "duracion": 3.318,
+      "cara": {
+        "x0": 278,
+        "y0": 227,
+        "x1": 578,
+        "y1": 544
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 278,
+          "y0": 227,
+          "x1": 578,
+          "y1": 544
+        },
+        {
+          "tipo": "cara",
+          "x0": 693,
+          "y0": 1754,
+          "x1": 921,
+          "y1": 1952
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "y": 752
+          }
+        ],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     },
     {
       "id": "b7",
@@ -187,7 +352,46 @@
           "resaltar": 2
         }
       ],
-      "duracion": 5.799
+      "duracion": 5.799,
+      "cara": {
+        "x0": 496,
+        "y0": 445,
+        "x1": 683,
+        "y1": 713
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 496,
+          "y0": 445,
+          "x1": 683,
+          "y1": 713
+        },
+        {
+          "tipo": "cara",
+          "x0": 130,
+          "y0": 781,
+          "x1": 253,
+          "y1": 994
+        }
+      ],
+      "layout": {
+        "extras": [
+          {
+            "inserto": true,
+            "y": 356
+          }
+        ],
+        "avisos": [
+          "subtítulos en panel angosto para no tapar ninguna cara (green screen o dos personas)",
+          "tarjeta «Agenda de hoy» como corte a pantalla (la toma se desenfoca detrás): no entraba sin tapar a la persona"
+        ],
+        "subtitulo": {
+          "base": 1146,
+          "x0": 287,
+          "x1": 918
+        }
+      }
     },
     {
       "id": "cta",
@@ -206,7 +410,29 @@
       ],
       "cola": 6,
       "extras": [],
-      "duracion": 3.7
+      "duracion": 3.7,
+      "cara": {
+        "x0": 230,
+        "y0": 305,
+        "x1": 718,
+        "y1": 925
+      },
+      "obstaculos": [
+        {
+          "tipo": "cara",
+          "x0": 230,
+          "y0": 305,
+          "x1": 718,
+          "y1": 925
+        }
+      ],
+      "layout": {
+        "extras": [],
+        "avisos": [],
+        "subtitulo": {
+          "base": 1146
+        }
+      }
     }
   ],
   "cierre": {
