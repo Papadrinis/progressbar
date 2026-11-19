@@ -20,35 +20,13 @@
       "cola": 6,
       "extras": [
         {
-          "tipo": "sticker",
+          "tipo": "sfx",
           "en": "35%",
-          "texto": "📱 3 mensajes nuevos",
-          "x": 520,
-          "y": 1000,
-          "giro": -5,
-          "tamano": 54,
-          "fondo": "#ffffff",
-          "sfx": "vibrate",
-          "volumenSfx": 0.35
+          "nombre": "vibrate",
+          "volumen": 0.5
         }
       ],
       "duracion": 3.474
-    },
-    {
-      "id": "b2",
-      "voz": "voz/v20/x2.mp3",
-      "locucion": "Mientras atiende a uno, otro le está pidiendo cita.",
-      "toma": "v7/shot2.mp4",
-      "lineas": [
-        "Mientras atiende a uno,",
-        "otro le está pidiendo cita."
-      ],
-      "claves": [
-        "pidiendo cita"
-      ],
-      "cola": 6,
-      "extras": [],
-      "duracion": 3.082
     },
     {
       "id": "b3",
@@ -170,7 +148,8 @@
       "locucion": "Barbería, salón o peluquería canina: su agenda en orden, en el computador y en el celular.",
       "toma": "v8/shot4.mp4",
       "lineas": [
-        "Barbería, salón o peluquería canina:",
+        "Barbería, salón",
+        "o peluquería canina:",
         "su agenda en orden,",
         "en el computador y en el celular."
       ],
@@ -233,7 +212,7 @@
   "cierre": {
     "voz": "voz/v20/silencio.wav",
     "locucion": "",
-    "cola": 46,
+    "cola": 36,
     "pantalla": {
       "titulo": "15 días gratis",
       "oferta": "",

@@ -24,7 +24,7 @@
       "id": "h2",
       "voz": "voz/v20/c2.mp3",
       "locucion": "Si su agenda vive en el WhatsApp, esto es para usted.",
-      "toma": "v8/shot6.mp4",
+      "toma": "v8/shot1.mp4",
       "lineas": [
         "Si su agenda vive en el WhatsApp,",
         "esto es para usted."
@@ -36,51 +36,6 @@
       "cola": 4,
       "extras": [],
       "duracion": 3.161
-    },
-    {
-      "id": "b2",
-      "voz": "voz/v20/x2.mp3",
-      "locucion": "Mientras atiende a uno, otro le está pidiendo cita.",
-      "toma": "v7/shot2.mp4",
-      "lineas": [
-        "Mientras atiende a uno,",
-        "otro le está pidiendo cita."
-      ],
-      "claves": [
-        "pidiendo cita"
-      ],
-      "cola": 6,
-      "extras": [],
-      "duracion": 3.082
-    },
-    {
-      "id": "b3",
-      "voz": "voz/v20/x3.mp3",
-      "locucion": "Contesta tarde, y se le cruzan las citas...",
-      "toma": "v8/shot3.mp4",
-      "lineas": [
-        "Contesta tarde,",
-        "y se le cruzan las citas…"
-      ],
-      "claves": [
-        "se le cruzan"
-      ],
-      "cola": 2,
-      "extras": [
-        {
-          "tipo": "sticker",
-          "en": "40%",
-          "texto": "⚠️ 10:00 a. m. × 2",
-          "x": 520,
-          "y": 1000,
-          "giro": -4,
-          "tamano": 54,
-          "fondo": "#ffd400",
-          "sfx": "boing",
-          "volumenSfx": 0.3
-        }
-      ],
-      "duracion": 3.082
     },
     {
       "id": "b4",
@@ -173,7 +128,8 @@
       "locucion": "Barbería, salón o peluquería canina: su agenda en orden, en el computador y en el celular.",
       "toma": "v8/shot4.mp4",
       "lineas": [
-        "Barbería, salón o peluquería canina:",
+        "Barbería, salón",
+        "o peluquería canina:",
         "su agenda en orden,",
         "en el computador y en el celular."
       ],
@@ -236,7 +192,7 @@
   "cierre": {
     "voz": "voz/v20/silencio.wav",
     "locucion": "",
-    "cola": 46,
+    "cola": 36,
     "pantalla": {
       "titulo": "15 días gratis",
       "oferta": "",
